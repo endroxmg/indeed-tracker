@@ -4,7 +4,8 @@ import { subscribeTickets, subscribeUsers, subscribeActivityLog } from '../servi
 import { getWorkingDaysInMonth, STATUS_COLORS, STATUS_LABELS, TICKET_TYPE_COLORS, TYPE_LABELS, formatDate, isOverdue } from '../utils/helpers';
 import { SkeletonCard } from '../components/Skeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Ticket, Clock, MessageSquare, CheckCircle2, Timer, TrendingUp, AlertCircle } from 'lucide-react';
+import { Ticket, Clock, MessageSquare, CheckCircle2, Timer, TrendingUp, AlertCircle, DollarSign } from 'lucide-react';
+import InitialsAvatar from '../components/InitialsAvatar';
 import { format, startOfMonth, endOfMonth, isToday } from 'date-fns';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -48,12 +49,15 @@ export default function Dashboard() {
       return d >= monthStart;
     });
     const totalHoursMonth = timeEntries.reduce((s, e) => s + (e.hours || 0), 0);
+    const incomeUSD = totalHoursMonth * 20;
+    const incomeINR = incomeUSD * 85;
     return [
       { label: 'In Production', value: tickets.filter((t) => t.status === 'in_production').length, icon: Timer, color: '#2557A7', bg: '#E8EDF7' },
       { label: 'Waiting Feedback', value: tickets.filter((t) => t.status === 'ready_for_feedback').length, icon: MessageSquare, color: '#9A3412', bg: '#FFF7ED' },
       { label: 'Feedback to Action', value: tickets.filter((t) => t.status === 'feedback_ready').length, icon: AlertCircle, color: '#C91B1B', bg: '#FEE2E2' },
       { label: 'Completed', value: completedThisMonth.length, icon: CheckCircle2, color: '#0D7A3F', bg: '#ECFDF5' },
       { label: 'Hours Logged', value: `${totalHoursMonth}h`, icon: Clock, color: '#2557A7', bg: '#E8EDF7' },
+      { label: 'Income', value: `$${incomeUSD.toLocaleString()}`, subValue: `₹${incomeINR.toLocaleString()}`, icon: DollarSign, color: '#0D7A3F', bg: '#ECFDF5' },
     ];
   }, [tickets, timeEntries]);
 
@@ -119,7 +123,7 @@ export default function Dashboard() {
       )}
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (
@@ -130,7 +134,8 @@ export default function Dashboard() {
                   <Icon size={18} color={stat.color} />
                 </div>
               </div>
-              <div style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 32, color: '#1A1A2E', lineHeight: 1 }}>{stat.value}</div>
+              <div style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 28, color: '#1A1A2E', lineHeight: 1 }}>{stat.value}</div>
+              {stat.subValue && <div style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 600, fontSize: 14, color: '#767676', marginTop: 4 }}>{stat.subValue}</div>}
             </div>
           );
         })}
@@ -149,8 +154,7 @@ export default function Dashboard() {
               return (
                 <div key={designer.uid}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                    <img src={designer.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(designer.name)}&size=28&background=E8EDF7&color=2557A7`}
-                      alt="" style={{ width: 28, height: 28, borderRadius: '50%' }} />
+                    <InitialsAvatar name={designer.name} size={28} />
                     <span style={{ fontSize: 14, fontWeight: 700, fontFamily: '"Poppins", sans-serif', color: '#1A1A2E' }}>{designer.name}</span>
                   </div>
                   {activeTicket ? (

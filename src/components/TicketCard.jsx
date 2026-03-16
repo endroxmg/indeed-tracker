@@ -1,12 +1,16 @@
-import { TICKET_TYPE_COLORS, TYPE_LABELS, PRIORITY_COLORS, daysInCurrentStage, isOverdue } from '../utils/helpers';
-import { ExternalLink, Clock, AlertCircle } from 'lucide-react';
+import { TYPE_LABELS, PRIORITY_COLORS, daysInCurrentStage, isOverdue } from '../utils/helpers';
+import { Clock, AlertTriangle } from 'lucide-react';
+import InitialsAvatar from './InitialsAvatar';
 
 export default function TicketCard({ ticket, users = [], onClick }) {
   const assignee = users.find((u) => u.uid === ticket.assigneeId);
   const overdue = isOverdue(ticket);
   const daysInStage = daysInCurrentStage(ticket.statusHistory);
-  const typeColor = TICKET_TYPE_COLORS[ticket.type] || TICKET_TYPE_COLORS.other;
   const priorityColor = PRIORITY_COLORS[ticket.priority] || {};
+
+  // Priority accent bar color
+  const accentColor = ticket.priority === 'high' ? '#C91B1B'
+    : ticket.priority === 'medium' ? '#D97706' : '#2557A7';
 
   return (
     <div
@@ -14,101 +18,76 @@ export default function TicketCard({ ticket, users = [], onClick }) {
       style={{
         background: '#FFFFFF',
         borderRadius: 10,
-        padding: 16,
-        border: overdue ? '1px solid #C91B1B' : '1px solid #D4D2D0',
+        border: overdue ? '1px solid #FCA5A5' : '1px solid #E8E8E8',
         cursor: 'pointer',
-        transition: 'all 0.2s ease',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-        position: 'relative',
+        transition: 'all 0.15s ease',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+        overflow: 'hidden',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)';
-        e.currentTarget.style.borderColor = '#2557A7';
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+        e.currentTarget.style.transform = 'translateY(-1px)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
-        e.currentTarget.style.borderColor = overdue ? '#C91B1B' : '#D4D2D0';
+        e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.04)';
+        e.currentTarget.style.transform = 'translateY(0)';
       }}
     >
-      {/* Top row: Jira ID + Type */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <span style={{
-          fontWeight: 700, fontSize: 13, color: '#2557A7',
-          fontFamily: '"Poppins", sans-serif',
-        }}>
-          {ticket.jiraId}
-        </span>
-        <span style={{
-          fontSize: 11, fontWeight: 600, padding: '2px 8px',
-          borderRadius: 20, background: typeColor.bg, color: typeColor.text,
-        }}>
-          {TYPE_LABELS[ticket.type]}
-        </span>
-      </div>
+      {/* Priority accent bar */}
+      <div style={{ height: 3, background: accentColor }} />
 
-      {/* Title */}
-      <h4 style={{
-        fontSize: 14, fontWeight: 600, color: '#1A1A2E',
-        margin: '0 0 10px', lineHeight: 1.4,
-        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-        overflow: 'hidden',
-      }}>
-        {ticket.title}
-      </h4>
-
-      {/* Meta badges */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
-        {ticket.priority && (
+      <div style={{ padding: '12px 14px' }}>
+        {/* Row 1: Jira ID + Type */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
           <span style={{
-            fontSize: 11, fontWeight: 600, padding: '2px 8px',
-            borderRadius: 20, background: priorityColor.bg, color: priorityColor.text,
+            fontWeight: 700, fontSize: 12, color: '#2557A7',
+            fontFamily: '"Poppins", sans-serif', letterSpacing: '0.01em',
           }}>
-            {ticket.priority}
+            {ticket.jiraId}
           </span>
-        )}
-        <span style={{
-          fontSize: 11, fontWeight: 600, padding: '2px 8px',
-          borderRadius: 20, background: '#F3F2F1', color: '#4B5563',
-        }}>
-          v{ticket.versions?.length || 1}
-        </span>
-        {daysInStage > 0 && (
           <span style={{
-            fontSize: 11, fontWeight: 500, padding: '2px 8px',
-            borderRadius: 20, background: daysInStage > 3 ? '#FEE2E2' : '#F3F2F1',
-            color: daysInStage > 3 ? '#C91B1B' : '#767676',
-            display: 'flex', alignItems: 'center', gap: 3,
+            fontSize: 10, fontWeight: 600, padding: '2px 7px',
+            borderRadius: 4, background: '#F3F2F1', color: '#767676',
+            textTransform: 'uppercase', letterSpacing: '0.03em',
           }}>
-            <Clock size={10} /> {daysInStage}d
+            {TYPE_LABELS[ticket.type]}
           </span>
-        )}
-      </div>
+        </div>
 
-      {/* Bottom row: Assignee + Frame.io */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {assignee ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <img
-              src={assignee.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(assignee.name)}&size=24&background=E8EDF7&color=2557A7`}
-              alt=""
-              style={{ width: 22, height: 22, borderRadius: '50%' }}
-            />
-            <span style={{ fontSize: 12, color: '#767676', fontWeight: 500 }}>{assignee.name}</span>
-          </div>
-        ) : (
-          <span style={{ fontSize: 12, color: '#999' }}>Unassigned</span>
-        )}
+        {/* Title — max 2 lines */}
+        <h4 style={{
+          fontSize: 13, fontWeight: 600, color: '#1A1A2E',
+          margin: '0 0 10px', lineHeight: 1.45,
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        }}>
+          {ticket.title}
+        </h4>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          {ticket.frameioUrl && (
-            <ExternalLink size={12} color="#2557A7" />
-          )}
-          {overdue && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-              <AlertCircle size={12} color="#C91B1B" />
-              <span style={{ fontSize: 10, color: '#C91B1B', fontWeight: 700 }}>OVERDUE</span>
+        {/* Bottom: assignee + meta */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {assignee ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <InitialsAvatar name={assignee.name} size={20} />
+              <span style={{ fontSize: 11, color: '#767676', fontWeight: 500 }}>{assignee.name.split(' ')[0]}</span>
             </div>
+          ) : (
+            <span style={{ fontSize: 11, color: '#C4C4C4', fontStyle: 'italic' }}>Unassigned</span>
           )}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {daysInStage > 0 && (
+              <span style={{
+                fontSize: 10, fontWeight: 600, padding: '1px 6px',
+                borderRadius: 4, display: 'flex', alignItems: 'center', gap: 2,
+                background: daysInStage > 3 ? '#FEF2F2' : '#F9F9F9',
+                color: daysInStage > 3 ? '#B91C1C' : '#999',
+              }}>
+                <Clock size={9} /> {daysInStage}d
+              </span>
+            )}
+            {overdue && <AlertTriangle size={13} color="#C91B1B" />}
+          </div>
         </div>
       </div>
     </div>
