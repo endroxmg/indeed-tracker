@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    // For a small internal team, allow all authenticated users
+    // to read/write most collections
+    match /users/{userId} {
+      allow read: if isLoggedIn();
+      allow create: if isLoggedIn();
+      allow update: if isLoggedIn();
+      allow delete: if isLoggedIn();
+    }
+
+    match /tickets/{ticketId} {
+      allow read, write: if isLoggedIn();
+    }
+
+    match /timeEntries/{entryId} {
+      allow read, write: if isLoggedIn();
+    }
+
+    match /activityLog/{logId} {
+      allow read, write: if isLoggedIn();
+    }
+
+    match /invites/{inviteId} {
+      allow read, write: if isLoggedIn();
+    }
+  }
+}

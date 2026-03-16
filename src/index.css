@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2557A7;
+  --color-primary-dark: #1A4286;
+  --color-primary-light: #EEF1F8;
+  --color-primary-text: #1A1A2E;
+  --color-secondary-text: #767676;
+  --color-border: #D4D2D0;
+  --color-surface: #F3F2F1;
+  --color-error: #C91B1B;
+  --color-warning: #D97706;
+  --color-success: #0D7A3F;
+  --color-sidebar: #1A1A2E;
+  --color-sidebar-hover: #2D2D44;
+  --color-sidebar-active: #2557A7;
+
+  --font-family-heading: "Poppins", sans-serif;
+  --font-family-body: "Noto Sans", sans-serif;
+
+  --shadow-card: 0 1px 4px rgba(0,0,0,0.1), 0 0 1px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.08);
+  --shadow-modal: 0 20px 60px rgba(0,0,0,0.2);
+  --shadow-dropdown: 0 4px 24px rgba(0,0,0,0.15);
+
+  --radius-card: 12px;
+  --radius-button: 8px;
+  --radius-input: 8px;
+  --radius-pill: 20px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Noto Sans", sans-serif;
+  color: #1A1A2E;
+  background-color: #F3F2F1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, label, th, .heading {
+  font-family: "Poppins", sans-serif;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #C4C4C4; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #999; }
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #E8E8E8 25%, #D4D4D4 50%, #E8E8E8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Overdue pulse */
+@keyframes pulse-orange {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.overdue-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #D97706;
+  animation: pulse-orange 1.5s infinite;
+  display: inline-block;
+}
+
+/* Transitions */
+button, a, input, select, textarea, .interactive {
+  transition: all 0.2s ease;
+}
+
+/* Badge base */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "Noto Sans", sans-serif;
+  line-height: 1.5;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+/* Table alternating rows */
+.alt-row:nth-child(even) {
+  background-color: #F9F9F8;
+}
+
+/* Focus ring */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #2557A7;
+  box-shadow: 0 0 0 3px rgba(37, 87, 167, 0.15);
+}
+
+/* Button base styles */
+.btn-primary {
+  background: #2557A7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-primary:hover {
+  background: #1A4286;
+  box-shadow: 0 2px 8px rgba(37, 87, 167, 0.3);
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #1A1A2E;
+  border: 1px solid #D4D2D0;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+  background: #F3F2F1;
+  border-color: #999;
+}

@@ -1,0 +1,169 @@
+import {
+  eachDayOfInterval,
+  getDay,
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  isAfter,
+  isBefore,
+  isSameDay,
+  differenceInCalendarDays,
+  parseISO,
+  addDays,
+} from 'date-fns';
+
+// ─── Working Days (exclude Sundays) ────────────────────────
+export function getWorkingDays(startDate, endDate) {
+  if (!startDate || !endDate) return 0;
+  const start = typeof startDate === 'string' ? parseISO(startDate) : startDate;
+  const end = typeof endDate === 'string' ? parseISO(endDate) : endDate;
+  if (isAfter(start, end)) return 0;
+  const days = eachDayOfInterval({ start, end });
+  return days.filter((d) => getDay(d) !== 0).length; // 0 = Sunday
+}
+
+export function getWorkingDaysInMonth(year, month) {
+  const start = startOfMonth(new Date(year, month));
+  const today = new Date();
+  const monthEnd = endOfMonth(new Date(year, month));
+  const end = isBefore(monthEnd, today) ? monthEnd : today;
+  return getWorkingDays(start, end);
+}
+
+// ─── Utilization ───────────────────────────────────────────
+export function calculateUtilization(loggedHours, workingDays, dailyCapacity = 8) {
+  const expected = workingDays * dailyCapacity;
+  if (expected === 0) return { expected, logged: loggedHours, percentage: 0 };
+  return {
+    expected,
+    logged: loggedHours,
+    percentage: Math.round((loggedHours / expected) * 100),
+  };
+}
+
+// ─── Date formatting ──────────────────────────────────────
+export function formatDate(date, fmt = 'dd MMM yyyy') {
+  if (!date) return '';
+  const d = date?.toDate ? date.toDate() : typeof date === 'string' ? parseISO(date) : date;
+  return format(d, fmt);
+}
+
+export function toDateString(date) {
+  const d = date?.toDate ? date.toDate() : date;
+  return format(d, 'yyyy-MM-dd');
+}
+
+// ─── Days in stage ─────────────────────────────────────────
+export function daysInCurrentStage(statusHistory) {
+  if (!statusHistory || statusHistory.length === 0) return 0;
+  const lastEntry = statusHistory[statusHistory.length - 1];
+  const enteredAt = lastEntry.timestamp?.toDate
+    ? lastEntry.timestamp.toDate()
+    : new Date(lastEntry.timestamp);
+  return getWorkingDays(enteredAt, new Date());
+}
+
+// ─── Overdue check ─────────────────────────────────────────
+export function isOverdue(ticket) {
+  if (ticket.status !== 'ready_for_feedback') return false;
+  const days = daysInCurrentStage(ticket.statusHistory);
+  return days > 3;
+}
+
+// ─── Badge color maps ──────────────────────────────────────
+export const TICKET_TYPE_COLORS = {
+  webinar: { bg: '#E8EDF7', text: '#2557A7' },
+  video: { bg: '#FFF7ED', text: '#9A3412' },
+  screengrabs: { bg: '#ECFDF5', text: '#065F46' },
+  motion_graphics: { bg: '#F5F0FF', text: '#6D28D9' },
+  other: { bg: '#F3F2F1', text: '#4B5563' },
+};
+
+export const PRIORITY_COLORS = {
+  high: { bg: '#FEE2E2', text: '#C91B1B' },
+  medium: { bg: '#FFF7ED', text: '#9A3412' },
+  low: { bg: '#ECFDF5', text: '#0D7A3F' },
+};
+
+export const STATUS_COLORS = {
+  todo: { bg: '#F3F2F1', text: '#4B5563' },
+  in_production: { bg: '#E8EDF7', text: '#2557A7' },
+  ready_for_feedback: { bg: '#FFF7ED', text: '#9A3412' },
+  feedback_ready: { bg: '#FEE2E2', text: '#C91B1B' },
+  completed: { bg: '#ECFDF5', text: '#0D7A3F' },
+};
+
+export const FEEDBACK_CATEGORY_COLORS = {
+  ui: { bg: '#EEF2FF', text: '#4338CA' },
+  voiceover: { bg: '#FDF4FF', text: '#7E22CE' },
+  animation: { bg: '#FFF7ED', text: '#C2410C' },
+  storyboard: { bg: '#F0FDF4', text: '#166534' },
+  text: { bg: '#EFF6FF', text: '#1D4ED8' },
+  timing: { bg: '#FFF1F2', text: '#BE123C' },
+  other: { bg: '#F9FAFB', text: '#374151' },
+};
+
+export const STATUS_LABELS = {
+  todo: 'To Do',
+  in_production: 'In Production',
+  ready_for_feedback: 'Ready for Feedback',
+  feedback_ready: 'Feedback Ready',
+  completed: 'Completed',
+};
+
+export const TYPE_LABELS = {
+  webinar: 'Webinar',
+  video: 'Video',
+  screengrabs: 'Screengrabs',
+  motion_graphics: 'Motion Graphics',
+  other: 'Other',
+};
+
+export const KANBAN_COLUMNS = [
+  { id: 'todo', label: 'To Do' },
+  { id: 'in_production', label: 'In Production' },
+  { id: 'ready_for_feedback', label: 'Ready for Feedback' },
+  { id: 'feedback_ready', label: 'Feedback Ready' },
+  { id: 'completed', label: 'Completed' },
+];
+
+// ─── Frame.io comment auto-categorization ──────────────────
+export function categorizeComment(text) {
+  const lower = (text || '').toLowerCase();
+  if (/voice|vo\b|audio|narrat|sound/.test(lower)) return 'voiceover';
+  if (/animat|motion|transition|keyframe|ease|bounce/.test(lower)) return 'animation';
+  if (/storyboard|script|story|scene|sequence|slide/.test(lower)) return 'storyboard';
+  if (/\btext\b|copy|font|typo|caption|subtitle|title|heading/.test(lower)) return 'text';
+  if (/timing|duration|speed|slow|fast|pace/.test(lower)) return 'timing';
+  if (/\bui\b|design|layout|colou?r|brand|logo|icon|graphic/.test(lower)) return 'ui';
+  return 'other';
+}
+
+export function categorizeCommentType(text) {
+  const lower = (text || '').toLowerCase();
+  if (/error|mistake|wrong|incorrect|fix|broken|not working|doesn't/.test(lower)) return 'error';
+  return 'update';
+}
+
+// ─── Week helpers ──────────────────────────────────────────
+export function getWeekDays(date) {
+  const start = startOfWeek(date, { weekStartsOn: 1 }); // Monday
+  return Array.from({ length: 6 }, (_, i) => addDays(start, i)); // Mon-Sat
+}
+
+export function getMonthDateRange(year, month) {
+  return {
+    start: startOfMonth(new Date(year, month)),
+    end: endOfMonth(new Date(year, month)),
+  };
+}
+
+// ─── Video duration formatter ──────────────────────────────
+export function formatDuration(seconds) {
+  if (!seconds) return '—';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${String(secs).padStart(2, '0')}`;
+}
