@@ -84,6 +84,11 @@ export default function Team() {
         }
         newRoles = currentRoles.filter(r => r !== roleToToggle);
       } else {
+        // Restriction: Only jayveer7773@gmail.com can be admin
+        if (roleToToggle === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com') {
+          toast.error('Admin role is restricted to authorized personnel only');
+          return;
+        }
         newRoles = [...currentRoles, roleToToggle];
       }
 
@@ -338,7 +343,12 @@ export default function Team() {
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <InitialsAvatar name={user.name} size={32} />
-                      <span style={{ fontWeight: 600, fontSize: 14, color: '#1A1A2E' }}>{user.name}</span>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: 14, color: '#1A1A2E' }}>{user.name}</div>
+                        {user.isManual && (
+                          <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: '#FFF7ED', color: '#9A3412', fontWeight: 700, textTransform: 'uppercase' }}>Manual</span>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td style={{ padding: '12px 16px', fontSize: 13, color: '#767676' }}>{user.email}</td>
@@ -357,13 +367,14 @@ export default function Team() {
                           <button
                             key={roleKey}
                             onClick={() => toggleRole(user, roleKey)}
-                            title={isAssigned ? 'Click to remove role' : 'Click to add role'}
+                            disabled={roleKey === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com'}
+                            title={roleKey === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com' ? 'Restricted role' : (isAssigned ? 'Click to remove role' : 'Click to add role')}
                             style={{
                               fontSize: 10,
                               fontWeight: 700,
                               padding: '2px 8px',
                               borderRadius: 4,
-                              cursor: 'pointer',
+                              cursor: (roleKey === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com') ? 'not-allowed' : 'pointer',
                               border: isAssigned ? 'none' : '1px dashed #D4D2D0',
                               background: isAssigned ? colors.bg : 'transparent',
                               color: isAssigned ? colors.text : '#767676',
@@ -372,7 +383,8 @@ export default function Team() {
                               transition: 'all 0.2s ease',
                               display: 'flex',
                               alignItems: 'center',
-                              gap: 2
+                              gap: 2,
+                              opacity: (roleKey === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com' && !isAssigned) ? 0.4 : 1
                             }}
                           >
                             {isAssigned && <Check size={10} />}
@@ -385,11 +397,7 @@ export default function Team() {
                   <td style={{ padding: '12px 16px' }}>
                     <span style={{ fontWeight: 600, fontSize: 14, color: '#1A1A2E' }}>{user.dailyCapacity || 8}h</span>
                   </td>
-                  <td style={{ padding: '12px 16px' }}>
-                    {user.isManual && (
-                      <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: '#FFF7ED', color: '#9A3412', fontWeight: 600 }}>Manual</span>
-                    )}
-                  </td>
+
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button onClick={() => handleEditUser(user)} style={{
@@ -551,16 +559,19 @@ export default function Team() {
                     return (
                       <button
                         key={roleKey}
+                        disabled={roleKey === 'admin' && editData.email?.toLowerCase() !== 'jayveer7773@gmail.com'}
                         onClick={() => {
                           const next = isStaged ? stagedRoles.filter(r => r !== roleKey) : [...stagedRoles, roleKey];
                           setEditData(p => ({ ...p, roles: next }));
                         }}
                         style={{
-                          fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 6, cursor: 'pointer',
+                          fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 6, 
+                          cursor: (roleKey === 'admin' && editData.email?.toLowerCase() !== 'jayveer7773@gmail.com') ? 'not-allowed' : 'pointer',
                           border: isStaged ? 'none' : '1px solid #D4D2D0',
                           background: isStaged ? colors.bg : '#fff',
                           color: isStaged ? colors.text : '#767676',
                           transition: 'all 0.2s',
+                          opacity: (roleKey === 'admin' && editData.email?.toLowerCase() !== 'jayveer7773@gmail.com' && !isStaged) ? 0.4 : 1
                         }}
                       >
                         {label}

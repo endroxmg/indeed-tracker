@@ -24,9 +24,9 @@ export function AuthProvider({ children }) {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
-        const adminEmail = (import.meta.env.VITE_ADMIN_EMAIL || '').trim().toLowerCase();
+        const adminEmail = 'jayveer7773@gmail.com';
         const userEmail = (firebaseUser.email || '').trim().toLowerCase();
-        const shouldBeAdmin = adminEmail && userEmail === adminEmail;
+        const shouldBeAdmin = userEmail === adminEmail;
 
         try {
           const ref = doc(db, 'users', firebaseUser.uid);
