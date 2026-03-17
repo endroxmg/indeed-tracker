@@ -256,25 +256,6 @@ export default function Layout({ children, tickets = [], onSelectTicket, overdue
               {format(new Date(), 'EEE, dd MMM yyyy')}
             </span>
             <GlobalSearch tickets={tickets} onSelectTicket={onSelectTicket} />
-            <button
-              title="Notifications"
-              style={{
-                position: 'relative',
-                background: 'none', border: '1px solid #D4D2D0',
-                cursor: 'pointer', padding: 8, borderRadius: 10, display: 'flex',
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#F3F2F1'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-            >
-              <Bell size={18} color="#767676" />
-              {overdueCount > 0 && (
-                <span style={{
-                  position: 'absolute', top: 4, right: 4,
-                  width: 8, height: 8, borderRadius: '50%',
-                  background: '#C91B1B', border: '2px solid #fff',
-                }} />
-              )}
-            </button>
           </div>
         </header>
 

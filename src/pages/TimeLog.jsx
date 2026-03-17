@@ -188,7 +188,7 @@ export default function TimeLog() {
           <thead>
             <tr style={{ background: '#F3F2F1' }}>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 700, color: '#767676', fontFamily: '"Poppins", sans-serif', width: 180 }}>
-                Designer
+                LDAP Account
               </th>
               {weekDays.map((day) => {
                 const isSunday = getDay(day) === 0;
@@ -217,8 +217,8 @@ export default function TimeLog() {
                 <tr key={user.uid} style={{ borderBottom: '1px solid #F3F2F1' }}>
                   <td style={{ padding: '10px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <InitialsAvatar name={user.name} size={28} />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E' }}>{user.name}</span>
+                      <InitialsAvatar name={user.ldap || user.name} size={28} />
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', fontFamily: 'monospace' }}>{user.ldap || user.name}</span>
                     </div>
                   </td>
                   {weekDays.map((day) => {
@@ -274,7 +274,7 @@ export default function TimeLog() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#F3F2F1' }}>
-              {['Designer', 'Working Days', 'Expected Hrs', 'Logged Hrs', 'Utilization', 'Status'].map((h) => (
+              {['LDAP Account', 'Working Days', 'Expected Hrs', 'Logged Hrs', 'Utilization', 'Status'].map((h) => (
                 <th key={h} style={{
                   padding: '10px 16px', textAlign: 'left', fontSize: 12, fontWeight: 700,
                   color: '#767676', fontFamily: '"Poppins", sans-serif',
@@ -285,7 +285,7 @@ export default function TimeLog() {
           <tbody>
             {monthSummary.map(({ user, workDays, expected, logged, pct, statusColor, statusLabel }) => (
               <tr key={user.uid} style={{ borderBottom: '1px solid #F3F2F1' }}>
-                <td style={{ padding: '10px 16px', fontWeight: 600, fontSize: 14, color: '#1A1A2E' }}>{user.name}</td>
+                <td style={{ padding: '10px 16px', fontWeight: 600, fontSize: 14, color: '#1A1A2E', fontFamily: 'monospace' }}>{user.ldap || user.name}</td>
                 <td style={{ padding: '10px 16px', fontSize: 14, color: '#1A1A2E' }}>{workDays}</td>
                 <td style={{ padding: '10px 16px', fontSize: 14, color: '#1A1A2E' }}>{expected}h</td>
                 <td style={{ padding: '10px 16px', fontSize: 14, fontWeight: 700, color: '#2557A7' }}>{logged}h</td>
