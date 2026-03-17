@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { X, ExternalLink, Clock, CheckCircle2, Circle, ArrowRight, Plus, RefreshCw, ChevronDown, ChevronRight, Edit3, Save } from 'lucide-react';
-import { TICKET_TYPE_COLORS, STATUS_COLORS, PRIORITY_COLORS, FEEDBACK_CATEGORY_COLORS, STATUS_LABELS, TYPE_LABELS, formatDate, formatDuration, daysInCurrentStage } from '../utils/helpers';
+import { X, ExternalLink, Clock, CheckCircle2, Circle, ArrowRight, Plus, RefreshCw, ChevronDown, ChevronRight, Edit3, Save, Trash2 } from 'lucide-react';
+import { TICKET_TYPE_COLORS, STATUS_COLORS, PRIORITY_COLORS, FEEDBACK_CATEGORY_COLORS, STATUS_LABELS, TYPE_LABELS, formatDate, formatDuration, daysInCurrentStage, LDAP_ACCOUNTS } from '../utils/helpers';
 import { useToast } from './Toast';
-import { updateTicket, logActivity } from '../services/firestoreService';
+import { updateTicket, logActivity, deleteTicket } from '../services/firestoreService';
 import { Timestamp } from 'firebase/firestore';
 import InitialsAvatar from './InitialsAvatar';
 
-export default function TicketDetailModal({ ticket, users = [], currentUserId, onClose, onUpdate }) {
+export default function TicketDetailModal({ ticket, users = [], currentUserId, onClose, onUpdate, onDelete }) {
   const toast = useToast();
+  const [deleting, setDeleting] = useState(false);
   const [editingField, setEditingField] = useState(null);
   const [editValues, setEditValues] = useState({});
   const [syncing, setSyncing] = useState(false);
@@ -167,12 +168,45 @@ export default function TicketDetailModal({ ticket, users = [], currentUserId, o
             <span style={{ padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, background: statusColor.bg, color: statusColor.text }}>{STATUS_LABELS[ticket.status]}</span>
             <span style={{ padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, background: priorityColor.bg, color: priorityColor.text }}>{ticket.priority}</span>
             <span style={{ padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, background: typeColor.bg, color: typeColor.text }}>{TYPE_LABELS[ticket.type]}</span>
+            {ticket.ldap && (
+              <span style={{ padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, background: '#F0FDF4', color: '#166534', fontFamily: '"Noto Sans", monospace' }}>{ticket.ldap}</span>
+            )}
           </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button
+              onClick={async () => {
+                if (deleting) return;
+                if (!window.confirm(`Delete ticket ${ticket.jiraId}? This cannot be undone.`)) return;
+                setDeleting(true);
+                try {
+                  await deleteTicket(ticket.id);
+                  await logActivity({
+                    userId: currentUserId,
+                    type: 'ticket_deleted',
+                    description: `Deleted ticket ${ticket.jiraId} — "${ticket.title}"`,
+                  });
+                  toast.success(`Ticket ${ticket.jiraId} deleted`);
+                  if (onDelete) onDelete(ticket.id);
+                  onClose();
+                } catch (err) {
+                  toast.error('Failed to delete ticket');
+                  setDeleting(false);
+                }
+              }}
+              style={{
+                background: deleting ? '#FEE2E2' : '#FEF2F2', border: '1px solid #FECACA',
+                cursor: deleting ? 'wait' : 'pointer', padding: 6, borderRadius: 8, display: 'flex',
+              }}
+              title="Delete ticket"
+            >
+              <Trash2 size={15} color="#DC2626" />
+            </button>
           <button onClick={onClose} style={{ background: '#F3F2F1', border: 'none', cursor: 'pointer', padding: 6, borderRadius: 8, display: 'flex' }}
             onMouseEnter={(e) => e.currentTarget.style.background = '#E8E8E8'}
             onMouseLeave={(e) => e.currentTarget.style.background = '#F3F2F1'}>
             <X size={18} color="#767676" />
           </button>
+          </div>
         </div>
 
         {/* ─── Body ─── */}
@@ -230,15 +264,37 @@ export default function TicketDetailModal({ ticket, users = [], currentUserId, o
               )}
             </div>
 
-            {/* Inline fields row */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
               <div>
-                <label style={labelStyle}>Assignee</label>
+                <label style={labelStyle}>LDAP Account</label>
+                <select value={ticket.ldap || ''} onChange={(e) => handleFieldSave('ldap', e.target.value)} style={{ ...selectStyle, width: '100%' }}>
+                  <option value="">Select LDAP...</option>
+                  {LDAP_ACCOUNTS.map((l) => (
+                    <option key={l.id} value={l.id}>{l.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Designer</label>
                 <select value={ticket.assigneeId || ''} onChange={(e) => handleFieldSave('assigneeId', e.target.value)} style={{ ...selectStyle, width: '100%' }}>
                   <option value="">Unassigned</option>
                   {users.filter((u) => u.isActive && u.role !== 'pending').map((u) => (
                     <option key={u.uid} value={u.uid}>{u.name}</option>
                   ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Type + Priority row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+              <div>
+                <label style={labelStyle}>Type</label>
+                <select value={ticket.type || 'other'} onChange={(e) => handleFieldSave('type', e.target.value)} style={{ ...selectStyle, width: '100%' }}>
+                  <option value="webinar">Webinar</option>
+                  <option value="video">Video</option>
+                  <option value="screengrabs">Screengrabs</option>
+                  <option value="motion_graphics">Motion Graphics</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
               <div>

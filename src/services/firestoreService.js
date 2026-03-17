@@ -96,6 +96,10 @@ export async function getTicket(ticketId) {
   return snap.exists() ? { id: snap.id, ...snap.data() } : null;
 }
 
+export async function deleteTicket(ticketId) {
+  await deleteDoc(doc(db, 'tickets', ticketId));
+}
+
 // ─── Time Entries ──────────────────────────────────────────
 export async function addTimeEntry(data) {
   return addDoc(collection(db, 'timeEntries'), {

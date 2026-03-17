@@ -129,6 +129,27 @@ export const KANBAN_COLUMNS = [
   { id: 'completed', label: 'Completed' },
 ];
 
+// ─── LDAP Accounts ─────────────────────────────────────────
+export const LDAP_ACCOUNTS = [
+  { id: 'arcgate_arshadh', label: 'arcgate_arshadh' },
+  { id: 'arcgate_jrathore', label: 'arcgate_jrathore' },
+];
+
+// ─── Roles ─────────────────────────────────────────────────
+export const ROLE_LABELS = {
+  admin: 'Admin',
+  moderator: 'Moderator',
+  designer: 'Designer',
+  pending: 'Pending',
+};
+
+export const ROLE_COLORS = {
+  admin: { bg: '#E8EDF7', text: '#2557A7' },
+  moderator: { bg: '#F5F0FF', text: '#6D28D9' },
+  designer: { bg: '#ECFDF5', text: '#065F46' },
+  pending: { bg: '#FFF7ED', text: '#9A3412' },
+};
+
 // ─── Frame.io comment auto-categorization ──────────────────
 export function categorizeComment(text) {
   const lower = (text || '').toLowerCase();

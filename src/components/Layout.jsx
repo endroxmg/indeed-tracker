@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, Columns3, Clock, BarChart3, Users,
-  LogOut, ChevronLeft, ChevronRight, Bell,
+  LogOut, ChevronLeft, ChevronRight, Bell, Activity,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import GlobalSearch from './GlobalSearch';
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { path: '/kanban', label: 'Kanban Board', icon: Columns3 },
   { path: '/timelog', label: 'Time Log', icon: Clock },
   { path: '/reports', label: 'Reports & MBR', icon: BarChart3 },
+  { path: '/activity-log', label: 'Activity Log', icon: Activity },
 ];
 
 const ADMIN_NAV = { path: '/team', label: 'Team', icon: Users };
@@ -23,6 +24,7 @@ const PAGE_TITLES = {
   '/kanban': 'Kanban Board',
   '/timelog': 'Time Log',
   '/reports': 'Reports & MBR',
+  '/activity-log': 'Activity Log',
   '/team': 'Team Management',
 };
 

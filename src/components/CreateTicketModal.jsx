@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
 import { useToast } from './Toast';
+import { LDAP_ACCOUNTS } from '../utils/helpers';
 
 export default function CreateTicketModal({ users = [], onClose, onSubmit }) {
   const toast = useToast();
@@ -13,6 +14,7 @@ export default function CreateTicketModal({ users = [], onClose, onSubmit }) {
     priority: 'medium',
     frameioLink: '',
     figmaAvailable: false,
+    ldap: '',
   });
 
   const designers = users.filter((u) => u.role !== 'pending' && u.isActive);
@@ -106,7 +108,16 @@ export default function CreateTicketModal({ users = [], onClose, onSubmit }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
-              <label style={labelStyle}>Assign To <span style={{ fontWeight: 400, color: '#999', fontSize: 11 }}>(optional — auto-assigned on drag)</span></label>
+              <label style={labelStyle}>LDAP Account</label>
+              <select style={inputStyle} value={form.ldap} onChange={(e) => update('ldap', e.target.value)}>
+                <option value="">Select LDAP...</option>
+                {LDAP_ACCOUNTS.map((l) => (
+                  <option key={l.id} value={l.id}>{l.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Assign To <span style={{ fontWeight: 400, color: '#999', fontSize: 11 }}>(designer)</span></label>
               <select style={inputStyle} value={form.assigneeId} onChange={(e) => update('assigneeId', e.target.value)}>
                 <option value="">Select designer...</option>
                 {designers.map((u) => (
@@ -114,6 +125,9 @@ export default function CreateTicketModal({ users = [], onClose, onSubmit }) {
                 ))}
               </select>
             </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
               <label style={labelStyle}>Priority</label>
               <select style={inputStyle} value={form.priority} onChange={(e) => update('priority', e.target.value)}>

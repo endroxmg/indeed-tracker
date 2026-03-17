@@ -9,6 +9,7 @@ import {
   UserPlus, UserCheck, UserX, Mail, Trash2, Edit3, Check, X,
   Shield, Clock, Send, Plus, Users,
 } from 'lucide-react';
+import { ROLE_LABELS, ROLE_COLORS } from '../utils/helpers';
 import InitialsAvatar from '../components/InitialsAvatar';
 
 export default function Team() {
@@ -63,6 +64,20 @@ export default function Team() {
       toast.success(`${user.name} ${user.isActive ? 'deactivated' : 'activated'}`);
     } catch (err) {
       toast.error('Failed to update user');
+    }
+  };
+
+  const changeRole = async (user, newRole) => {
+    try {
+      await updateUser(user.uid || user.id, { role: newRole });
+      await logActivity({
+        userId: userDoc.uid,
+        type: 'role_changed',
+        description: `Admin changed ${user.name}'s role to ${ROLE_LABELS[newRole]}`,
+      });
+      toast.success(`${user.name}'s role changed to ${ROLE_LABELS[newRole]}`);
+    } catch (err) {
+      toast.error('Failed to change role');
     }
   };
 
@@ -279,14 +294,29 @@ export default function Team() {
                   </td>
                   <td style={{ padding: '12px 16px', fontSize: 13, color: '#767676' }}>{user.email}</td>
                   <td style={{ padding: '12px 16px' }}>
-                    <span style={{
-                      fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
-                      background: user.role === 'admin' ? '#E8EDF7' : '#F3F2F1',
-                      color: user.role === 'admin' ? '#2557A7' : '#4B5563',
-                      textTransform: 'uppercase', letterSpacing: '0.05em',
-                    }}>
-                      {user.role === 'admin' ? '🛡 Admin' : 'Designer'}
-                    </span>
+                    {user.role === 'admin' ? (
+                      <span style={{
+                        fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
+                        background: ROLE_COLORS.admin.bg, color: ROLE_COLORS.admin.text,
+                        textTransform: 'uppercase', letterSpacing: '0.05em',
+                      }}>
+                        🛡 Admin
+                      </span>
+                    ) : (
+                      <select
+                        value={user.role}
+                        onChange={(e) => changeRole(user, e.target.value)}
+                        style={{
+                          fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 8,
+                          border: '1px solid #D4D2D0', cursor: 'pointer',
+                          background: (ROLE_COLORS[user.role] || ROLE_COLORS.designer).bg,
+                          color: (ROLE_COLORS[user.role] || ROLE_COLORS.designer).text,
+                        }}
+                      >
+                        <option value="designer">Designer</option>
+                        <option value="moderator">Moderator</option>
+                      </select>
+                    )}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     {editingCapacity === user.id ? (

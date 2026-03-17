@@ -64,9 +64,21 @@ export default function TicketCard({ ticket, users = [], onClick }) {
           {ticket.title}
         </h4>
 
-        {/* Bottom: assignee + meta */}
+        {/* Bottom: LDAP / assignee + meta */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {assignee ? (
+          {ticket.ldap ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{
+                fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 4,
+                background: '#F0FDF4', color: '#166534', fontFamily: 'monospace',
+              }}>
+                {ticket.ldap}
+              </span>
+              {assignee && (
+                <span style={{ fontSize: 10, color: '#999' }}>· {assignee.name.split(' ')[0]}</span>
+              )}
+            </div>
+          ) : assignee ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <InitialsAvatar name={assignee.name} size={20} />
               <span style={{ fontSize: 11, color: '#767676', fontWeight: 500 }}>{assignee.name.split(' ')[0]}</span>
