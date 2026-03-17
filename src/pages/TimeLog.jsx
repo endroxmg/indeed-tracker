@@ -58,7 +58,7 @@ export default function TimeLog() {
   }, [weekStart]);
 
   const weekDays = getWeekDays(weekStart);
-  const designers = users.filter((u) => u.isActive && u.role !== 'pending');
+  const designers = users.filter((u) => u.isActive && u.role === 'designer');
 
   const getHoursForCell = (userId, date) => {
     const dateStr = format(date, 'yyyy-MM-dd');

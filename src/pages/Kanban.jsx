@@ -3,12 +3,12 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/Toast';
 import { subscribeTickets, createTicket, updateTicket, logActivity, subscribeUsers } from '../services/firestoreService';
-import { KANBAN_COLUMNS, STATUS_LABELS, isOverdue } from '../utils/helpers';
+import { KANBAN_COLUMNS, STATUS_LABELS, isOverdue, LDAP_ACCOUNTS } from '../utils/helpers';
 import TicketCard from '../components/TicketCard';
 import CreateTicketModal from '../components/CreateTicketModal';
 import TicketDetailModal from '../components/TicketDetailModal';
 import { SkeletonKanban } from '../components/Skeleton';
-import { Plus, Search, Filter, Columns3 } from 'lucide-react';
+import { Plus, Search, Filter, Columns3, X } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
 
 export default function Kanban() {
@@ -19,6 +19,8 @@ export default function Kanban() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [pendingDrag, setPendingDrag] = useState(null); // { ticket, result } for assignment popup
+  const [assignForm, setAssignForm] = useState({ ldap: '', designerId: '' });
   const [filters, setFilters] = useState({ designer: 'all', type: 'all', search: '' });
 
   useEffect(() => {
@@ -57,20 +59,24 @@ export default function Kanban() {
     const ticket = tickets.find((t) => t.id === draggableId);
     if (!ticket) return;
 
-    // WIP limit for In Production
+    // If dragging to In Production, show assignment popup instead of auto-assigning
     if (newStatus === 'in_production') {
       const inProd = tickets.filter((t) => t.status === 'in_production');
-      const userAlreadyHas = inProd.find((t) => t.assigneeId === userDoc.uid);
       if (inProd.length >= 2) {
-        toast.error('In Production is limited to 2 tickets (1 per designer)');
+        toast.error('In Production is limited to 2 tickets (1 per LDAP)');
         return;
       }
-      if (userAlreadyHas && userAlreadyHas.id !== ticket.id) {
-        toast.error('You already have an active ticket in production');
-        return;
-      }
+      // Pre-fill with existing ticket values
+      setAssignForm({ ldap: ticket.ldap || '', designerId: ticket.assigneeId || '' });
+      setPendingDrag({ ticket, result });
+      return; // Don't move yet — wait for popup confirmation
     }
 
+    // For all other status transitions, proceed normally
+    await executeMove(ticket, newStatus, result);
+  };
+
+  const executeMove = async (ticket, newStatus, result, overrides = {}) => {
     try {
       const updates = {
         status: newStatus,
@@ -78,12 +84,8 @@ export default function Kanban() {
           ...(ticket.statusHistory || []),
           { status: newStatus, timestamp: Timestamp.now(), movedBy: userDoc.uid },
         ],
+        ...overrides,
       };
-
-      // Auto-assign when moved to In Production
-      if (newStatus === 'in_production') {
-        updates.assigneeId = userDoc.uid;
-      }
 
       // Auto-create new version when moving from Feedback Ready back to In Production
       if (newStatus === 'in_production' && ticket.status === 'feedback_ready') {
@@ -113,7 +115,6 @@ export default function Kanban() {
 
       await updateTicket(ticket.id, updates);
 
-      // Log activity with full details
       const movedByUser = users.find((u) => u.uid === userDoc.uid);
       await logActivity({
         userId: userDoc.uid,
@@ -126,6 +127,24 @@ export default function Kanban() {
     } catch (err) {
       toast.error('Failed to move ticket');
     }
+  };
+
+  const confirmAssignment = async () => {
+    if (!pendingDrag) return;
+    if (!assignForm.ldap) {
+      toast.error('Please select an LDAP account');
+      return;
+    }
+    const { ticket } = pendingDrag;
+    const overrides = {
+      ldap: assignForm.ldap,
+    };
+    if (assignForm.designerId) {
+      overrides.assigneeId = assignForm.designerId;
+    }
+    await executeMove(ticket, 'in_production', pendingDrag.result, overrides);
+    setPendingDrag(null);
+    setAssignForm({ ldap: '', designerId: '' });
   };
 
   const handleCreateTicket = async (form) => {
@@ -149,7 +168,7 @@ export default function Kanban() {
     }
   };
 
-  const designers = users.filter((u) => u.role !== 'pending' && u.isActive);
+  const designers = users.filter((u) => u.role === 'designer' && u.isActive);
 
   if (loading) return <SkeletonKanban />;
 
@@ -288,9 +307,8 @@ export default function Kanban() {
           users={users}
           currentUserId={userDoc?.uid}
           onClose={() => setSelectedTicket(null)}
+          onDelete={() => setSelectedTicket(null)}
           onUpdate={() => {
-            // Ticket will update via subscription
-            // Re-select the updated version
             setTimeout(() => {
               setSelectedTicket((prev) => {
                 if (!prev) return null;
@@ -299,6 +317,68 @@ export default function Kanban() {
             }, 500);
           }}
         />
+      )}
+
+      {/* Assignment Popup — shown when dragging to In Production */}
+      {pendingDrag && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }} onClick={() => { setPendingDrag(null); setAssignForm({ ldap: '', designerId: '' }); }}>
+          <div style={{
+            background: '#fff', borderRadius: 16, width: 420, padding: 28,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+          }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+              <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 17, margin: 0, color: '#1A1A2E' }}>
+                Assign Ticket to Production
+              </h2>
+              <button onClick={() => { setPendingDrag(null); setAssignForm({ ldap: '', designerId: '' }); }}
+                style={{ background: '#F3F2F1', border: 'none', cursor: 'pointer', padding: 6, borderRadius: 8, display: 'flex' }}>
+                <X size={16} color="#767676" />
+              </button>
+            </div>
+
+            <div style={{ background: '#F9FAFB', borderRadius: 10, padding: 14, marginBottom: 20, border: '1px solid #E5E7EB' }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: '#2557A7', marginBottom: 2 }}>{pendingDrag.ticket.jiraId}</div>
+              <div style={{ fontSize: 13, color: '#1A1A2E' }}>{pendingDrag.ticket.title}</div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>LDAP Account *</label>
+                <select
+                  value={assignForm.ldap}
+                  onChange={(e) => setAssignForm(p => ({ ...p, ldap: e.target.value }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #D4D2D0', fontSize: 14, color: '#1A1A2E' }}
+                >
+                  <option value="">Select LDAP...</option>
+                  {LDAP_ACCOUNTS.map((l) => (
+                    <option key={l.id} value={l.id}>{l.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Designer</label>
+                <select
+                  value={assignForm.designerId}
+                  onChange={(e) => setAssignForm(p => ({ ...p, designerId: e.target.value }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #D4D2D0', fontSize: 14, color: '#1A1A2E' }}
+                >
+                  <option value="">Select designer...</option>
+                  {designers.map((u) => (
+                    <option key={u.uid} value={u.uid}>{u.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24 }}>
+              <button onClick={() => { setPendingDrag(null); setAssignForm({ ldap: '', designerId: '' }); }} className="btn-secondary">Cancel</button>
+              <button onClick={confirmAssignment} className="btn-primary">Confirm & Move</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

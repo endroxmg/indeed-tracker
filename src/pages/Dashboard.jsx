@@ -4,7 +4,7 @@ import { subscribeTickets, subscribeUsers, subscribeActivityLog } from '../servi
 import { getWorkingDaysInMonth, STATUS_COLORS, STATUS_LABELS, TICKET_TYPE_COLORS, TYPE_LABELS, formatDate, isOverdue } from '../utils/helpers';
 import { SkeletonCard } from '../components/Skeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Ticket, Clock, MessageSquare, CheckCircle2, Timer, TrendingUp, AlertCircle, DollarSign } from 'lucide-react';
+import { Ticket, Clock, CheckCircle2, Timer, TrendingUp, DollarSign } from 'lucide-react';
 import InitialsAvatar from '../components/InitialsAvatar';
 import { format, startOfMonth, endOfMonth, isToday } from 'date-fns';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
@@ -38,7 +38,7 @@ export default function Dashboard() {
     return unsub;
   }, []);
 
-  const designers = users.filter((u) => u.isActive && u.role !== 'pending');
+  const designers = users.filter((u) => u.isActive && u.role === 'designer');
 
   const stats = useMemo(() => {
     const now = new Date();
@@ -53,8 +53,6 @@ export default function Dashboard() {
     const incomeINR = incomeUSD * 85;
     return [
       { label: 'In Production', value: tickets.filter((t) => t.status === 'in_production').length, icon: Timer, color: '#2557A7', bg: '#E8EDF7' },
-      { label: 'Waiting Feedback', value: tickets.filter((t) => t.status === 'ready_for_feedback').length, icon: MessageSquare, color: '#9A3412', bg: '#FFF7ED' },
-      { label: 'Feedback to Action', value: tickets.filter((t) => t.status === 'feedback_ready').length, icon: AlertCircle, color: '#C91B1B', bg: '#FEE2E2' },
       { label: 'Completed', value: completedThisMonth.length, icon: CheckCircle2, color: '#0D7A3F', bg: '#ECFDF5' },
       { label: 'Hours Logged', value: `${totalHoursMonth}h`, icon: Clock, color: '#2557A7', bg: '#E8EDF7' },
       { label: 'Income', value: `$${incomeUSD.toLocaleString()}`, subValue: `₹${incomeINR.toLocaleString()}`, icon: DollarSign, color: '#0D7A3F', bg: '#ECFDF5' },
@@ -123,7 +121,7 @@ export default function Dashboard() {
       )}
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (
@@ -150,12 +148,17 @@ export default function Dashboard() {
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             {designers.map((designer) => {
-              const activeTicket = tickets.find((t) => t.status === 'in_production' && t.assigneeId === designer.uid);
+              const activeTicket = tickets.find((t) => t.status === 'in_production' && (t.ldap === designer.ldap || t.assigneeId === designer.uid));
               return (
                 <div key={designer.uid}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                     <InitialsAvatar name={designer.name} size={28} />
-                    <span style={{ fontSize: 14, fontWeight: 700, fontFamily: '"Poppins", sans-serif', color: '#1A1A2E' }}>{designer.name}</span>
+                    <div>
+                      <span style={{ fontSize: 14, fontWeight: 700, fontFamily: '"Poppins", sans-serif', color: '#1A1A2E' }}>{designer.name}</span>
+                      {designer.ldap && (
+                        <span style={{ fontSize: 10, fontWeight: 600, marginLeft: 6, padding: '1px 6px', borderRadius: 4, background: '#F0FDF4', color: '#166534', fontFamily: 'monospace' }}>{designer.ldap}</span>
+                      )}
+                    </div>
                   </div>
                   {activeTicket ? (
                     <div style={{ background: '#F9F9F8', borderRadius: 10, padding: 14, border: '1px solid #E8E8E8' }}>
@@ -163,7 +166,9 @@ export default function Dashboard() {
                       <div style={{ fontSize: 13, color: '#1A1A2E', marginBottom: 6, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{activeTicket.title}</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{ fontSize: 11, padding: '1px 8px', borderRadius: 20, background: TICKET_TYPE_COLORS[activeTicket.type]?.bg, color: TICKET_TYPE_COLORS[activeTicket.type]?.text, fontWeight: 600 }}>{TYPE_LABELS[activeTicket.type]}</span>
-                        <span style={{ fontSize: 11, padding: '1px 8px', borderRadius: 20, background: '#F3F2F1', color: '#4B5563', fontWeight: 600 }}>v{activeTicket.versions?.length || 1}</span>
+                        {activeTicket.ldap && (
+                          <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: '#F0FDF4', color: '#166534', fontWeight: 600, fontFamily: 'monospace' }}>{activeTicket.ldap}</span>
+                        )}
                       </div>
                     </div>
                   ) : (
