@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import GlobalSearch from './GlobalSearch';
 import InitialsAvatar from './InitialsAvatar';
 import { useState, useEffect } from 'react';
+import ChatBot from './ChatBot';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -264,6 +265,9 @@ export default function Layout({ children, tickets = [], onSelectTicket, overdue
           {children}
         </main>
       </div>
+
+      {/* AI Help Bot */}
+      <ChatBot />
     </div>
   );
 }
