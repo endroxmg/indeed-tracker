@@ -62,7 +62,7 @@ export default function Reports() {
   }, []);
 
   const designers = useMemo(() =>
-    users.filter(u => u.isActive && u.role === 'designer'),
+    users.filter(u => u.isActive && (u.roles?.includes('designer') || u.role === 'designer')),
     [users]
   );
 

@@ -168,7 +168,7 @@ export default function Kanban() {
     }
   };
 
-  const designers = users.filter((u) => u.role === 'designer' && u.isActive);
+  const designers = users.filter((u) => (u.roles?.includes('designer') || u.role === 'designer') && u.isActive);
 
   if (loading) return <SkeletonKanban />;
 

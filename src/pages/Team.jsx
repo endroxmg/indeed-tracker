@@ -30,14 +30,18 @@ export default function Team() {
     return () => { unsub1(); unsub2(); };
   }, []);
 
-  const pendingUsers = users.filter((u) => u.role === 'pending');
-  const activeUsers = users.filter((u) => u.role !== 'pending' && u.isActive);
-  const inactiveUsers = users.filter((u) => u.role !== 'pending' && !u.isActive);
+  const pendingUsers = users.filter((u) => u.roles?.includes('pending') || u.role === 'pending');
+  const activeUsers = users.filter((u) => !(u.roles?.includes('pending') || u.role === 'pending') && u.isActive);
+  const inactiveUsers = users.filter((u) => !(u.roles?.includes('pending') || u.role === 'pending') && !u.isActive);
   const pendingInvites = invites.filter((i) => i.status === 'pending');
 
   const approveUser = async (user) => {
     try {
-      await updateUser(user.uid || user.id, { role: 'designer', isActive: true });
+      await updateUser(user.uid || user.id, {
+        roles: ['designer'],
+        role: 'designer', // legacy
+        isActive: true
+      });
       await logActivity({
         userId: userDoc.uid,
         type: 'user_approved',
@@ -67,17 +71,41 @@ export default function Team() {
     }
   };
 
-  const changeRole = async (user, newRole) => {
+  const toggleRole = async (user, roleToToggle) => {
     try {
-      await updateUser(user.uid || user.id, { role: newRole });
+      const currentRoles = user.roles || (user.role ? [user.role] : []);
+      let newRoles;
+
+      if (currentRoles.includes(roleToToggle)) {
+        // Don't allow removing the last role
+        if (currentRoles.length === 1) {
+          toast.error('User must have at least one role');
+          return;
+        }
+        newRoles = currentRoles.filter(r => r !== roleToToggle);
+      } else {
+        newRoles = [...currentRoles, roleToToggle];
+      }
+
+      // Filter out 'pending' if it was there and we are adding real roles
+      if (newRoles.length > 1) {
+        newRoles = newRoles.filter(r => r !== 'pending');
+      }
+
+      await updateUser(user.uid || user.id, {
+        roles: newRoles,
+        role: newRoles[0] || 'pending' // fallback for legacy
+      });
+
       await logActivity({
         userId: userDoc.uid,
         type: 'role_changed',
-        description: `Admin changed ${user.name}'s role to ${ROLE_LABELS[newRole]}`,
+        description: `Admin updated roles for ${user.name}: ${newRoles.map(r => ROLE_LABELS[r]).join(', ')}`,
       });
-      toast.success(`${user.name}'s role changed to ${ROLE_LABELS[newRole]}`);
+
+      toast.success(`Updated roles for ${user.name}`);
     } catch (err) {
-      toast.error('Failed to change role');
+      toast.error('Failed to change roles');
     }
   };
 
@@ -294,29 +322,41 @@ export default function Team() {
                   </td>
                   <td style={{ padding: '12px 16px', fontSize: 13, color: '#767676' }}>{user.email}</td>
                   <td style={{ padding: '12px 16px' }}>
-                    {user.role === 'admin' ? (
-                      <span style={{
-                        fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
-                        background: ROLE_COLORS.admin.bg, color: ROLE_COLORS.admin.text,
-                        textTransform: 'uppercase', letterSpacing: '0.05em',
-                      }}>
-                        🛡 Admin
-                      </span>
-                    ) : (
-                      <select
-                        value={user.role}
-                        onChange={(e) => changeRole(user, e.target.value)}
-                        style={{
-                          fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 8,
-                          border: '1px solid #D4D2D0', cursor: 'pointer',
-                          background: (ROLE_COLORS[user.role] || ROLE_COLORS.designer).bg,
-                          color: (ROLE_COLORS[user.role] || ROLE_COLORS.designer).text,
-                        }}
-                      >
-                        <option value="designer">Designer</option>
-                        <option value="moderator">Moderator</option>
-                      </select>
-                    )}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {Object.keys(ROLE_LABELS).filter(r => r !== 'pending').map(roleKey => {
+                        const userRoles = user.roles || (user.role ? [user.role] : []);
+                        const isAssigned = userRoles.includes(roleKey);
+                        const label = ROLE_LABELS[roleKey];
+                        const colors = ROLE_COLORS[roleKey] || ROLE_COLORS.designer;
+
+                        return (
+                          <button
+                            key={roleKey}
+                            onClick={() => toggleRole(user, roleKey)}
+                            title={isAssigned ? 'Click to remove role' : 'Click to add role'}
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 700,
+                              padding: '2px 8px',
+                              borderRadius: 4,
+                              cursor: 'pointer',
+                              border: isAssigned ? 'none' : '1px dashed #D4D2D0',
+                              background: isAssigned ? colors.bg : 'transparent',
+                              color: isAssigned ? colors.text : '#767676',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.05em',
+                              transition: 'all 0.2s ease',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 2
+                            }}
+                          >
+                            {isAssigned && <Check size={10} />}
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     {editingCapacity === user.id ? (
@@ -348,7 +388,7 @@ export default function Team() {
                     )}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
-                    {user.role !== 'admin' && (
+                    {(!user.roles?.includes('admin') && user.role !== 'admin') && (
                       <button onClick={() => toggleActive(user)} style={{
                         padding: '6px 14px', borderRadius: 8, border: '1px solid #D4D2D0',
                         background: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer',

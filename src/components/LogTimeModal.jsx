@@ -4,7 +4,8 @@ import { useToast } from './Toast';
 
 export default function LogTimeModal({ date, users = [], tickets = [], currentUserId, existingEntries = [], onClose, onSave }) {
   const toast = useToast();
-  const isAdmin = users.find((u) => u.uid === currentUserId)?.role === 'admin';
+  const targetUser = users.find((u) => u.uid === currentUserId);
+  const isAdmin = targetUser?.roles?.includes('admin') || targetUser?.role === 'admin';
 
   const [rows, setRows] = useState(
     existingEntries.length > 0
@@ -70,7 +71,7 @@ export default function LogTimeModal({ date, users = [], tickets = [], currentUs
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'block', fontFamily: '"Poppins", sans-serif' }}>Designer</label>
               <select value={userId} onChange={(e) => setUserId(e.target.value)} style={inputStyle}>
-                {users.filter((u) => u.isActive && u.role !== 'pending').map((u) => (
+                {users.filter((u) => u.isActive && (u.roles?.some(r => r !== 'pending') || u.role !== 'pending')).map((u) => (
                   <option key={u.uid} value={u.uid}>{u.name}</option>
                 ))}
               </select>

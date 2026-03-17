@@ -4,7 +4,7 @@ import { getWorkingDaysInRange } from '../../utils/reportUtils';
 import InitialsAvatar from '../InitialsAvatar';
 
 export default function DesignerWorkloadCards({ users, timeEntries, dateRange, tickets, chartRef }) {
-  const activeDesigners = users.filter(u => u.isActive && u.role === 'designer');
+  const activeDesigners = users.filter(u => u.isActive && (u.roles?.includes('designer') || u.role === 'designer'));
   const workingDays = getWorkingDaysInRange(dateRange.start, dateRange.end);
 
   if (activeDesigners.length === 0) {

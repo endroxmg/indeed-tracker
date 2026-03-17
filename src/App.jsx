@@ -41,7 +41,7 @@ export default function App() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    if (!user || !userDoc || userDoc.role === 'pending') return;
+    if (!user || !userDoc || (userDoc.roles?.includes('pending') || userDoc.role === 'pending')) return;
     const unsub1 = subscribeTickets(setTickets);
     const unsub2 = subscribeUsers(setUsers);
     return () => { unsub1(); unsub2(); };
@@ -72,7 +72,7 @@ export default function App() {
     );
   }
 
-  if (userDoc?.role === 'pending' || !userDoc?.isActive) {
+  if ((userDoc?.roles?.includes('pending') || userDoc?.role === 'pending') || !userDoc?.isActive) {
     return <PendingAccess />;
   }
 

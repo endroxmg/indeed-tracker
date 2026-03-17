@@ -196,8 +196,8 @@ export default function Layout({ children, tickets = [], onSelectTicket, overdue
               </div>
               <span style={{
                 fontSize: 10, padding: '1px 8px', borderRadius: 20,
-                background: userDoc?.role === 'admin' ? 'rgba(37,87,167,0.3)' : 'rgba(255,255,255,0.1)',
-                color: userDoc?.role === 'admin' ? '#8ABAFF' : 'rgba(255,255,255,0.5)',
+                background: userDoc?.roles?.includes('admin') ? 'rgba(37,87,167,0.3)' : 'rgba(255,255,255,0.1)',
+                color: userDoc?.roles?.includes('admin') ? '#8ABAFF' : 'rgba(255,255,255,0.5)',
                 fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em',
               }}>
                 {userDoc?.role}

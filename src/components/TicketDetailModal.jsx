@@ -278,7 +278,7 @@ export default function TicketDetailModal({ ticket, users = [], currentUserId, o
                 <label style={labelStyle}>Designer</label>
                 <select value={ticket.assigneeId || ''} onChange={(e) => handleFieldSave('assigneeId', e.target.value)} style={{ ...selectStyle, width: '100%' }}>
                   <option value="">Unassigned</option>
-                  {users.filter((u) => u.isActive && u.role !== 'pending').map((u) => (
+                  {users.filter((u) => u.isActive && (u.roles?.some(r => r !== 'pending') || u.role !== 'pending')).map((u) => (
                     <option key={u.uid} value={u.uid}>{u.name}</option>
                   ))}
                 </select>

@@ -33,17 +33,24 @@ export function AuthProvider({ children }) {
           const snap = await getDoc(ref);
 
           if (snap.exists()) {
-            const existingData = { id: snap.id, ...snap.data() };
+            const data = snap.data();
+            const existingData = { id: snap.id, ...data };
+
+            // Migration: role (string) -> roles (array)
+            if (!existingData.roles || !Array.isArray(existingData.roles)) {
+              existingData.roles = existingData.role ? [existingData.role] : ['pending'];
+            }
 
             // Auto-upgrade to admin if email matches
-            if (shouldBeAdmin && existingData.role !== 'admin') {
+            if (shouldBeAdmin && !existingData.roles.includes('admin')) {
               try {
-                await setDoc(ref, { role: 'admin', isActive: true }, { merge: true });
-                existingData.role = 'admin';
+                const newRoles = Array.from(new Set([...existingData.roles, 'admin'])).filter(r => r !== 'pending');
+                await setDoc(ref, { roles: newRoles, role: 'admin', isActive: true }, { merge: true });
+                existingData.roles = newRoles;
+                existingData.role = 'admin'; // Keep for legacy
                 existingData.isActive = true;
               } catch (e) {
-                // Force local state even if Firestore write fails
-                existingData.role = 'admin';
+                existingData.roles = ['admin'];
                 existingData.isActive = true;
               }
             }
@@ -86,7 +93,8 @@ export function AuthProvider({ children }) {
               name: firebaseUser.displayName || '',
               email: firebaseUser.email || '',
               photoURL: firebaseUser.photoURL || '',
-              role: shouldBeAdmin ? 'admin' : (autoApprove ? 'designer' : 'pending'),
+              role: shouldBeAdmin ? 'admin' : (autoApprove ? 'designer' : 'pending'), // Legacy
+              roles: shouldBeAdmin ? ['admin'] : (autoApprove ? ['designer'] : ['pending']),
               isActive: shouldBeAdmin || autoApprove,
               dailyCapacity: 8,
               createdAt: serverTimestamp(),
@@ -138,9 +146,9 @@ export function AuthProvider({ children }) {
 
   const value = {
     user, userDoc, loading, login, logout, refreshUserDoc,
-    isAdmin: userDoc?.role === 'admin',
-    isDesigner: userDoc?.role === 'designer',
-    isPending: userDoc?.role === 'pending',
+    isAdmin: userDoc?.roles?.includes('admin'),
+    isDesigner: userDoc?.roles?.includes('designer'),
+    isPending: userDoc?.roles?.includes('pending'),
     isActive: userDoc?.isActive === true,
   };
 

@@ -58,7 +58,7 @@ export default function TimeLog() {
   }, [weekStart]);
 
   const weekDays = getWeekDays(weekStart);
-  const designers = users.filter((u) => u.isActive && u.role === 'designer');
+  const designers = users.filter((u) => u.isActive && (u.roles?.includes('designer') || u.role === 'designer'));
 
   const getHoursForCell = (userId, date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
@@ -218,7 +218,10 @@ export default function TimeLog() {
                   <td style={{ padding: '10px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <InitialsAvatar name={user.ldap || user.name} size={28} />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', fontFamily: 'monospace' }}>{user.ldap || user.name}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1A2E', fontFamily: 'monospace', letterSpacing: '-0.02em' }}>{user.ldap || 'LDAP Missing'}</span>
+                        <span style={{ fontSize: 10, color: '#767676', fontWeight: 500 }}>{user.name}</span>
+                      </div>
                     </div>
                   </td>
                   {weekDays.map((day) => {
@@ -285,7 +288,10 @@ export default function TimeLog() {
           <tbody>
             {monthSummary.map(({ user, workDays, expected, logged, pct, statusColor, statusLabel }) => (
               <tr key={user.uid} style={{ borderBottom: '1px solid #F3F2F1' }}>
-                <td style={{ padding: '10px 16px', fontWeight: 600, fontSize: 14, color: '#1A1A2E', fontFamily: 'monospace' }}>{user.ldap || user.name}</td>
+                <td style={{ padding: '10px 16px' }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A2E', fontFamily: 'monospace' }}>{user.ldap || 'LDAP Missing'}</div>
+                  <div style={{ fontSize: 11, color: '#767676' }}>{user.name}</div>
+                </td>
                 <td style={{ padding: '10px 16px', fontSize: 14, color: '#1A1A2E' }}>{workDays}</td>
                 <td style={{ padding: '10px 16px', fontSize: 14, color: '#1A1A2E' }}>{expected}h</td>
                 <td style={{ padding: '10px 16px', fontSize: 14, fontWeight: 700, color: '#2557A7' }}>{logged}h</td>

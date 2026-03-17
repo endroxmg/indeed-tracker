@@ -5,7 +5,7 @@ import { getWorkingDatesInRange, getDailyTeamHours } from '../../utils/reportUti
 import { format } from 'date-fns';
 
 export default function UtilizationChart({ dateRange, timeEntries, users, chartRef }) {
-  const activeDesigners = users.filter(u => u.isActive && u.role === 'designer');
+  const activeDesigners = users.filter(u => u.isActive && (u.roles?.includes('designer') || u.role === 'designer'));
   const totalCapacity = activeDesigners.reduce((s, u) => s + (u.dailyCapacity || 8), 0);
   const workingDates = getWorkingDatesInRange(dateRange.start, dateRange.end);
 

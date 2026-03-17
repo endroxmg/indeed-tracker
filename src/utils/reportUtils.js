@@ -182,7 +182,7 @@ export function ticketsActiveInRange(tickets, start, end) {
 export function getSixMonthTrendData(tickets, timeEntries, users) {
   const now = new Date();
   const months = eachMonthOfInterval({ start: subMonths(now, 5), end: now });
-  const activeDesigners = users.filter(u => u.isActive && u.role === 'designer');
+  const activeDesigners = users.filter(u => u.isActive && (u.roles?.includes('designer') || u.role === 'designer'));
   const totalCapacity = activeDesigners.reduce((s, u) => s + (u.dailyCapacity || 8), 0);
 
   return months.map(m => {

@@ -17,7 +17,7 @@ export default function CreateTicketModal({ users = [], onClose, onSubmit }) {
     ldap: '',
   });
 
-  const designers = users.filter((u) => u.role !== 'pending' && u.isActive);
+  const designers = users.filter((u) => (u.roles?.some(r => r !== 'pending') || u.role !== 'pending') && u.isActive);
 
   const handleSubmit = (e) => {
     e.preventDefault();

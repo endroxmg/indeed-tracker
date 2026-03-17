@@ -38,7 +38,7 @@ export default function Dashboard() {
     return unsub;
   }, []);
 
-  const designers = users.filter((u) => u.isActive && u.role === 'designer');
+  const designers = users.filter((u) => u.isActive && (u.roles?.includes('designer') || u.role === 'designer'));
 
   const stats = useMemo(() => {
     const now = new Date();
