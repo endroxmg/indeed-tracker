@@ -162,9 +162,23 @@ export default function TicketDetailModal({ ticket, users = [], currentUserId, o
           position: 'sticky', top: 0, background: '#fff', zIndex: 10, borderRadius: '14px 14px 0 0',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 16, color: '#2557A7' }}>
-              {ticket.jiraId}
-            </span>
+            {editingField === 'jiraId' ? (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input style={{ ...inputStyle, width: 120, fontWeight: 700 }} value={editValues.jiraId} autoFocus
+                  onChange={(e) => setEditValues({ ...editValues, jiraId: e.target.value })}
+                  onKeyDown={(e) => e.key === 'Enter' && saveEdit('jiraId')} />
+                <button onClick={() => saveEdit('jiraId')} style={{ background: '#2557A7', border: 'none', borderRadius: 8, padding: '0 8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Save"><Save size={12} color="#fff" /></button>
+                <button onClick={() => setEditingField(null)} style={{ background: '#F3F2F1', border: 'none', borderRadius: 8, padding: '0 6px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Cancel"><X size={12} color="#767676" /></button>
+              </div>
+            ) : (
+              <span onClick={() => startEdit('jiraId', ticket.jiraId)} style={{ 
+                fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 16, color: '#2557A7',
+                cursor: 'pointer', borderBottom: '1px dashed transparent' 
+              }} onMouseEnter={(e) => e.currentTarget.style.borderBottomColor = '#D4D2D0'}
+                 onMouseLeave={(e) => e.currentTarget.style.borderBottomColor = 'transparent'}>
+                {ticket.jiraId} <Edit3 size={12} color="#C4C4C4" style={{ marginLeft: 4 }} />
+              </span>
+            )}
             <span style={{ padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, background: statusColor.bg, color: statusColor.text }}>{STATUS_LABELS[ticket.status]}</span>
             <span style={{ padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, background: priorityColor.bg, color: priorityColor.text }}>{ticket.priority}</span>
             <span style={{ padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, background: typeColor.bg, color: typeColor.text }}>{TYPE_LABELS[ticket.type]}</span>

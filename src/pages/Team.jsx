@@ -7,9 +7,9 @@ import {
 } from '../services/firestoreService';
 import {
   UserPlus, UserCheck, UserX, Mail, Trash2, Edit3, Check, X,
-  Shield, Clock, Send, Plus, Users,
+  Shield, Clock, Send, Plus, Users, Edit,
 } from 'lucide-react';
-import { ROLE_LABELS, ROLE_COLORS } from '../utils/helpers';
+import { ROLE_LABELS, ROLE_COLORS, LDAP_ACCOUNTS } from '../utils/helpers';
 import InitialsAvatar from '../components/InitialsAvatar';
 
 export default function Team() {
@@ -21,8 +21,8 @@ export default function Team() {
   const [showInvite, setShowInvite] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', dailyCapacity: 8 });
   const [inviteEmail, setInviteEmail] = useState('');
-  const [editingCapacity, setEditingCapacity] = useState(null);
-  const [tempCapacity, setTempCapacity] = useState('');
+  const [editingUser, setEditingUser] = useState(null);
+  const [editData, setEditData] = useState({ name: '', email: '', ldap: '', dailyCapacity: 8 });
 
   useEffect(() => {
     const unsub1 = subscribeUsers(setUsers);
@@ -109,18 +109,39 @@ export default function Team() {
     }
   };
 
-  const saveCapacity = async (user) => {
-    const val = parseFloat(tempCapacity);
-    if (isNaN(val) || val <= 0 || val > 24) {
-      toast.error('Invalid capacity (1-24)');
+  const handleEditUser = (user) => {
+    setEditingUser(user);
+    setEditData({
+      name: user.name || '',
+      email: user.email || '',
+      ldap: user.ldap || '',
+      dailyCapacity: user.dailyCapacity || 8,
+      roles: user.roles || (user.role ? [user.role] : []),
+    });
+  };
+
+  const saveUserEdits = async () => {
+    if (!editData.name.trim() || !editData.email.trim()) {
+      toast.error('Name and email are required');
       return;
     }
     try {
-      await updateUser(user.uid || user.id, { dailyCapacity: val });
-      setEditingCapacity(null);
-      toast.success('Capacity updated');
+      // If roles changed, also update legacy 'role' string (first one in array)
+      const updates = { ...editData };
+      if (updates.roles?.length > 0) {
+        updates.role = updates.roles[0];
+      }
+
+      await updateUser(editingUser.uid || editingUser.id, updates);
+      await logActivity({
+        userId: userDoc.uid,
+        type: 'user_updated',
+        description: `Admin updated details for ${editData.name}`,
+      });
+      setEditingUser(null);
+      toast.success('User updated successfully');
     } catch (err) {
-      toast.error('Failed to update');
+      toast.error('Failed to update user');
     }
   };
 
@@ -303,7 +324,7 @@ export default function Team() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#F3F2F1' }}>
-                {['Member', 'Email', 'Role', 'Daily Capacity', 'Type', 'Actions'].map((h) => (
+                {['Member', 'Email', 'LDAP Account', 'Role', 'Capacity', 'Actions'].map((h) => (
                   <th key={h} style={{
                     padding: '10px 16px', textAlign: 'left', fontSize: 12,
                     fontWeight: 700, color: '#767676', fontFamily: '"Poppins", sans-serif',
@@ -321,6 +342,9 @@ export default function Team() {
                     </div>
                   </td>
                   <td style={{ padding: '12px 16px', fontSize: 13, color: '#767676' }}>{user.email}</td>
+                  <td style={{ padding: '12px 16px', fontSize: 13, color: '#1A1A2E', fontFamily: 'monospace' }}>
+                    {user.ldap || <span style={{ color: '#C91B1B', fontWeight: 600 }}>Not Set</span>}
+                  </td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                       {Object.keys(ROLE_LABELS).filter(r => r !== 'pending').map(roleKey => {
@@ -359,28 +383,7 @@ export default function Team() {
                     </div>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
-                    {editingCapacity === user.id ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <input type="number" min="1" max="24" value={tempCapacity}
-                          onChange={(e) => setTempCapacity(e.target.value)}
-                          style={{ width: 60, padding: '4px 8px', borderRadius: 6, border: '1px solid #D4D2D0', fontSize: 13 }}
-                          autoFocus />
-                        <button onClick={() => saveCapacity(user)} style={{
-                          background: '#0D7A3F', border: 'none', borderRadius: 6, padding: 4, cursor: 'pointer', display: 'flex',
-                        }}><Check size={14} color="#fff" /></button>
-                        <button onClick={() => setEditingCapacity(null)} style={{
-                          background: '#F3F2F1', border: 'none', borderRadius: 6, padding: 4, cursor: 'pointer', display: 'flex',
-                        }}><X size={14} color="#767676" /></button>
-                      </div>
-                    ) : (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontWeight: 600, fontSize: 14, color: '#1A1A2E' }}>{user.dailyCapacity || 8}h</span>
-                        <button onClick={() => { setEditingCapacity(user.id); setTempCapacity(String(user.dailyCapacity || 8)); }}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}>
-                          <Edit3 size={13} color="#767676" />
-                        </button>
-                      </div>
-                    )}
+                    <span style={{ fontWeight: 600, fontSize: 14, color: '#1A1A2E' }}>{user.dailyCapacity || 8}h</span>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     {user.isManual && (
@@ -388,13 +391,22 @@ export default function Team() {
                     )}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
-                    {(!user.roles?.includes('admin') && user.role !== 'admin') && (
-                      <button onClick={() => toggleActive(user)} style={{
-                        padding: '6px 14px', borderRadius: 8, border: '1px solid #D4D2D0',
-                        background: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                        color: '#C91B1B',
-                      }}>Deactivate</button>
-                    )}
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={() => handleEditUser(user)} style={{
+                        padding: '6px', borderRadius: 8, border: '1px solid #D4D2D0',
+                        background: '#fff', cursor: 'pointer', color: '#2557A7',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }} title="Edit User">
+                        <Edit size={14} />
+                      </button>
+                      {(!user.roles?.includes('admin') && user.role !== 'admin') && (
+                        <button onClick={() => toggleActive(user)} style={{
+                          padding: '6px 14px', borderRadius: 8, border: '1px solid #D4D2D0',
+                          background: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                          color: '#C91B1B',
+                        }}>Deactivate</button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -477,35 +489,91 @@ export default function Team() {
         </div>
       )}
 
-      {/* Invite Modal */}
-      {showInvite && (
+      {/* Edit User Modal */}
+      {editingUser && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }} onClick={() => setShowInvite(false)}>
+        }} onClick={() => setEditingUser(null)}>
           <div style={{
             background: '#fff', borderRadius: 16, width: 440, padding: 32,
             boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
           }} onClick={(e) => e.stopPropagation()}>
             <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 18, margin: '0 0 4px', color: '#1A1A2E' }}>
-              Invite by Email
+              Edit Team Member
             </h2>
             <p style={{ fontSize: 13, color: '#767676', margin: '0 0 24px' }}>
-              Send an invite email — they'll be auto-approved when they sign in.
+              Update details for {editingUser.name}.
             </p>
 
-            <div>
-              <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Email Address *</label>
-              <input style={inputStyle} type="email" placeholder="colleague@example.com" value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleInvite()} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Name *</label>
+                <input style={inputStyle} placeholder="Full name" value={editData.name}
+                  onChange={(e) => setEditData((p) => ({ ...p, name: e.target.value }))} />
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Email *</label>
+                <input style={inputStyle} type="email" placeholder="email@example.com" value={editData.email}
+                  onChange={(e) => setEditData((p) => ({ ...p, email: e.target.value }))} />
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>LDAP Account</label>
+                <select style={inputStyle} value={editData.ldap}
+                  onChange={(e) => setEditData((p) => ({ ...p, ldap: e.target.value }))}>
+                  <option value="">Select LDAP Account</option>
+                  {LDAP_ACCOUNTS.map(acc => (
+                    <option key={acc.id} value={acc.id}>{acc.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Daily Capacity (hrs)</label>
+                <input style={inputStyle} type="number" min="1" max="24" value={editData.dailyCapacity}
+                  onChange={(e) => setEditData((p) => ({ ...p, dailyCapacity: parseFloat(e.target.value) || 8 }))} />
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Roles</label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {Object.keys(ROLE_LABELS).filter(r => r !== 'pending').map(roleKey => {
+                    const currentRoles = editingUser.roles || (editingUser.role ? [editingUser.role] : []);
+                    const isAssigned = currentRoles.includes(roleKey);
+                    const label = ROLE_LABELS[roleKey];
+                    const colors = ROLE_COLORS[roleKey] || ROLE_COLORS.designer;
+
+                    // Note: We update roles via the existing toggleRole logic but ideally we'd stage it in editData
+                    // For now, to keep it simple and consistent with the table, we'll keep the table toggles 
+                    // and maybe just show status here, OR we stage it if we want "one Save click".
+                    // Let's stage it for better UX.
+                    const stagedRoles = editData.roles || currentRoles;
+                    const isStaged = stagedRoles.includes(roleKey);
+
+                    return (
+                      <button
+                        key={roleKey}
+                        onClick={() => {
+                          const next = isStaged ? stagedRoles.filter(r => r !== roleKey) : [...stagedRoles, roleKey];
+                          setEditData(p => ({ ...p, roles: next }));
+                        }}
+                        style={{
+                          fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 6, cursor: 'pointer',
+                          border: isStaged ? 'none' : '1px solid #D4D2D0',
+                          background: isStaged ? colors.bg : '#fff',
+                          color: isStaged ? colors.text : '#767676',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24 }}>
-              <button onClick={() => setShowInvite(false)} className="btn-secondary">Cancel</button>
-              <button onClick={handleInvite} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Send size={14} /> Send Invite
-              </button>
+              <button onClick={() => setEditingUser(null)} className="btn-secondary">Cancel</button>
+              <button onClick={saveUserEdits} className="btn-primary">Save Changes</button>
             </div>
           </div>
         </div>
