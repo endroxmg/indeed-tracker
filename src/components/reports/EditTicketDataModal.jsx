@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { db } from '../../firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { X, Save, AlertCircle, History, Info } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { useToast } from '../Toast';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function EditTicketDataModal({ ticket, onClose }) {
   const { user } = useAuth();
+  const toast = useToast();
   const [formData, setFormData] = useState({
     totalTime: ticket.totalTime || 0,
     productionTime: ticket.productionTime || 0,
