@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { doc, getDoc, collection, query, where, getDocs, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, getDay } from 'date-fns';
 import { 
   X, User, PieChart, Calendar, BarChart2, 
   Edit2, CheckCircle, Clock, Umbrella,
@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { 
   ATTENDANCE_STATUS_COLORS, ATTENDANCE_STATUS_LABELS,
-  getCurrentFinancialYear, toDateString
+  getCurrentFinancialYear, toDateString, getWorkingDaysInMonth
 } from '../../utils/helpers';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from 'recharts';
 
@@ -18,7 +18,9 @@ export default function UserProfilePopup({ userId, onClose }) {
   const [activeTab, setActiveTab] = useState('profile');
   const [userData, setUserData] = useState(null);
   const [lbData, setLbData] = useState(null);
-  const { isAdmin } = useAuth();
+  const [timeEntries, setTimeEntries] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const { isAdmin, publicHolidays } = useAuth();
   const currentFY = getCurrentFinancialYear();
 
   useEffect(() => {
@@ -30,7 +32,24 @@ export default function UserProfilePopup({ userId, onClose }) {
       setLbData(snap.data());
     });
 
-    return () => { unsubUser(); unsubLb(); };
+    const mStart = toDateString(startOfMonth(new Date()));
+    const mEnd = toDateString(endOfMonth(new Date()));
+    const timeQ = query(
+      collection(db, 'timeEntries'), 
+      where('userId', '==', userId),
+      where('date', '>=', mStart),
+      where('date', '<=', mEnd)
+    );
+    const unsubTime = onSnapshot(timeQ, (snap) => {
+      setTimeEntries(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+
+    const ticketsQ = query(collection(db, 'tickets'), where('assigneeId', '==', userId));
+    const unsubTickets = onSnapshot(ticketsQ, (snap) => {
+      setTickets(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+
+    return () => { unsubUser(); unsubLb(); unsubTime(); unsubTickets(); };
   }, [userId, currentFY]);
 
   if (!userData) return null;
@@ -67,8 +86,8 @@ export default function UserProfilePopup({ userId, onClose }) {
         <div style={contentStyle}>
           {activeTab === 'profile' && <ProfileTab user={userData} userId={userId} isAdmin={isAdmin} />}
           {activeTab === 'leaves' && <LeaveInsightsTab user={userData} lb={lbData} />}
-          {activeTab === 'attendance' && <AttendanceTab userId={userId} />}
-          {activeTab === 'work' && <WorkStatsTab userId={userId} user={userData} />}
+          {activeTab === 'attendance' && <AttendanceTab userId={userId} holidays={publicHolidays} />}
+          {activeTab === 'work' && <WorkStatsTab userId={userId} user={userData} timeEntries={timeEntries} tickets={tickets} />}
         </div>
       </div>
     </div>
@@ -167,18 +186,69 @@ function LeaveInsightsTab({ user, lb }) {
   );
 }
 
-function AttendanceTab({ userId }) {
-  return <div style={{ padding: 40, textAlign: 'center' }}>Monthly Attendance View coming from AttendanceCalendarTab...</div>;
+function AttendanceTab({ userId, holidays }) {
+  const [attendance, setAttendance] = useState({});
+  const month = new Date();
+  
+  useEffect(() => {
+    const start = toDateString(startOfMonth(month));
+    const end = toDateString(endOfMonth(month));
+    const q = query(collection(db, 'attendance'), where('userId', '==', userId), where('date', '>=', start), where('date', '<=', end));
+    const unsub = onSnapshot(q, (snap) => {
+      const map = {};
+      snap.docs.forEach(d => map[d.data().date] = d.data());
+      setAttendance(map);
+    });
+    return unsub;
+  }, [userId]);
+
+  const start = startOfWeek(startOfMonth(month), { weekStartsOn: 1 });
+  const days = eachDayOfInterval({ start, end: endOfWeek(endOfMonth(month), { weekStartsOn: 1 }) });
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ fontSize: 14, fontWeight: 700 }}>{format(month, 'MMMM yyyy')} Attendance</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
+        {['M','T','W','T','F','S','S'].map(d => <div key={d} style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', fontWeight: 600 }}>{d}</div>)}
+        {days.map(day => {
+          const dateStr = toDateString(day);
+          const att = attendance[dateStr];
+          const holiday = holidays.find(h => h.date === dateStr);
+          const isSun = getDay(day) === 0;
+          const isOut = !isSameMonth(day, month);
+
+          return (
+            <div key={dateStr} style={{
+              height: 48, borderRadius: 8, display: 'flex', flexDir: 'column', alignItems: 'center', justifyContent: 'center',
+              background: att ? ATTENDANCE_STATUS_COLORS[att.status]?.bg : (holiday ? '#FEF9C3' : (isSun ? '#F3F4F6' : '#fff')),
+              border: '1px solid #F3F4F6', opacity: isOut ? 0.2 : 1, position: 'relative'
+            }}>
+              <span style={{ fontSize: 10, position: 'absolute', top: 2, right: 4, color: '#9CA3AF' }}>{format(day, 'd')}</span>
+              {att && <div style={{ width: 6, height: 6, borderRadius: '50%', background: ATTENDANCE_STATUS_COLORS[att.status]?.text }} />}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
-function WorkStatsTab({ userId, user }) {
+function WorkStatsTab({ userId, user, timeEntries, tickets }) {
+  const logged = timeEntries.reduce((s, e) => s + (e.hours || 0), 0);
+  const monthStart = startOfMonth(new Date());
+  const workingDays = getWorkingDaysInMonth(monthStart.getFullYear(), monthStart.getMonth());
+  const expected = workingDays * (user.dailyCapacity || 8);
+  const utilization = expected > 0 ? (logged / expected) * 100 : 0;
+  const overtime = Math.max(0, logged - expected);
+  const completed = tickets.filter(t => t.status === 'completed').length;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        <DashboardMetric label="This Month Logged" value="156 hrs" sub="vs 168 expected" />
-        <DashboardMetric label="Utilization" value="92.8%" sub="High Productivity" />
-        <DashboardMetric label="Overtime" value="+12 hrs" sub="Earned $240 extra" />
-        <DashboardMetric label="Tickets Done" value="28" sub="4 pending feedback" />
+        <DashboardMetric label="This Month Logged" value={`${logged} hrs`} sub={`vs ${expected} expected`} />
+        <DashboardMetric label="Utilization" value={`${utilization.toFixed(1)}%`} sub={utilization >= 90 ? 'High Productivity' : 'Target: 95%'} />
+        <DashboardMetric label="Overtime" value={`+${overtime} hrs`} sub={`Earned $${overtime * 20} extra`} />
+        <DashboardMetric label="Tickets Done" value={completed} sub={`${tickets.filter(t => t.status !== 'completed').length} in progress`} />
       </div>
     </div>
   );
