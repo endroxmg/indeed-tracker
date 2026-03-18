@@ -17,7 +17,7 @@ import { Umbrella, CalendarClock, IndianRupee } from 'lucide-react';
 import SalaryDashboardWidget from '../components/salary/SalaryDashboardWidget';
 
 export default function Dashboard() {
-  const { userDoc } = useAuth();
+  const { userDoc, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
   const [users, setUsers] = useState([]);

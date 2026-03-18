@@ -10,7 +10,7 @@ import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestor
 import { db } from '../firebase';
 import { getEnhancedTicketData } from '../utils/mbrOverrides';
 import EditTicketDataModal from '../components/reports/EditTicketDataModal';
-import { Edit2, Eye, Info } from 'lucide-react';
+import { Edit2, Eye, Info, Calendar, Download, Loader2 } from 'lucide-react';
 
 // Chart components
 import UtilizationChart from '../components/charts/UtilizationChart';
@@ -234,7 +234,7 @@ export default function Reports() {
             display: 'flex', alignItems: 'center', gap: 6,
             opacity: generating ? 0.7 : 1, transition: 'opacity 0.2s',
           }}>
-            {generating && <Loader size={14} className="spinning" />}
+            {generating && <Loader2 size={14} className="spinning" />}
             {generating ? 'Generating...' : 'Generate Report'}
           </button>
           <button onClick={handleExport} disabled={!generated || exporting} style={{
@@ -244,7 +244,7 @@ export default function Reports() {
             display: 'flex', alignItems: 'center', gap: 6,
             fontFamily: '"Poppins", sans-serif',
           }}>
-            {exporting ? <Loader size={14} className="spinning" /> : <Download size={14} />}
+            {exporting ? <Loader2 size={14} className="spinning" /> : <Download size={14} />}
             {exporting ? 'Generating PDF…' : 'Export PDF'}
           </button>
         </div>

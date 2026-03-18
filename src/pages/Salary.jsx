@@ -95,7 +95,7 @@ export default function Salary() {
         // 2. Time Entries
         const timeQ = query(
           collection(db, 'timeEntries'),
-          where('designerId', '==', u.id || u.uid),
+          where('userId', '==', u.id || u.uid),
           where('date', '>=', format(monthStart, 'yyyy-MM-dd')),
           where('date', '<=', format(monthEnd, 'yyyy-MM-dd'))
         );
