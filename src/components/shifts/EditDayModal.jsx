@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { 
   calculateShiftEnd, toDateString, getCurrentFinancialYear,
-  ATTENDANCE_STATUS_LABELS 
+  ATTENDANCE_STATUS_LABELS, formatShiftTime
 } from '../../utils/helpers';
 
 export default function EditDayModal({ user, date, onClose }) {

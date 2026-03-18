@@ -54,19 +54,30 @@ export async function exportReportPDF({ dateRange, summaryStats, chartRefs, work
   };
 
   const addChartImage = (imgData, y, maxH) => {
-    if (!imgData) return y;
-    const img = new Image();
-    img.src = imgData;
-    const aspect = img.width / img.height;
-    let imgW = contentW;
-    let imgH = imgW / aspect;
-    if (imgH > maxH) {
-      imgH = maxH;
-      imgW = imgH * aspect;
-    }
-    const x = margin + (contentW - imgW) / 2;
-    pdf.addImage(imgData, 'PNG', x, y, imgW, imgH);
-    return y + imgH + 4;
+    return new Promise((resolve) => {
+      if (!imgData) {
+        resolve(y);
+        return;
+      }
+      const img = new Image();
+      img.onload = () => {
+        const aspect = img.width / img.height;
+        let imgW = contentW;
+        let imgH = imgW / aspect;
+        if (imgH > maxH) {
+          imgH = maxH;
+          imgW = imgH * aspect;
+        }
+        const x = margin + (contentW - imgW) / 2;
+        pdf.addImage(imgData, 'PNG', x, y, imgW, imgH, undefined, 'FAST');
+        resolve(y + imgH + 4);
+      };
+      img.onerror = () => {
+        console.error('Failed to load image for PDF');
+        resolve(y);
+      };
+      img.src = imgData;
+    });
   };
 
   // ═══════════════════════════════════════════════════════════
@@ -122,7 +133,7 @@ export async function exportReportPDF({ dateRange, summaryStats, chartRefs, work
 
   // Utilization chart
   const utilImg = await captureChart(chartRefs.utilization);
-  addChartImage(utilImg, boxY + boxH + 6, H - boxY - boxH - 20);
+  await addChartImage(utilImg, boxY + boxH + 6, H - boxY - boxH - 20);
 
   // ═══════════════════════════════════════════════════════════
   // PAGE 3: FEEDBACK BREAKDOWN
@@ -132,7 +143,7 @@ export async function exportReportPDF({ dateRange, summaryStats, chartRefs, work
   pages.push('Feedback Breakdown');
   addHeader('Feedback Breakdown');
   const fbImg = await captureChart(chartRefs.feedbackBreakdown);
-  addChartImage(fbImg, 22, H - 34);
+  await addChartImage(fbImg, 22, H - 34);
 
   // ═══════════════════════════════════════════════════════════
   // PAGE 4: FEEDBACK COUNT VS VIDEO LENGTH
@@ -142,7 +153,7 @@ export async function exportReportPDF({ dateRange, summaryStats, chartRefs, work
   pages.push('Feedback Count vs Video Length');
   addHeader('Feedback Count vs Video Length');
   const fvlImg = await captureChart(chartRefs.feedbackVsLength);
-  addChartImage(fvlImg, 22, H - 34);
+  await addChartImage(fvlImg, 22, H - 34);
 
   // ═══════════════════════════════════════════════════════════
   // PAGE 5: FEEDBACK ROUNDS
@@ -152,7 +163,7 @@ export async function exportReportPDF({ dateRange, summaryStats, chartRefs, work
   pages.push('Feedback Rounds');
   addHeader('Feedback Rounds');
   const frImg = await captureChart(chartRefs.feedbackRounds);
-  addChartImage(frImg, 22, H - 34);
+  await addChartImage(frImg, 22, H - 34);
 
   // ═══════════════════════════════════════════════════════════
   // PAGE 6: TICKETS TURNAROUND TIME
@@ -162,7 +173,7 @@ export async function exportReportPDF({ dateRange, summaryStats, chartRefs, work
   pages.push('Tickets Turnaround Time');
   addHeader('Tickets Turnaround Time');
   const ttImg = await captureChart(chartRefs.turnaround);
-  addChartImage(ttImg, 22, H - 34);
+  await addChartImage(ttImg, 22, H - 34);
 
   // ═══════════════════════════════════════════════════════════
   // PAGE 7: TOTAL TIME TO COMPLETE
@@ -172,7 +183,7 @@ export async function exportReportPDF({ dateRange, summaryStats, chartRefs, work
   pages.push('Total Time to Complete');
   addHeader('Total Time to Complete');
   const tcImg = await captureChart(chartRefs.totalTime);
-  addChartImage(tcImg, 22, H - 34);
+  await addChartImage(tcImg, 22, H - 34);
 
   // ═══════════════════════════════════════════════════════════
   // PAGE 8: ADDITIONAL INSIGHTS — 2x2 grid
@@ -191,18 +202,25 @@ export async function exportReportPDF({ dateRange, summaryStats, chartRefs, work
   const trendImg = await captureChart(chartRefs.monthlyTrend);
   const dwImg = await captureChart(chartRefs.designerWorkload);
 
-  if (veImg) {
-    pdf.addImage(veImg, 'PNG', margin, gridY, halfW, halfH);
-  }
-  if (donutImg) {
-    pdf.addImage(donutImg, 'PNG', margin + halfW + 6, gridY, halfW, halfH);
-  }
-  if (trendImg) {
-    pdf.addImage(trendImg, 'PNG', margin, gridY + halfH + 6, halfW, halfH);
-  }
-  if (dwImg) {
-    pdf.addImage(dwImg, 'PNG', margin + halfW + 6, gridY + halfH + 6, halfW, halfH);
-  }
+  const placeInGrid = (imgData, x, y) => {
+    return new Promise((resolve) => {
+      if (!imgData) return resolve();
+      const img = new Image();
+      img.onload = () => {
+        pdf.addImage(imgData, 'PNG', x, y, halfW, halfH, undefined, 'FAST');
+        resolve();
+      };
+      img.onerror = resolve;
+      img.src = imgData;
+    });
+  };
+
+  await Promise.all([
+    placeInGrid(veImg, margin, gridY),
+    placeInGrid(donutImg, margin + halfW + 6, gridY),
+    placeInGrid(trendImg, margin, gridY + halfH + 6),
+    placeInGrid(dwImg, margin + halfW + 6, gridY + halfH + 6)
+  ]);
 
   // ═══════════════════════════════════════════════════════════
   // LAST PAGE: THANK YOU
