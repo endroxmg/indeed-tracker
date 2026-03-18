@@ -4,7 +4,7 @@ import { subscribeTickets, subscribeUsers, subscribeActivityLog } from '../servi
 import { getWorkingDaysInMonth, STATUS_COLORS, STATUS_LABELS, TICKET_TYPE_COLORS, TYPE_LABELS, formatDate, isOverdue } from '../utils/helpers';
 import { SkeletonCard } from '../components/Skeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Ticket, Clock, CheckCircle2, Timer, TrendingUp, DollarSign } from 'lucide-react';
+import { Ticket, Clock, CheckCircle2, Timer, TrendingUp, DollarSign, AlertTriangle } from 'lucide-react';
 import InitialsAvatar from '../components/InitialsAvatar';
 import { format, startOfMonth, endOfMonth, isToday } from 'date-fns';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
