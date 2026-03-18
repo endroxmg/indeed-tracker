@@ -5,12 +5,13 @@ import { useAuth } from '../../contexts/AuthContext';
 import { format } from 'date-fns';
 import { 
   X, Clock, Umbrella, AlertTriangle, 
-  Calendar, CheckCircle 
+  Calendar, CheckCircle, Info 
 } from 'lucide-react';
 import { 
   calculateShiftEnd, toDateString, getCurrentFinancialYear,
   ATTENDANCE_STATUS_LABELS, formatShiftTime
 } from '../../utils/helpers';
+import { startOfWeek } from 'date-fns';
 
 export default function EditDayModal({ user, date, onClose }) {
   const { userDoc: currentUser, publicHolidays } = useAuth();
@@ -21,6 +22,7 @@ export default function EditDayModal({ user, date, onClose }) {
   const [leaveType, setLeaveType] = useState('normal');
   const [notes, setNotes] = useState('');
   const [leaveBalance, setLeaveBalance] = useState(null);
+  const [hasSundayShift, setHasSundayShift] = useState(false);
 
   const dateStr = toDateString(date);
   const currentFY = getCurrentFinancialYear();
@@ -51,6 +53,14 @@ export default function EditDayModal({ user, date, onClose }) {
       if (balanceSnap.exists()) {
         setLeaveBalance(balanceSnap.data());
       }
+
+      // Check for Sunday shift in the current week
+      const sundayDate = startOfWeek(date, { weekStartsOn: 0 });
+      const sundayStr = toDateString(sundayDate);
+      const sunShiftRef = doc(db, 'shifts', `${user.id}_${sundayStr}`);
+      const sunShiftSnap = await getDoc(sunShiftRef);
+      setHasSundayShift(sunShiftSnap.exists());
+
       setLoading(false);
     };
 
@@ -181,24 +191,38 @@ export default function EditDayModal({ user, date, onClose }) {
           <div style={sectionStyle}>
             <div style={sectionTitleStyle}><CheckCircle size={16} /> Attendance Status</div>
             <div style={radioGridStyle}>
-              {['working', 'half_day', 'early_leave', 'leave', 'comp_off', 'week_off'].map(s => (
-                <label key={s} style={{ 
-                  ...radioLabelStyle, 
-                  borderColor: status === s ? '#0451CC' : '#E5E7EB',
-                  background: status === s ? '#EAF0FD' : '#fff'
-                }}>
-                  <input 
-                    type="radio" 
-                    name="status" 
-                    value={s} 
-                    checked={status === s} 
-                    onChange={(e) => setStatus(e.target.value)}
-                    style={{ position: 'absolute', opacity: 0 }}
-                  />
-                  {ATTENDANCE_STATUS_LABELS[s]}
-                </label>
-              ))}
+              {['working', 'half_day', 'early_leave', 'leave', 'comp_off', 'week_off'].map(s => {
+                const isDisabled = s === 'week_off' && !hasSundayShift;
+                return (
+                  <label key={s} style={{ 
+                    ...radioLabelStyle, 
+                    borderColor: status === s ? '#0451CC' : '#E5E7EB',
+                    background: status === s ? '#EAF0FD' : '#fff',
+                    opacity: isDisabled ? 0.5 : 1,
+                    cursor: isDisabled ? 'not-allowed' : 'pointer'
+                  }} title={isDisabled ? 'Sunday shift required for Week-off' : ''}>
+                    <input 
+                      type="radio" 
+                      name="status" 
+                      value={s} 
+                      checked={status === s} 
+                      disabled={isDisabled}
+                      onChange={(e) => setStatus(e.target.value)}
+                      style={{ position: 'absolute', opacity: 0 }}
+                    />
+                    {ATTENDANCE_STATUS_LABELS[s]}
+                    {isDisabled && <AlertTriangle size={10} style={{ marginTop: 2, color: '#DC2626' }} />}
+                  </label>
+                );
+              })}
             </div>
+
+            {!hasSundayShift && (
+              <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, color: '#C91B1B', fontSize: 11, fontWeight: 500 }}>
+                <Info size={14} />
+                <span>Week-off is disabled (No Sunday shift scheduled for this week)</span>
+              </div>
+            )}
 
             {status === 'early_leave' && (
               <div style={{ marginTop: 16, padding: '12px', background: '#FFF7ED', borderRadius: 8 }}>

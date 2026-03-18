@@ -202,14 +202,14 @@ function AttendanceTab({ userId, holidays }) {
     return unsub;
   }, [userId]);
 
-  const start = startOfWeek(startOfMonth(month), { weekStartsOn: 1 });
-  const days = eachDayOfInterval({ start, end: endOfWeek(endOfMonth(month), { weekStartsOn: 1 }) });
+  const start = startOfWeek(startOfMonth(month), { weekStartsOn: 0 });
+  const days = eachDayOfInterval({ start, end: endOfWeek(endOfMonth(month), { weekStartsOn: 0 }) });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ fontSize: 14, fontWeight: 700 }}>{format(month, 'MMMM yyyy')} Attendance</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
-        {['M','T','W','T','F','S','S'].map(d => <div key={d} style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', fontWeight: 600 }}>{d}</div>)}
+        {['S','M','T','W','T','F','S'].map((d, i) => <div key={`${d}-${i}`} style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', fontWeight: 600 }}>{d}</div>)}
         {days.map(day => {
           const dateStr = toDateString(day);
           const att = attendance[dateStr];
@@ -247,7 +247,6 @@ function WorkStatsTab({ userId, user, timeEntries, tickets }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
         <DashboardMetric label="This Month Logged" value={`${logged} hrs`} sub={`vs ${expected} expected`} />
         <DashboardMetric label="Utilization" value={`${utilization.toFixed(1)}%`} sub={utilization >= 90 ? 'High Productivity' : 'Target: 95%'} />
-        <DashboardMetric label="Overtime" value={`+${overtime} hrs`} sub={`Earned $${overtime * 20} extra`} />
         <DashboardMetric label="Tickets Done" value={completed} sub={`${tickets.filter(t => t.status !== 'completed').length} in progress`} />
       </div>
     </div>

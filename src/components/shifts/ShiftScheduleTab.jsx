@@ -25,7 +25,7 @@ export default function ShiftScheduleTab() {
   const [selectedDay, setSelectedDay] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const start = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday
+  const start = startOfWeek(currentDate, { weekStartsOn: 0 }); // Sunday
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(start, i));
 
   useEffect(() => {
@@ -159,11 +159,14 @@ export default function ShiftScheduleTab() {
                     >
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                         {holiday ? (
-                          <div style={{ fontSize: 10, color: '#92400E', textAlign: 'center', fontWeight: 500 }}>
-                            {holiday.name}
-                          </div>
-                        ) : isSun ? (
-                          <div style={{ fontSize: 10, color: '#6B7280' }}>Sunday</div>
+                          <>
+                            <div style={{ fontSize: 10, color: '#92400E', textAlign: 'center', fontWeight: 500 }}>
+                              {holiday.name}
+                            </div>
+                            <div style={{ fontSize: 10, color: '#6B7280' }}>
+                              {isSun && !shift ? 'Sunday' : ''}
+                            </div>
+                          </>
                         ) : null}
 
                         {shift ? (
@@ -171,6 +174,8 @@ export default function ShiftScheduleTab() {
                             {formatShiftTime(shift.shiftStart)} – {formatShiftTime(shift.shiftEnd)}
                           </div>
                         ) : !holiday && !isSun ? (
+                          <div style={{ fontSize: 12, color: '#9CA3AF' }}>—</div>
+                        ) : isSun && !shift ? (
                           <div style={{ fontSize: 12, color: '#9CA3AF' }}>—</div>
                         ) : null}
 

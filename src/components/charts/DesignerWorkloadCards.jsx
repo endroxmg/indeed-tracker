@@ -73,7 +73,7 @@ export default function DesignerWorkloadCards({ users, timeEntries, dateRange, t
                 <span style={{ fontWeight: 600, color: '#2D2D2D' }}>{logged} hrs</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>{diff >= 0 ? 'Overtime:' : 'Undertime:'}</span>
+                <span>{diff >= 0 ? 'Extra Hours:' : 'Diff:'}</span>
                 <span style={{ fontWeight: 600, color: diff >= 0 ? '#16A34A' : '#DC2626' }}>
                   {diff >= 0 ? '+' : ''}{diff} hrs
                 </span>

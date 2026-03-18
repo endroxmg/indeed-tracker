@@ -184,8 +184,8 @@ export function categorizeCommentType(text) {
 
 // ─── Week helpers ──────────────────────────────────────────
 export function getWeekDays(date) {
-  const start = startOfWeek(date, { weekStartsOn: 1 }); // Monday
-  return Array.from({ length: 6 }, (_, i) => addDays(start, i)); // Mon-Sat
+  const start = startOfWeek(date, { weekStartsOn: 0 }); // Sunday
+  return Array.from({ length: 7 }, (_, i) => addDays(start, i)); // Sun-Sat
 }
 
 export function getMonthDateRange(year, month) {

@@ -13,8 +13,8 @@ export default function WeekRosterCard() {
   const [shifts, setShifts] = useState({});
   const [attendance, setAttendance] = useState({});
 
-  const start = startOfWeek(new Date(), { weekStartsOn: 1 });
-  const weekDays = Array.from({ length: 6 }, (_, i) => addDays(start, i)); // Mon-Sat
+  const start = startOfWeek(new Date(), { weekStartsOn: 0 }); // Sunday
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(start, i)); // Sun-Sat
 
   useEffect(() => {
     const unsubUsers = onSnapshot(collection(db, 'users'), (snap) => {
@@ -22,7 +22,7 @@ export default function WeekRosterCard() {
     });
 
     const startStr = format(weekDays[0], 'yyyy-MM-dd');
-    const endStr = format(weekDays[5], 'yyyy-MM-dd');
+    const endStr = format(weekDays[6], 'yyyy-MM-dd');
 
     const shiftsQ = query(collection(db, 'shifts'), where('date', '>=', startStr), where('date', '<=', endStr));
     const attQ = query(collection(db, 'attendance'), where('date', '>=', startStr), where('date', '<=', endStr));
@@ -95,6 +95,8 @@ export default function WeekRosterCard() {
                         <div style={{ fontSize: 10, fontWeight: 500, color: '#4B5563' }}>
                           {formatShiftTime(shift.shiftStart)}–{formatShiftTime(shift.shiftEnd)}
                         </div>
+                      ) : isSunday(day) ? (
+                        <div style={{ fontSize: 9, color: '#9CA3AF' }}>Sunday</div>
                       ) : <span style={{ color: '#D1D5DB' }}>—</span>}
                     </td>
                   );

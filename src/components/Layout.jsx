@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { path: '/timelog', label: 'Time Log', icon: Clock },
   { path: '/shifts', label: 'Shifts & Attendance', icon: CalendarClock },
   { path: '/leaves', label: 'Leave Management', icon: Umbrella },
-  { path: '/overtime', label: 'Overtime Tracker', icon: Activity },
+  { path: '/leaves', label: 'Leave Management', icon: Umbrella },
   { path: '/reports', label: 'Reports & MBR', icon: BarChart3 },
   { path: '/activity-log', label: 'Activity Log', icon: Activity },
 ];
@@ -32,7 +32,7 @@ const PAGE_TITLES = {
   '/activity-log': 'Activity Log',
   '/shifts': 'Shifts & Attendance',
   '/leaves': 'Leave Management',
-  '/overtime': 'Overtime Tracker',
+  '/leaves': 'Leave Management',
   '/team': 'Team Management',
 };
 
