@@ -23,7 +23,7 @@ import FeedbackDonutChart from '../components/charts/FeedbackDonutChart';
 import { ChartSkeleton } from '../components/charts/ChartCard';
 
 export default function Reports() {
-  const { userDoc } = useAuth();
+  const { userDoc, publicHolidays } = useAuth();
   const toast = useToast();
   const [tickets, setTickets] = useState([]);
   const [users, setUsers] = useState([]);
@@ -99,10 +99,10 @@ export default function Reports() {
     const created = ticketsCreatedInRange(tickets, dateRange.start, dateRange.end);
     const completed = ticketsCompletedInRange(tickets, dateRange.start, dateRange.end);
     const totalHours = timeEntries.reduce((s, e) => s + (e.hours || 0), 0);
-    const workingDays = getWorkingDaysInRange(dateRange.start, dateRange.end);
-    const dailyAvg = workingDays > 0 ? (totalHours / workingDays).toFixed(2) : '0.00';
+    const workingDaysCount = getWorkingDaysInRange(dateRange.start, dateRange.end, publicHolidays);
+    const dailyAvg = workingDaysCount > 0 ? (totalHours / workingDaysCount).toFixed(2) : '0.00';
     const totalCapacity = designers.reduce((s, u) => s + (u.dailyCapacity || 8), 0);
-    const expectedHours = workingDays * totalCapacity;
+    const expectedHours = workingDaysCount * totalCapacity;
     const utilPct = expectedHours > 0 ? ((totalHours / expectedHours) * 100).toFixed(2) : '0.00';
 
     return [
@@ -112,7 +112,7 @@ export default function Reports() {
       { label: 'Daily Avg. Utilization', value: `${dailyAvg} hours` },
       { label: '% Utilization', value: `${utilPct}%` },
     ];
-  }, [generated, tickets, timeEntries, dateRange, designers]);
+  }, [generated, tickets, timeEntries, dateRange, designers, publicHolidays]);
 
   // Tickets active in the selected range (for charts)
   const activeTickets = useMemo(() => {
@@ -121,8 +121,8 @@ export default function Reports() {
   }, [generated, tickets, dateRange]);
 
   const workingDays = useMemo(() =>
-    getWorkingDaysInRange(dateRange.start, dateRange.end),
-    [dateRange]
+    getWorkingDaysInRange(dateRange.start, dateRange.end, publicHolidays),
+    [dateRange, publicHolidays]
   );
 
   // ─── Ticket click handler ────────────────────────────────
@@ -243,6 +243,7 @@ export default function Reports() {
             dateRange={dateRange}
             timeEntries={timeEntries}
             users={users}
+            publicHolidays={publicHolidays}
             chartRef={chartRefs.utilization}
           />
 
@@ -298,6 +299,7 @@ export default function Reports() {
             timeEntries={timeEntries}
             dateRange={dateRange}
             tickets={activeTickets}
+            publicHolidays={publicHolidays}
             chartRef={chartRefs.designerWorkload}
           />
 

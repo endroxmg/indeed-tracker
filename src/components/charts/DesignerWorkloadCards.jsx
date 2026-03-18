@@ -3,9 +3,9 @@ import { ChartCard, EmptyChart } from './ChartCard';
 import { getWorkingDaysInRange } from '../../utils/reportUtils';
 import InitialsAvatar from '../InitialsAvatar';
 
-export default function DesignerWorkloadCards({ users, timeEntries, dateRange, tickets, chartRef }) {
+export default function DesignerWorkloadCards({ users, timeEntries, dateRange, tickets, publicHolidays, chartRef }) {
   const activeDesigners = users.filter(u => u.isActive && (u.roles?.includes('designer') || u.role === 'designer'));
-  const workingDays = getWorkingDaysInRange(dateRange.start, dateRange.end);
+  const workingDays = getWorkingDaysInRange(dateRange.start, dateRange.end, publicHolidays);
 
   if (activeDesigners.length === 0) {
     return <ChartCard title="Designer Workload Split" icon={Users} chartRef={chartRef}><EmptyChart /></ChartCard>;

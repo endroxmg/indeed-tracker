@@ -14,20 +14,34 @@ import {
   max as maxDate,
 } from 'date-fns';
 
-// ─── Core: count working days (exclude Sundays) ────────────
-export function getWorkingDaysInRange(start, end) {
+// ─── Core: count working days (exclude Sundays & Holidays) ────────────
+export function getWorkingDaysInRange(start, end, holidays = []) {
   const s = typeof start === 'string' ? parseISO(start) : start;
   const e = typeof end === 'string' ? parseISO(end) : end;
   if (isAfter(s, e)) return 0;
-  return eachDayOfInterval({ start: s, end: e }).filter(d => getDay(d) !== 0).length;
+  
+  const holidayDates = holidays.map(h => typeof h === 'string' ? h : h.date);
+  
+  return eachDayOfInterval({ start: s, end: e }).filter(d => {
+    const isSunday = getDay(d) === 0;
+    const dateStr = format(d, 'yyyy-MM-dd');
+    return !isSunday && !holidayDates.includes(dateStr);
+  }).length;
 }
 
 // ─── Get list of working dates in range ────────────────────
-export function getWorkingDatesInRange(start, end) {
+export function getWorkingDatesInRange(start, end, holidays = []) {
   const s = typeof start === 'string' ? parseISO(start) : start;
   const e = typeof end === 'string' ? parseISO(end) : end;
   if (isAfter(s, e)) return [];
-  return eachDayOfInterval({ start: s, end: e }).filter(d => getDay(d) !== 0);
+  
+  const holidayDates = holidays.map(h => typeof h === 'string' ? h : h.date);
+
+  return eachDayOfInterval({ start: s, end: e }).filter(d => {
+    const isSunday = getDay(d) === 0;
+    const dateStr = format(d, 'yyyy-MM-dd');
+    return !isSunday && !holidayDates.includes(dateStr);
+  });
 }
 
 // ─── Timestamp → JS Date helper ───────────────────────────

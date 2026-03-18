@@ -4,10 +4,10 @@ import { ChartCard, EmptyChart, CustomTooltip } from './ChartCard';
 import { getWorkingDatesInRange, getDailyTeamHours } from '../../utils/reportUtils';
 import { format } from 'date-fns';
 
-export default function UtilizationChart({ dateRange, timeEntries, users, chartRef }) {
+export default function UtilizationChart({ dateRange, timeEntries, users, publicHolidays, chartRef }) {
   const activeDesigners = users.filter(u => u.isActive && (u.roles?.includes('designer') || u.role === 'designer'));
   const totalCapacity = activeDesigners.reduce((s, u) => s + (u.dailyCapacity || 8), 0);
-  const workingDates = getWorkingDatesInRange(dateRange.start, dateRange.end);
+  const workingDates = getWorkingDatesInRange(dateRange.start, dateRange.end, publicHolidays);
 
   const data = workingDates.map(d => {
     const dateStr = format(d, 'yyyy-MM-dd');
