@@ -258,9 +258,11 @@ export function AuthProvider({ children }) {
 
   const value = {
     user, userDoc, loading, login, logout, refreshUserDoc, publicHolidays,
-    isAdmin: userDoc?.roles?.includes('admin'),
-    isDesigner: userDoc?.roles?.includes('designer'),
-    isPending: userDoc?.roles?.includes('pending'),
+    isAdmin: userDoc?.roles?.includes('admin') || userDoc?.role === 'admin',
+    isModerator: userDoc?.roles?.includes('moderator') || userDoc?.role === 'moderator',
+    isAdminOrMod: userDoc?.roles?.includes('admin') || userDoc?.role === 'admin' || userDoc?.roles?.includes('moderator') || userDoc?.role === 'moderator',
+    isDesigner: userDoc?.roles?.includes('designer') || userDoc?.role === 'designer',
+    isPending: userDoc?.roles?.includes('pending') || userDoc?.role === 'pending',
     isActive: userDoc?.isActive === true,
   };
 

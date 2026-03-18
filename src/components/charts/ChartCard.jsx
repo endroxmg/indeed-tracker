@@ -61,9 +61,25 @@ const customTooltipStyle = {
 
 export function CustomTooltip({ active, payload, label, formatter }) {
   if (!active || !payload?.length) return null;
+  const isOverridden = payload.some(p => p.payload?._isOverridden || p.payload?.payload?._isOverridden);
+  
   return (
     <div style={customTooltipStyle}>
-      {label && <div style={{ fontWeight: 700, marginBottom: 4, fontSize: 13 }}>{label}</div>}
+      {label && (
+        <div style={{ fontWeight: 700, marginBottom: 6, fontSize: 13, display: 'flex', alignItems: 'center', gap: 6, borderBottom: isOverridden ? '1px solid #F3F4F6' : 'none', paddingBottom: isOverridden ? 4 : 0 }}>
+          {label}
+          {isOverridden && (
+             <span style={{ 
+               display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, 
+               color: '#D97706', background: '#FFFBEB', padding: '1px 6px', 
+               borderRadius: 10, fontWeight: 700, textTransform: 'uppercase' 
+             }}>
+               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#D97706' }} />
+               Modified
+             </span>
+          )}
+        </div>
+      )}
       {payload.map((p, i) => (
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.color || p.fill, flexShrink: 0 }} />

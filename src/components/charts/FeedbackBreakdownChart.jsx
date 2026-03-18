@@ -1,12 +1,12 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, LabelList } from 'recharts';
-import { ThumbsUp } from 'lucide-react';
+import { ThumbsUp, Edit2 } from 'lucide-react';
 import { ChartCard, EmptyChart, CustomTooltip } from './ChartCard';
 import { FEEDBACK_COLORS, FEEDBACK_LABELS, getTotalFeedbackCount, getFeedbackByCategory } from '../../utils/reportUtils';
 
 const CATEGORIES = ['ui', 'storyboard', 'voiceover', 'animation', 'text', 'timing', 'other'];
 const TYPES = ['update', 'error'];
 
-export default function FeedbackBreakdownChart({ tickets, onTicketClick, chartRef }) {
+export default function FeedbackBreakdownChart({ tickets, onTicketClick, chartRef, isEditMode }) {
   if (!tickets.length) {
     return <ChartCard title="Feedback Breakdown" icon={ThumbsUp} chartRef={chartRef}><EmptyChart /></ChartCard>;
   }
@@ -40,6 +40,7 @@ export default function FeedbackBreakdownChart({ tickets, onTicketClick, chartRe
       jiraId: t.jiraId,
       ticketId: t.id,
       total: getTotalFeedbackCount(t),
+      _isOverridden: t._isOverridden,
       ...Object.fromEntries(CATEGORIES.map(c => [c, cats[c] || 0])),
     };
   }).filter(d => d.total > 0);
@@ -73,14 +74,25 @@ export default function FeedbackBreakdownChart({ tickets, onTicketClick, chartRe
               <YAxis
                 dataKey="jiraId"
                 type="category"
-                tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#0451CC', fontWeight: 600, cursor: 'pointer' }}
+                tick={(props) => {
+                  const data = rightData.find(d => d.jiraId === props.payload.value);
+                  return (
+                    <g transform={`translate(${props.x},${props.y})`} style={{ cursor: 'pointer' }} onClick={() => onTicketClick(data?.ticketId)}>
+                      <text x={-5} y={0} dy={4} textAnchor="end" fontSize={11} fontFamily='"Poppins"' fontWeight={600} fill={isEditMode ? '#DC2626' : '#0451CC'}>
+                        {props.payload.value}
+                      </text>
+                      {isEditMode && <path d="M-60 -4 L-50 -4 L-50 4 L-60 4 Z" fill="transparent" />} {/* Hit area */}
+                      {isEditMode && (
+                        <foreignObject x={-80} y={-8} width={16} height={16}>
+                          <Edit2 size={12} color="#DC2626" />
+                        </foreignObject>
+                      )}
+                    </g>
+                  );
+                }}
                 tickLine={false}
                 axisLine={{ stroke: '#E5E7EB' }}
                 width={80}
-                onClick={(e) => {
-                  const ticket = rightData.find(d => d.jiraId === e?.value);
-                  if (ticket && onTicketClick) onTicketClick(ticket.ticketId);
-                }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 11, fontFamily: '"Noto Sans"' }} />

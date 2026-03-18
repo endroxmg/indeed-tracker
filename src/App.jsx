@@ -14,6 +14,7 @@ import Team from './pages/Team';
 import ActivityLog from './pages/ActivityLog';
 import Shifts from './pages/Shifts';
 import LeaveManagement from './pages/LeaveManagement';
+import Salary from './pages/Salary';
 
 function ProtectedRoute({ children, adminOnly = false }) {
   const { user, userDoc, loading, isAdmin, isPending, isActive } = useAuth();
@@ -88,6 +89,7 @@ export default function App() {
         <Route path="/activity-log" element={<ProtectedRoute><ActivityLog /></ProtectedRoute>} />
         <Route path="/shifts" element={<ProtectedRoute><Shifts /></ProtectedRoute>} />
         <Route path="/leaves" element={<ProtectedRoute><LeaveManagement /></ProtectedRoute>} />
+        <Route path="/salary" element={<ProtectedRoute><Salary /></ProtectedRoute>} />
         <Route path="/team" element={<ProtectedRoute adminOnly><Team /></ProtectedRoute>} />
         <Route path="/login" element={<Navigate to="/" />} />
         <Route path="*" element={<Navigate to="/" />} />

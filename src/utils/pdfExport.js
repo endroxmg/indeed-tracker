@@ -4,7 +4,7 @@ import { format } from 'date-fns';
  * Export the full MBR report as a landscape PDF.
  * Uses jsPDF + html2canvas to capture live chart DOM elements.
  */
-export async function exportReportPDF({ dateRange, summaryStats, chartRefs, workingDays }) {
+export async function exportReportPDF({ dateRange, summaryStats, chartRefs, workingDays, isAnyOverridden }) {
   const { default: jsPDF } = await import('jspdf');
   const html2canvas = (await import('html2canvas')).default;
 
@@ -37,6 +37,15 @@ export async function exportReportPDF({ dateRange, summaryStats, chartRefs, work
     pdf.setFontSize(7);
     pdf.setTextColor(...rgb('#6B7280'));
     pdf.text('Monthly Business Review | Video Content Creation', margin, H - 6);
+    
+    if (isAnyOverridden) {
+      pdf.setTextColor(...rgb('#D97706'));
+      pdf.setFont(undefined, 'bold');
+      pdf.text('* One or more data points in this report have been manually overridden for accuracy.', margin + 70, H - 6);
+      pdf.setFont(undefined, 'normal');
+      pdf.setTextColor(...rgb('#6B7280'));
+    }
+
     pdf.text(`Page ${num} of ${total}`, W - margin, H - 6, { align: 'right' });
   };
 

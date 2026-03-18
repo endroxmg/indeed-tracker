@@ -1,5 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList, Cell } from 'recharts';
-import { GitBranch } from 'lucide-react';
+import { GitBranch, Edit2 } from 'lucide-react';
 import { ChartCard, EmptyChart, CustomTooltip } from './ChartCard';
 
 function getVersionColor(count) {
@@ -8,11 +8,12 @@ function getVersionColor(count) {
   return '#DC2626';
 }
 
-export default function VersionEfficiencyChart({ tickets, onTicketClick, chartRef }) {
+export default function VersionEfficiencyChart({ tickets, onTicketClick, chartRef, isEditMode }) {
   const data = tickets.map(t => ({
     jiraId: t.jiraId,
     ticketId: t.id,
     versions: t.versions?.length || 1,
+    _isOverridden: t._isOverridden,
   }));
 
   if (data.length === 0) {
@@ -39,7 +40,21 @@ export default function VersionEfficiencyChart({ tickets, onTicketClick, chartRe
           <YAxis
             dataKey="jiraId"
             type="category"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#0451CC', fontWeight: 600, cursor: 'pointer' }}
+            tick={(props) => {
+              const d = data.find(item => item.jiraId === props.payload.value);
+              return (
+                <g transform={`translate(${props.x},${props.y})`} style={{ cursor: 'pointer' }} onClick={() => onTicketClick(d?.ticketId)}>
+                  <text x={-20} y={0} dy={4} textAnchor="end" fontSize={11} fontFamily='"Poppins"' fontWeight={600} fill={isEditMode ? '#DC2626' : '#0451CC'}>
+                    {props.payload.value}
+                  </text>
+                  {isEditMode && (
+                    <foreignObject x={-15} y={-8} width={12} height={12}>
+                      <Edit2 size={10} color="#DC2626" />
+                    </foreignObject>
+                  )}
+                </g>
+              );
+            }}
             tickLine={false}
             axisLine={{ stroke: '#E5E7EB' }}
             width={80}

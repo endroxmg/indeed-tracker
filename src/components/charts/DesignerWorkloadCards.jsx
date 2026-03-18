@@ -1,9 +1,9 @@
-import { Users } from 'lucide-react';
+import { Users, Info } from 'lucide-react';
 import { ChartCard, EmptyChart } from './ChartCard';
 import { getWorkingDaysInRange } from '../../utils/reportUtils';
 import InitialsAvatar from '../InitialsAvatar';
 
-export default function DesignerWorkloadCards({ users, timeEntries, dateRange, tickets, publicHolidays, chartRef }) {
+export default function DesignerWorkloadCards({ users, timeEntries, dateRange, tickets, publicHolidays, chartRef, isEditMode }) {
   const activeDesigners = users.filter(u => u.isActive && (u.roles?.includes('designer') || u.role === 'designer'));
   const workingDays = getWorkingDaysInRange(dateRange.start, dateRange.end, publicHolidays);
 
@@ -18,11 +18,9 @@ export default function DesignerWorkloadCards({ users, timeEntries, dateRange, t
     const expected = workingDays * (user.dailyCapacity || 8);
     const pct = expected > 0 ? Math.round((logged / expected) * 100) : 0;
     const diff = Math.round((logged - expected) * 100) / 100;
-    const ticketsWorked = new Set(
-      timeEntries.filter(e => e.userId === user.uid && e.ticketId).map(e => e.ticketId)
-    ).size;
+    const anyOverridden = tickets.some(t => t._isOverridden && (t.assigneeId === user.uid || t.ldap === user.ldap));
 
-    return { user, workingDays, expected, logged, pct, diff, ticketsWorked };
+    return { user, workingDays, expected, logged, pct, diff, ticketsWorked, anyOverridden };
   });
 
   const arcRadius = 50;
@@ -36,9 +34,14 @@ export default function DesignerWorkloadCards({ users, timeEntries, dateRange, t
             border: '1px solid #E5E7EB', borderRadius: 12, padding: 20, textAlign: 'center',
             background: '#FAFAFA',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 16, position: 'relative' }}>
               <InitialsAvatar name={user.name} size={28} bg="#0451CC" color="#fff" />
               <span style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 600, fontSize: 14, color: '#2D2D2D' }}>{user.name}</span>
+              {anyOverridden && (
+                <div style={{ position: 'absolute', top: -4, right: 0 }} title="Contains overridden ticket data">
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#D97706', border: '2px solid #FAFAFA' }} />
+                </div>
+              )}
             </div>
 
             {/* SVG gauge */}

@@ -86,18 +86,18 @@ export default function Team() {
         }
         newRoles = currentRoles.filter(r => r !== roleToToggle);
       } else {
-        // Restriction: Only jayveer7773@gmail.com can be admin
-        if (roleToToggle === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com') {
-          toast.error('Admin role is restricted to authorized personnel only');
-          return;
-        }
-        newRoles = [...currentRoles, roleToToggle];
+      // Restriction: Only jayveer7773@gmail.com can be admin
+      if (roleToToggle === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com') {
+        toast.error('Admin role is restricted to authorized personnel only');
+        return;
       }
+      newRoles = [...currentRoles, roleToToggle];
+    }
 
-      // Filter out 'pending' if it was there and we are adding real roles
-      if (newRoles.length > 1) {
-        newRoles = newRoles.filter(r => r !== 'pending');
-      }
+    // Filter out 'pending' if it was there and we are adding real roles
+    if (newRoles.length > 0 && newRoles.some(r => ['admin', 'moderator', 'designer'].includes(r))) {
+      newRoles = newRoles.filter(r => r !== 'pending');
+    }
 
       await updateUser(user.uid || user.id, {
         roles: newRoles,
@@ -365,7 +365,7 @@ export default function Team() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                      {Object.keys(ROLE_LABELS).filter(r => r !== 'pending').map(roleKey => {
+                      {['designer', 'moderator', 'admin'].map(roleKey => {
                         const userRoles = user.roles || (user.role ? [user.role] : []);
                         const isAssigned = userRoles.includes(roleKey);
                         const label = ROLE_LABELS[roleKey];
@@ -374,7 +374,7 @@ export default function Team() {
                         return (
                           <button
                             key={roleKey}
-                            onClick={() => toggleRole(user, roleKey)}
+                            onClick={(e) => { e.stopPropagation(); toggleRole(user, roleKey); }}
                             disabled={roleKey === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com'}
                             title={roleKey === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com' ? 'Restricted role' : (isAssigned ? 'Click to remove role' : 'Click to add role')}
                             style={{
@@ -551,16 +551,12 @@ export default function Team() {
               <div>
                 <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Roles</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {Object.keys(ROLE_LABELS).filter(r => r !== 'pending').map(roleKey => {
+                  {['designer', 'moderator', 'admin'].map(roleKey => {
                     const currentRoles = editingUser.roles || (editingUser.role ? [editingUser.role] : []);
                     const isAssigned = currentRoles.includes(roleKey);
                     const label = ROLE_LABELS[roleKey];
                     const colors = ROLE_COLORS[roleKey] || ROLE_COLORS.designer;
 
-                    // Note: We update roles via the existing toggleRole logic but ideally we'd stage it in editData
-                    // For now, to keep it simple and consistent with the table, we'll keep the table toggles 
-                    // and maybe just show status here, OR we stage it if we want "one Save click".
-                    // Let's stage it for better UX.
                     const stagedRoles = editData.roles || currentRoles;
                     const isStaged = stagedRoles.includes(roleKey);
 

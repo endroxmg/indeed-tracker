@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, Columns3, Clock, BarChart3, Users,
   LogOut, ChevronLeft, ChevronRight, Bell, Activity,
-  CalendarClock, Umbrella,
+  CalendarClock, Umbrella, IndianRupee,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import GlobalSearch from './GlobalSearch';
@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { path: '/shifts', label: 'Shifts & Attendance', icon: CalendarClock },
   { path: '/leaves', label: 'Leave Management', icon: Umbrella },
   { path: '/reports', label: 'Reports & MBR', icon: BarChart3 },
+  { path: '/salary', label: 'Salary', icon: IndianRupee },
   { path: '/activity-log', label: 'Activity Log', icon: Activity },
 ];
 
@@ -28,6 +29,7 @@ const PAGE_TITLES = {
   '/kanban': 'Kanban Board',
   '/timelog': 'Time Log',
   '/reports': 'Reports & MBR',
+  '/salary': 'Salary Management',
   '/activity-log': 'Activity Log',
   '/shifts': 'Shifts & Attendance',
   '/leaves': 'Leave Management',

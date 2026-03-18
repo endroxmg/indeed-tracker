@@ -5,37 +5,100 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // For a small internal team, allow all authenticated users
-    // to read/write most collections
-    match /users/{userId} {
-      allow read: if isLoggedIn();
-      allow create: if isLoggedIn();
-      allow update: if isLoggedIn();
-      allow delete: if isLoggedIn();
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
+    function isAdmin() {
+      let data = getUserData();
+      return data.roles.hasAny(['admin']) || data.role == 'admin';
+    }
+
+    function isModerator() {
+      let data = getUserData();
+      return data.roles.hasAny(['moderator']) || data.role == 'moderator';
+    }
+
+    function isAdminOrMod() {
+      return isAdmin() || isModerator();
+    }
+
+    function isActiveUser() {
+      return isLoggedIn() && getUserData().isActive == true;
+    }
+
+    // Profiles & Invitations
+    match /users/{userId} {
+      allow read: if isLoggedIn();
+      allow write: if isAdmin();
+    }
+    
+    match /invites/{id} {
+      allow read: if isLoggedIn();
+      allow write: if isAdmin();
+    }
+
+    // Attendance & Scheduling
     match /attendance/{id} {
-      allow read, write: if isLoggedIn();
+      allow read: if isActiveUser();
+      allow write: if isAdminOrMod() || (isLoggedIn() && request.auth.uid == resource.data.userId);
     }
 
     match /leaveBalances/{id} {
-      allow read, write: if isLoggedIn();
+      allow read: if isActiveUser();
+      allow write: if isAdminOrMod();
     }
 
     match /publicHolidays/{id} {
-      allow read, write: if isLoggedIn();
+      allow read: if isLoggedIn();
+      allow write: if isAdmin();
     }
 
     match /compOffAssignments/{id} {
-      allow read, write: if isLoggedIn();
+      allow read: if isActiveUser();
+      allow write: if isAdminOrMod();
     }
 
     match /shifts/{id} {
-      allow read, write: if isLoggedIn();
+      allow read: if isActiveUser();
+      allow write: if isAdminOrMod();
+    }
+
+    // MBR Data & Overrides
+    match /tickets/{id} {
+      allow read: if isActiveUser();
+      allow write: if isAdminOrMod();
+    }
+
+    match /timeEntries/{id} {
+      allow read: if isActiveUser();
+      allow write: if isAdminOrMod() || (isLoggedIn() && request.auth.uid == resource.data.userId);
+    }
+
+    match /mbrOverrides/{docId} {
+      allow read: if isActiveUser();
+      allow write: if isAdminOrMod();
+    }
+
+    // Salary System (Highly Restricted)
+    match /salaryProfiles/{userId} {
+      allow read: if isAdmin() || (isLoggedIn() && request.auth.uid == userId);
+      allow write: if isAdmin();
+    }
+
+    match /salaryHistory/{docId} {
+      // docId: {userId}_{YYYY-MM}
+      allow read: if isAdmin() || (isLoggedIn() && docId.matches(request.auth.uid + '_.*'));
+      allow write: if isAdmin();
     }
 
     match /system/{id} {
       allow read: if isLoggedIn();
+      allow write: if isAdmin();
+    }
+    
+    match /activityLog/{id} {
+      allow read: if isAdmin();
       allow write: if isLoggedIn();
     }
   }

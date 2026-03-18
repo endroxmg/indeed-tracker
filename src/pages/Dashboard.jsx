@@ -13,7 +13,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import WeekRosterCard from '../components/shifts/WeekRosterCard';
 import LeaveBalanceWidget from '../components/leaves/LeaveBalanceWidget';
 import { toDateString } from '../utils/helpers';
-import { Umbrella, CalendarClock } from 'lucide-react';
+import { Umbrella, CalendarClock, IndianRupee } from 'lucide-react';
+import SalaryDashboardWidget from '../components/salary/SalaryDashboardWidget';
 
 export default function Dashboard() {
   const { userDoc } = useAuth();
@@ -275,7 +276,10 @@ export default function Dashboard() {
       </div>
       {/* ─── New Shift & Leave Widgets ─── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, marginTop: 24 }}>
-        <WeekRosterCard />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <WeekRosterCard />
+          {isAdmin && <SalaryDashboardWidget />}
+        </div>
         <LeaveBalanceWidget />
       </div>
     </div>

@@ -5,8 +5,12 @@ import { getWorkingDaysInRange, ticketsCreatedInRange, ticketsCompletedInRange, 
 import { SkeletonCard } from '../components/Skeleton';
 import { useToast } from '../components/Toast';
 import TicketDetailModal from '../components/TicketDetailModal';
-import { Calendar, Download, FileText, Loader } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+import { getEnhancedTicketData } from '../utils/mbrOverrides';
+import EditTicketDataModal from '../components/reports/EditTicketDataModal';
+import { Edit2, Eye, Info } from 'lucide-react';
 
 // Chart components
 import UtilizationChart from '../components/charts/UtilizationChart';
@@ -34,6 +38,9 @@ export default function Reports() {
   const [generating, setGenerating] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [mbrOverrides, setMbrOverrides] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingTicket, setEditingTicket] = useState(null);
 
   const [dateRange, setDateRange] = useState({
     start: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
@@ -58,7 +65,13 @@ export default function Reports() {
   useEffect(() => {
     const unsub1 = subscribeTickets(data => { setTickets(data); setLoading(false); });
     const unsub2 = subscribeUsers(setUsers);
-    return () => { unsub1(); unsub2(); };
+    
+    // Listen to MBR Overrides
+    const unsub3 = onSnapshot(collection(db, 'mbrOverrides'), (snap) => {
+      setMbrOverrides(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+
+    return () => { unsub1(); unsub2(); unsub3(); };
   }, []);
 
   const designers = useMemo(() =>
@@ -117,8 +130,9 @@ export default function Reports() {
   // Tickets active in the selected range (for charts)
   const activeTickets = useMemo(() => {
     if (!generated) return [];
-    return ticketsActiveInRange(tickets, dateRange.start, dateRange.end);
-  }, [generated, tickets, dateRange]);
+    const baseActive = ticketsActiveInRange(tickets, dateRange.start, dateRange.end);
+    return getEnhancedTicketData(baseActive, mbrOverrides);
+  }, [generated, tickets, dateRange, mbrOverrides]);
 
   const workingDays = useMemo(() =>
     getWorkingDaysInRange(dateRange.start, dateRange.end, publicHolidays),
@@ -127,9 +141,15 @@ export default function Reports() {
 
   // ─── Ticket click handler ────────────────────────────────
   const handleTicketClick = useCallback((ticketId) => {
-    const t = tickets.find(t => t.id === ticketId);
-    if (t) setSelectedTicket(t);
-  }, [tickets]);
+    const t = activeTickets.find(t => t.id === ticketId);
+    if (!t) return;
+
+    if (isEditMode) {
+      setEditingTicket(t);
+    } else {
+      setSelectedTicket(t);
+    }
+  }, [activeTickets, isEditMode]);
 
   // ─── PDF Export ───────────────────────────────────────────
   const handleExport = async () => {
@@ -141,6 +161,7 @@ export default function Reports() {
         summaryStats,
         chartRefs,
         workingDays,
+        isAnyOverridden: activeTickets.some(t => t._isOverridden)
       });
       toast.success('PDF exported successfully');
     } catch (err) {
@@ -187,6 +208,24 @@ export default function Reports() {
           <button onClick={() => setQuickRange('last')} style={quickBtnStyle}>Last Month</button>
           <button onClick={() => setQuickRange('3months')} style={quickBtnStyle}>Last 3 Months</button>
           <div style={{ flex: 1 }} />
+          {(userDoc?.role === 'admin' || userDoc?.role === 'moderator' || userDoc?.roles?.includes('moderator')) && (
+            <button 
+              onClick={() => setIsEditMode(!isEditMode)}
+              style={{
+                padding: '9px 16px', borderRadius: 10, border: '1px solid',
+                background: isEditMode ? '#FEF2F2' : '#fff',
+                borderColor: isEditMode ? '#DC2626' : '#E5E7EB',
+                color: isEditMode ? '#DC2626' : '#374151',
+                fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'all 0.2s',
+                textTransform: 'uppercase', letterSpacing: '0.05em'
+              }}
+            >
+              {isEditMode ? <Edit2 size={16} /> : <Eye size={16} />}
+              {isEditMode ? 'Edit Mode ON' : 'Edit Mode'}
+            </button>
+          )}
           <button onClick={handleGenerate} disabled={generating} style={{
             padding: '9px 22px', borderRadius: 10, border: 'none',
             background: '#0451CC', color: '#fff', fontSize: 14,
@@ -234,8 +273,16 @@ export default function Reports() {
               </div>
             ))}
           </div>
-          <div style={{ textAlign: 'right', fontSize: 12, color: '#6B7280', marginBottom: 24, fontFamily: '"Noto Sans", sans-serif' }}>
-            Time Range: {dateRange.start} – {dateRange.end} ({workingDays} working days)
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24 }}>
+            {isEditMode && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#DC2626', background: '#FEF2F2', padding: '6px 12px', borderRadius: 8, fontSize: 13, fontWeight: 600 }}>
+                <Info size={16} /> Clicking a ticket in charts will now open the Edit Overrides modal.
+              </div>
+            )}
+            <div style={{ flex: 1 }} />
+            <div style={{ textAlign: 'right', fontSize: 12, color: '#6B7280', fontFamily: '"Noto Sans", sans-serif' }}>
+              Time Range: {dateRange.start} – {dateRange.end} ({workingDays} working days)
+            </div>
           </div>
 
           {/* ─── Section 2: Task Allocation / Utilization ─── */}
@@ -245,6 +292,7 @@ export default function Reports() {
             users={users}
             publicHolidays={publicHolidays}
             chartRef={chartRefs.utilization}
+            isEditMode={isEditMode}
           />
 
           {/* ─── Section 3: Feedback Breakdown ─── */}
@@ -259,6 +307,7 @@ export default function Reports() {
             tickets={activeTickets}
             onTicketClick={handleTicketClick}
             chartRef={chartRefs.feedbackVsLength}
+            isEditMode={isEditMode}
           />
 
           {/* ─── Section 5: Feedback Rounds ─── */}
@@ -266,6 +315,7 @@ export default function Reports() {
             tickets={activeTickets}
             onTicketClick={handleTicketClick}
             chartRef={chartRefs.feedbackRounds}
+            isEditMode={isEditMode}
           />
 
           {/* ─── Section 6: Tickets Turnaround Time ─── */}
@@ -275,6 +325,7 @@ export default function Reports() {
             publicHolidays={publicHolidays}
             onTicketClick={handleTicketClick}
             chartRef={chartRefs.turnaround}
+            isEditMode={isEditMode}
           />
 
           {/* ─── Section 7: Total Time to Complete ─── */}
@@ -284,6 +335,7 @@ export default function Reports() {
             publicHolidays={publicHolidays}
             onTicketClick={handleTicketClick}
             chartRef={chartRefs.totalTime}
+            isEditMode={isEditMode}
           />
 
           {/* ─── Section 8: Additional Insights ─── */}
@@ -310,6 +362,7 @@ export default function Reports() {
             tickets={activeTickets}
             onTicketClick={handleTicketClick}
             chartRef={chartRefs.versionEfficiency}
+            isEditMode={isEditMode}
           />
 
           {/* 8C + 8D side by side */}
@@ -350,6 +403,14 @@ export default function Reports() {
               });
             }, 500);
           }}
+        />
+      )}
+
+      {/* Edit Override Modal */}
+      {editingTicket && (
+        <EditTicketDataModal 
+          ticket={editingTicket}
+          onClose={() => setEditingTicket(null)}
         />
       )}
 

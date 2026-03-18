@@ -1,9 +1,9 @@
 import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Edit2 } from 'lucide-react';
 import { ChartCard, EmptyChart, CustomTooltip } from './ChartCard';
 import { getArcgateProductiveTime, getIndeedReviewTime, formatVideoDuration } from '../../utils/reportUtils';
 
-export default function TurnaroundTimeChart({ tickets, dateRange, publicHolidays, onTicketClick, chartRef }) {
+export default function TurnaroundTimeChart({ tickets, dateRange, publicHolidays, onTicketClick, chartRef, isEditMode }) {
   const data = tickets.map(t => {
     const arcgate = getArcgateProductiveTime(t, dateRange.start, dateRange.end, publicHolidays);
     const indeed = getIndeedReviewTime(t, dateRange.start, dateRange.end, publicHolidays);
@@ -13,6 +13,7 @@ export default function TurnaroundTimeChart({ tickets, dateRange, publicHolidays
       totalDays: arcgate + indeed,
       durationMin: t.videoDurationSec ? Math.round(t.videoDurationSec / 60 * 100) / 100 : null,
       durationLabel: formatVideoDuration(t.videoDurationSec),
+      _isOverridden: t._isOverridden,
     };
   });
 
@@ -27,7 +28,21 @@ export default function TurnaroundTimeChart({ tickets, dateRange, publicHolidays
           <CartesianGrid horizontal vertical={false} stroke="#F3F4F6" strokeDasharray="4 4" />
           <XAxis
             dataKey="jiraId"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#0451CC', fontWeight: 600, cursor: 'pointer' }}
+            tick={(props) => {
+              const d = data.find(item => item.jiraId === props.payload.value);
+              return (
+                <g transform={`translate(${props.x},${props.y})`} style={{ cursor: 'pointer' }} onClick={() => onTicketClick(d?.ticketId)}>
+                  <text x={0} y={0} dy={16} textAnchor="middle" fontSize={11} fontFamily='"Poppins"' fontWeight={600} fill={isEditMode ? '#DC2626' : '#0451CC'}>
+                    {props.payload.value}
+                  </text>
+                  {isEditMode && (
+                    <foreignObject x={-6} y={18} width={12} height={12}>
+                      <Edit2 size={10} color="#DC2626" />
+                    </foreignObject>
+                  )}
+                </g>
+              );
+            }}
             tickLine={false}
             axisLine={{ stroke: '#E5E7EB' }}
           />

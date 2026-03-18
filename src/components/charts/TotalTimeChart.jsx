@@ -1,9 +1,9 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
-import { Clock } from 'lucide-react';
+import { Clock, Edit2 } from 'lucide-react';
 import { ChartCard, EmptyChart, CustomTooltip } from './ChartCard';
 import { getArcgateProductiveTime, getIndeedReviewTime } from '../../utils/reportUtils';
 
-export default function TotalTimeChart({ tickets, dateRange, publicHolidays, onTicketClick, chartRef }) {
+export default function TotalTimeChart({ tickets, dateRange, publicHolidays, onTicketClick, chartRef, isEditMode }) {
   const data = tickets.map(t => {
     const arcgate = getArcgateProductiveTime(t, dateRange.start, dateRange.end, publicHolidays);
     const indeed = getIndeedReviewTime(t, dateRange.start, dateRange.end, publicHolidays);
@@ -13,6 +13,7 @@ export default function TotalTimeChart({ tickets, dateRange, publicHolidays, onT
       arcgate,
       indeed,
       total: arcgate + indeed,
+      _isOverridden: t._isOverridden,
     };
   }).filter(d => d.total > 0);
 
@@ -39,7 +40,21 @@ export default function TotalTimeChart({ tickets, dateRange, publicHolidays, onT
           <YAxis
             dataKey="jiraId"
             type="category"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#0451CC', fontWeight: 600, cursor: 'pointer' }}
+            tick={(props) => {
+              const d = data.find(item => item.jiraId === props.payload.value);
+              return (
+                <g transform={`translate(${props.x},${props.y})`} style={{ cursor: 'pointer' }} onClick={() => onTicketClick(d?.ticketId)}>
+                  <text x={-20} y={0} dy={4} textAnchor="end" fontSize={11} fontFamily='"Poppins"' fontWeight={600} fill={isEditMode ? '#DC2626' : '#0451CC'}>
+                    {props.payload.value}
+                  </text>
+                  {isEditMode && (
+                    <foreignObject x={-15} y={-8} width={12} height={12}>
+                      <Edit2 size={10} color="#DC2626" />
+                    </foreignObject>
+                  )}
+                </g>
+              );
+            }}
             tickLine={false}
             axisLine={{ stroke: '#E5E7EB' }}
             width={80}
