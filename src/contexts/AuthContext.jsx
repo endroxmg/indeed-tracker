@@ -1,7 +1,9 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth, googleProvider, db } from '../firebase';
-import { doc, getDoc, setDoc, deleteDoc, serverTimestamp, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteDoc, serverTimestamp, collection, query, where, getDocs, updateDoc, writeBatch, onSnapshot } from 'firebase/firestore';
+import { getCurrentFinancialYear, getFYResetDate, toDateString } from '../utils/helpers';
+import { format, startOfMonth, isBefore } from 'date-fns';
 
 const AuthContext = createContext(null);
 
@@ -15,6 +17,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userDoc, setUserDoc] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [publicHolidays, setPublicHolidays] = useState([]);
 
   useEffect(() => {
     if (!auth) {
@@ -122,6 +125,115 @@ export function AuthProvider({ children }) {
     return unsub;
   }, []);
 
+  // ─── Fetch Public Holidays ──────────────────────────────
+  useEffect(() => {
+    if (!db || !user) return;
+    const unsub = onSnapshot(collection(db, 'publicHolidays'), (snap) => {
+      setPublicHolidays(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+    return unsub;
+  }, [user]);
+
+  // ─── Financial Year Reset & Monthly Accrual ─────────────
+  useEffect(() => {
+    const runMaintenance = async () => {
+      if (!user || !userDoc || !db) return;
+      
+      // 1. Check FY Reset
+      const currentFY = getCurrentFinancialYear();
+      const fyStartYear = parseInt(currentFY.split('-')[0]);
+      
+      const systemRef = doc(db, 'system', 'fyReset');
+      const systemSnap = await getDoc(systemRef);
+      const lastResetYear = systemSnap.exists() ? systemSnap.data().lastResetYear : 0;
+
+      if (lastResetYear < fyStartYear) {
+        console.log('Triggering Financial Year Reset...');
+        const usersSnap = await getDocs(collection(db, 'users'));
+        const batch = writeBatch(db);
+
+        usersSnap.docs.forEach((uDoc) => {
+          const uRef = doc(db, 'leaveBalances', `${uDoc.id}_${currentFY}`);
+          batch.set(uRef, {
+            userId: uDoc.id,
+            financialYear: currentFY,
+            normalLeaveBalance: 0,
+            normalLeaveTaken: 0,
+            sickLeaveAllotted: 6,
+            sickLeaveTaken: 0,
+            festivalLeaveAllotted: 1,
+            festivalLeaveUsed: false,
+            compOffEarned: 0,
+            compOffUsed: 0,
+            compOffBalance: 0,
+            earlyLeaveMinutesTotal: 0,
+            earlyLeaveHalfDaysTriggered: 0,
+            halfDaysTaken: 0,
+            lastMonthlyAccrualDate: toDateString(new Date()),
+            resetDate: getFYResetDate(currentFY),
+            updatedAt: serverTimestamp(),
+          });
+        });
+
+        batch.set(systemRef, { lastResetYear: fyStartYear, updatedAt: serverTimestamp() }, { merge: true });
+        await batch.commit();
+        console.log('FY Reset Complete!');
+      }
+
+      // 2. Monthly Accrual
+      const lbRef = doc(db, 'leaveBalances', `${user.uid}_${currentFY}`);
+      const lbSnap = await getDoc(lbRef);
+      
+      if (lbSnap.exists()) {
+        const lbData = lbSnap.data();
+        const lastAccrualStr = lbData.lastMonthlyAccrualDate;
+        const lastAccrualDate = lastAccrualStr ? new Date(lastAccrualStr) : new Date(0);
+        const startOfThisMonth = startOfMonth(new Date());
+
+        if (isBefore(lastAccrualDate, startOfThisMonth)) {
+          console.log('Accruing monthly leaves...');
+          await updateDoc(lbRef, {
+            normalLeaveBalance: (lbData.normalLeaveBalance || 0) + 1.5,
+            lastMonthlyAccrualDate: toDateString(new Date()),
+            updatedAt: serverTimestamp()
+          });
+          
+          // Log to activityLog
+          await setDoc(doc(collection(db, 'activityLog')), {
+            type: 'system',
+            userId: user.uid,
+            userName: userDoc.name,
+            action: 'Leave accrued: +1.5 normal leaves',
+            timestamp: serverTimestamp()
+          });
+        }
+      } else if (lastResetYear >= fyStartYear) {
+        // Leave balance doc doesn't exist for current user, create it
+        await setDoc(lbRef, {
+          userId: user.uid,
+          financialYear: currentFY,
+          normalLeaveBalance: 1.5, // Start with first month accrual
+          normalLeaveTaken: 0,
+          sickLeaveAllotted: 6,
+          sickLeaveTaken: 0,
+          festivalLeaveAllotted: 1,
+          festivalLeaveUsed: false,
+          compOffEarned: 0,
+          compOffUsed: 0,
+          compOffBalance: 0,
+          earlyLeaveMinutesTotal: 0,
+          earlyLeaveHalfDaysTriggered: 0,
+          halfDaysTaken: 0,
+          lastMonthlyAccrualDate: toDateString(new Date()),
+          resetDate: getFYResetDate(currentFY),
+          updatedAt: serverTimestamp(),
+        });
+      }
+    };
+
+    runMaintenance();
+  }, [user, userDoc]);
+
   const login = async () => {
     if (!auth) return;
     try {
@@ -145,7 +257,7 @@ export function AuthProvider({ children }) {
   };
 
   const value = {
-    user, userDoc, loading, login, logout, refreshUserDoc,
+    user, userDoc, loading, login, logout, refreshUserDoc, publicHolidays,
     isAdmin: userDoc?.roles?.includes('admin'),
     isDesigner: userDoc?.roles?.includes('designer'),
     isPending: userDoc?.roles?.includes('pending'),

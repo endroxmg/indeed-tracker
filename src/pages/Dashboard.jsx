@@ -9,7 +9,11 @@ import InitialsAvatar from '../components/InitialsAvatar';
 import { format, startOfMonth, endOfMonth, isToday } from 'date-fns';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import WeekRosterCard from '../components/shifts/WeekRosterCard';
+import LeaveBalanceWidget from '../components/leaves/LeaveBalanceWidget';
+import { toDateString } from '../utils/helpers';
+import { Umbrella, CalendarClock } from 'lucide-react';
 
 export default function Dashboard() {
   const { userDoc } = useAuth();
@@ -20,13 +24,26 @@ export default function Dashboard() {
   const [timeEntries, setTimeEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dismissedReminder, setDismissedReminder] = useState(false);
+  const [teamAttendance, setTeamAttendance] = useState({});
+  const todayStr = toDateString(new Date());
 
   useEffect(() => {
     const unsub1 = subscribeTickets((data) => { setTickets(data); setLoading(false); });
     const unsub2 = subscribeUsers(setUsers);
     const unsub3 = subscribeActivityLog(setActivities, 20);
-    return () => { unsub1(); unsub2(); unsub3(); };
-  }, []);
+
+    // Fetch Attendance for alerts
+    const attQ = query(collection(db, 'attendance'), where('date', '==', todayStr));
+    const unsubAtt = onSnapshot(attQ, (snap) => {
+      const attMap = {};
+      snap.docs.forEach(d => {
+        attMap[d.data().userId] = d.data();
+      });
+      setTeamAttendance(attMap);
+    });
+
+    return () => { unsub1(); unsub2(); unsub3(); unsubAtt(); };
+  }, [todayStr]);
 
   useEffect(() => {
     if (!db) return;
@@ -104,7 +121,31 @@ export default function Dashboard() {
   if (loading) return <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>{Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}</div>;
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {/* Attendance Alerts */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {users.map(u => {
+          const att = teamAttendance[u.uid || u.id];
+          if (!att && u.uid === userDoc?.uid) {
+            return (
+              <div key="no-shift" style={alertBannerStyle}>
+                <AlertTriangle size={18} />
+                <span>Shift not set for today. <Link to="/shifts" style={{ color: 'inherit', fontWeight: 700 }}>Set it now →</Link></span>
+              </div>
+            );
+          }
+          if (att?.status === 'leave') {
+            return (
+              <div key={`${u.id}-leave`} style={infoBannerStyle}>
+                <Umbrella size={18} />
+                <span>{u.name} is on leave today</span>
+              </div>
+            );
+          }
+          return null;
+        })}
+      </div>
+
       {/* Reminder */}
       {!hasLoggedToday && !dismissedReminder && (
         <div style={{
@@ -232,6 +273,21 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
       </div>
+      {/* ─── New Shift & Leave Widgets ─── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, marginTop: 24 }}>
+        <WeekRosterCard />
+        <LeaveBalanceWidget />
+      </div>
     </div>
   );
 }
+
+const alertBannerStyle = {
+  background: '#FEF3C7', color: '#92400E', padding: '12px 20px', borderRadius: 12,
+  display: 'flex', alignItems: 'center', gap: 12, fontSize: 14, fontWeight: 500, border: '1px solid #FDE68A'
+};
+
+const infoBannerStyle = {
+  background: '#EAF0FD', color: '#0451CC', padding: '12px 20px', borderRadius: 12,
+  display: 'flex', alignItems: 'center', gap: 12, fontSize: 14, fontWeight: 500, border: '1px solid #BFDBFE'
+};

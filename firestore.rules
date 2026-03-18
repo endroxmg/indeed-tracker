@@ -14,20 +14,29 @@ service cloud.firestore {
       allow delete: if isLoggedIn();
     }
 
-    match /tickets/{ticketId} {
+    match /attendance/{id} {
       allow read, write: if isLoggedIn();
     }
 
-    match /timeEntries/{entryId} {
+    match /leaveBalances/{id} {
       allow read, write: if isLoggedIn();
     }
 
-    match /activityLog/{logId} {
+    match /publicHolidays/{id} {
       allow read, write: if isLoggedIn();
     }
 
-    match /invites/{inviteId} {
+    match /compOffAssignments/{id} {
       allow read, write: if isLoggedIn();
+    }
+
+    match /shifts/{id} {
+      allow read, write: if isLoggedIn();
+    }
+
+    match /system/{id} {
+      allow read: if isLoggedIn();
+      allow write: if isLoggedIn();
     }
   }
 }

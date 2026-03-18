@@ -6,9 +6,9 @@ import {
   createInvite, subscribeInvites, deleteInvite, logActivity,
 } from '../services/firestoreService';
 import {
-  UserPlus, UserCheck, UserX, Mail, Trash2, Edit3, Check, X,
-  Shield, Clock, Send, Plus, Users, Edit,
+  Shield, Clock, Send, Plus, Users, Edit, ExternalLink
 } from 'lucide-react';
+import UserProfilePopup from '../components/team/UserProfilePopup';
 import { ROLE_LABELS, ROLE_COLORS, LDAP_ACCOUNTS } from '../utils/helpers';
 import InitialsAvatar from '../components/InitialsAvatar';
 
@@ -23,6 +23,7 @@ export default function Team() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [editingUser, setEditingUser] = useState(null);
   const [editData, setEditData] = useState({ name: '', email: '', ldap: '', dailyCapacity: 8 });
+  const [selectedProfileId, setSelectedProfileId] = useState(null);
 
   useEffect(() => {
     const unsub1 = subscribeUsers(setUsers);
@@ -339,7 +340,13 @@ export default function Team() {
             </thead>
             <tbody>
               {activeUsers.map((user) => (
-                <tr key={user.id} style={{ borderBottom: '1px solid #F3F2F1' }}>
+                <tr 
+                  key={user.id} 
+                  onClick={() => setSelectedProfileId(user.uid || user.id)}
+                  style={{ borderBottom: '1px solid #F3F2F1', cursor: 'pointer', transition: 'background 0.2s' }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#F9FAFB'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                >
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <InitialsAvatar name={user.name} size={32} />
@@ -588,6 +595,13 @@ export default function Team() {
             </div>
           </div>
         </div>
+      )}
+
+      {selectedProfileId && (
+        <UserProfilePopup 
+          userId={selectedProfileId} 
+          onClose={() => setSelectedProfileId(null)} 
+        />
       )}
     </div>
   );

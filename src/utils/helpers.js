@@ -12,24 +12,38 @@ import {
   differenceInCalendarDays,
   parseISO,
   addDays,
+  isWithinInterval,
+  startOfQuarter,
+  endOfQuarter,
+  subDays,
 } from 'date-fns';
 
-// ─── Working Days (exclude Sundays) ────────────────────────
-export function getWorkingDays(startDate, endDate) {
+// ─── Working Days (exclude Sundays, Holidays, Week-offs) ───────
+export function getWorkingDays(startDate, endDate, publicHolidays = [], userWeekOffs = []) {
   if (!startDate || !endDate) return 0;
   const start = typeof startDate === 'string' ? parseISO(startDate) : startDate;
   const end = typeof endDate === 'string' ? parseISO(endDate) : endDate;
   if (isAfter(start, end)) return 0;
+  
   const days = eachDayOfInterval({ start, end });
-  return days.filter((d) => getDay(d) !== 0).length; // 0 = Sunday
+  const holidayDates = publicHolidays.map(h => typeof h === 'string' ? h : h.date);
+  const weekOffDates = userWeekOffs.map(w => typeof w === 'string' ? w : w.date);
+
+  return days.filter((d) => {
+    const dateStr = format(d, 'yyyy-MM-dd');
+    const isSunday = getDay(d) === 0;
+    const isHoliday = holidayDates.includes(dateStr);
+    const isWeekOff = weekOffDates.includes(dateStr);
+    return !isSunday && !isHoliday && !isWeekOff;
+  }).length;
 }
 
-export function getWorkingDaysInMonth(year, month) {
+export function getWorkingDaysInMonth(year, month, publicHolidays = [], userWeekOffs = []) {
   const start = startOfMonth(new Date(year, month));
   const today = new Date();
   const monthEnd = endOfMonth(new Date(year, month));
   const end = isBefore(monthEnd, today) ? monthEnd : today;
-  return getWorkingDays(start, end);
+  return getWorkingDays(start, end, publicHolidays, userWeekOffs);
 }
 
 // ─── Utilization ───────────────────────────────────────────
@@ -188,3 +202,68 @@ export function formatDuration(seconds) {
   const secs = Math.floor(seconds % 60);
   return `${mins}:${String(secs).padStart(2, '0')}`;
 }
+
+// ─── Financial Year Helpers ────────────────────────────────
+export function getCurrentFinancialYear() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth(); // 0-indexed, 3 = April
+  if (month >= 3) {
+    return `${year}-${year + 1}`;
+  }
+  return `${year - 1}-${year}`;
+}
+
+export function getFYResetDate(fy) {
+  const startYear = parseInt(fy.split('-')[0]);
+  return `${startYear}-04-01`;
+}
+
+// ─── Shift Helpers ──────────────────────────────────────────
+export function calculateShiftEnd(startTimeStr) {
+  if (!startTimeStr) return '';
+  const [hours, minutes] = startTimeStr.split(':').map(Number);
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  const endDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  return format(endDate, 'HH:mm');
+}
+
+export function formatShiftTime(timeStr) {
+  if (!timeStr) return '';
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  return format(date, 'h:mm a');
+}
+
+export function parseHHMM(timeStr) {
+  if (!timeStr) return null;
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+}
+
+// ─── Status Colors (Updated) ───────────────────────────────
+export const ATTENDANCE_STATUS_COLORS = {
+  working: { bg: '#ECFDF5', text: '#16A34A', border: '#16A34A' },
+  half_day: { bg: '#FEF3C7', text: '#D97706', border: '#D97706' },
+  early_leave: { bg: '#FFF7ED', text: '#C2410C', border: '#C2410C' },
+  leave: { bg: '#FEE2E2', text: '#DC2626', border: '#DC2626' },
+  holiday: { bg: '#FEF9C3', text: '#92400E', border: '#92400E' },
+  comp_off: { bg: '#EAF0FD', text: '#0451CC', border: '#0451CC' },
+  week_off: { bg: '#EEF2FF', text: '#4338CA', border: '#4338CA' },
+  sunday: { bg: '#F3F4F6', text: '#374151', border: '#D1D5DB' },
+};
+
+export const ATTENDANCE_STATUS_LABELS = {
+  working: 'Working',
+  half_day: 'Half Day',
+  early_leave: 'Early Leave',
+  leave: 'Leave',
+  holiday: 'Holiday',
+  comp_off: 'Comp-off',
+  week_off: 'Week-off',
+  sunday: 'Sunday',
+};

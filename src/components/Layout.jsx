@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, Columns3, Clock, BarChart3, Users,
   LogOut, ChevronLeft, ChevronRight, Bell, Activity,
+  CalendarClock, Umbrella,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import GlobalSearch from './GlobalSearch';
@@ -14,6 +15,8 @@ const NAV_ITEMS = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/kanban', label: 'Kanban Board', icon: Columns3 },
   { path: '/timelog', label: 'Time Log', icon: Clock },
+  { path: '/shifts', label: 'Shifts & Attendance', icon: CalendarClock },
+  { path: '/leaves', label: 'Leave Management', icon: Umbrella },
   { path: '/reports', label: 'Reports & MBR', icon: BarChart3 },
   { path: '/activity-log', label: 'Activity Log', icon: Activity },
 ];
@@ -26,6 +29,8 @@ const PAGE_TITLES = {
   '/timelog': 'Time Log',
   '/reports': 'Reports & MBR',
   '/activity-log': 'Activity Log',
+  '/shifts': 'Shifts & Attendance',
+  '/leaves': 'Leave Management',
   '/team': 'Team Management',
 };
 
