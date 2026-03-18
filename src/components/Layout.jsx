@@ -18,10 +18,10 @@ const NAV_ITEMS = [
   { path: '/shifts', label: 'Shifts & Attendance', icon: CalendarClock },
   { path: '/leaves', label: 'Leave Management', icon: Umbrella },
   { path: '/reports', label: 'Reports & MBR', icon: BarChart3 },
-  { path: '/salary', label: 'Salary', icon: IndianRupee },
   { path: '/activity-log', label: 'Activity Log', icon: Activity },
 ];
 
+const SALARY_NAV = { path: '/salary', label: 'Salary', icon: IndianRupee };
 const ADMIN_NAV = { path: '/team', label: 'Team', icon: Users };
 
 const PAGE_TITLES = {
@@ -37,7 +37,7 @@ const PAGE_TITLES = {
 };
 
 export default function Layout({ children, tickets = [], onSelectTicket, overdueCount = 0 }) {
-  const { userDoc, logout, isAdmin } = useAuth();
+  const { userDoc, logout, isAdmin, isModerator, isDesigner } = useAuth();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -48,7 +48,13 @@ export default function Layout({ children, tickets = [], onSelectTicket, overdue
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const navItems = isAdmin ? [...NAV_ITEMS, ADMIN_NAV] : NAV_ITEMS;
+  const navItems = [...NAV_ITEMS];
+  if (isAdmin || isModerator || isDesigner) {
+    navItems.push(SALARY_NAV);
+  }
+  if (isAdmin) {
+    navItems.push(ADMIN_NAV);
+  }
   const pageTitle = PAGE_TITLES[location.pathname] || 'Dashboard';
   const sidebarWidth = collapsed ? 68 : 240;
 

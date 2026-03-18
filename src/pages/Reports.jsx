@@ -27,7 +27,7 @@ import FeedbackDonutChart from '../components/charts/FeedbackDonutChart';
 import { ChartSkeleton } from '../components/charts/ChartCard';
 
 export default function Reports() {
-  const { userDoc, publicHolidays } = useAuth();
+  const { userDoc, publicHolidays, isAdmin, isModerator } = useAuth();
   const toast = useToast();
   const [tickets, setTickets] = useState([]);
   const [users, setUsers] = useState([]);
@@ -208,7 +208,7 @@ export default function Reports() {
           <button onClick={() => setQuickRange('last')} style={quickBtnStyle}>Last Month</button>
           <button onClick={() => setQuickRange('3months')} style={quickBtnStyle}>Last 3 Months</button>
           <div style={{ flex: 1 }} />
-          {(userDoc?.role === 'admin' || userDoc?.role === 'moderator' || userDoc?.roles?.includes('moderator')) && (
+          {(isAdmin || isModerator) && (
             <button 
               onClick={() => setIsEditMode(!isEditMode)}
               style={{
