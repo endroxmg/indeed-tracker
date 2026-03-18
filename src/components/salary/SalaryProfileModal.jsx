@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { db } from '../../firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { X, Save, AlertCircle } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { useToast } from '../Toast';
 import InitialsAvatar from '../InitialsAvatar';
 
 export default function SalaryProfileModal({ users, profiles, onClose }) {
+  const toast = useToast();
   const [editingUserId, setEditingUserId] = useState(null);
   const [editData, setEditData] = useState({ monthlySalary: '', effectiveFrom: '' });
   const [saving, setSaving] = useState(false);

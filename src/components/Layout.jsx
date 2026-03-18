@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, Columns3, Clock, BarChart3, Users,
   LogOut, ChevronLeft, ChevronRight, Bell, Activity,
-  CalendarClock, Umbrella, DollarSign,
+  CalendarClock, Umbrella, IndianRupee,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import GlobalSearch from './GlobalSearch';
@@ -12,13 +12,13 @@ import { useState, useEffect } from 'react';
 import ChatBot from './ChatBot';
 
 const NAV_ITEMS = [
-  { path: '/salary', label: 'Salary Management', icon: DollarSign },
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/kanban', label: 'Kanban Board', icon: Columns3 },
   { path: '/timelog', label: 'Time Log', icon: Clock },
   { path: '/shifts', label: 'Shifts & Attendance', icon: CalendarClock },
   { path: '/leaves', label: 'Leave Management', icon: Umbrella },
   { path: '/reports', label: 'Reports & MBR', icon: BarChart3 },
+  { path: '/salary', label: 'Salary Management', icon: IndianRupee },
   { path: '/activity-log', label: 'Activity Log', icon: Activity },
 ];
 

@@ -123,9 +123,6 @@ export default function Dashboard() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div style={{ background: '#DC2626', color: '#fff', padding: '20px', borderRadius: 12, textAlign: 'center', fontWeight: 800, fontSize: 24 }}>
-        🚨 DEPLOYMENT TEST: IF YOU SEE THIS, THE CODE IS UPDATED! 🚨
-      </div>
       {/* Attendance Alerts */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {users.map(u => {

@@ -14,7 +14,7 @@ import {
 } from 'firebase/firestore';
 import { format, subMonths, addMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { IndianRupee, ChevronLeft, ChevronRight, Settings, RefreshCcw } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { useToast } from '../components/Toast';
 
 import TeamSalaryTable from '../components/salary/TeamSalaryTable';
 import MySalaryView from '../components/salary/MySalaryView';
@@ -23,6 +23,7 @@ import { calculateMonthlySalary } from '../utils/salaryCalculator';
 
 export default function Salary() {
   const { user, userDoc, isAdmin } = useAuth();
+  const toast = useToast();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [salaryRecords, setSalaryRecords] = useState([]);
   const [users, setUsers] = useState([]);
