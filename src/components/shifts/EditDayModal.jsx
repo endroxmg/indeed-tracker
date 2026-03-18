@@ -145,6 +145,9 @@ export default function EditDayModal({ user, date, onClose }) {
             <span style={{ fontSize: 18, fontWeight: 700, fontFamily: 'Poppins' }}>{user.name}</span>
             <span style={{ fontSize: 13, color: '#6B7280' }}>{format(date, 'EEEE, dd MMM yyyy')}</span>
           </div>
+          <div style={{ fontSize: 12, background: '#F3F4F6', padding: '4px 12px', borderRadius: 20, color: '#4B5563', fontWeight: 600 }}>
+            12-Hour Format Active
+          </div>
           <button onClick={onClose} style={closeBtnStyle}><X size={20} /></button>
         </div>
 
@@ -155,17 +158,20 @@ export default function EditDayModal({ user, date, onClose }) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
                 <label style={labelStyle}>Shift Start</label>
-                <input 
-                  type="time" 
-                  value={shiftStart} 
-                  onChange={(e) => setShiftStart(e.target.value)}
-                  style={inputStyle}
-                />
-              </div>
+                  <input 
+                    type="time" 
+                    value={shiftStart} 
+                    onChange={(e) => setShiftStart(e.target.value)}
+                    style={inputStyle}
+                  />
+                  <div style={{ fontSize: 11, color: '#0451CC', marginTop: 4, fontWeight: 500 }}>
+                    Starts at {formatShiftTime(shiftStart)}
+                  </div>
+                </div>
               <div>
                 <label style={labelStyle}>Shift End (9hrs)</label>
-                <div style={{ ...inputStyle, background: '#F9FAFB', color: '#16A34A', fontWeight: 600 }}>
-                  {calculateShiftEnd(shiftStart)}
+                <div style={{ ...inputStyle, background: '#F0FDF4', color: '#16A34A', fontWeight: 700 }}>
+                  {formatShiftTime(calculateShiftEnd(shiftStart))}
                 </div>
               </div>
             </div>

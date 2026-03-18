@@ -147,7 +147,7 @@ export default function DailyLogTab() {
                 <span style={{ margin: '0 8px', color: '#6B7280' }}>•</span>
                 <span style={{ color: '#2D2D2D' }}>{log.action}</span>
                 <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
-                  {log.timestamp ? format(log.timestamp.toDate(), 'dd MMM, hh:mm a') : 'Just now'}
+                  {log.timestamp ? format(log.timestamp.toDate(), 'dd MMM, h:mm a') : 'Just now'}
                 </div>
               </div>
             </div>

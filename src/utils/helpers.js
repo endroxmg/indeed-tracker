@@ -226,15 +226,23 @@ export function calculateShiftEnd(startTimeStr) {
   const date = new Date();
   date.setHours(hours, minutes, 0, 0);
   const endDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
-  return format(endDate, 'HH:mm');
+  return format(endDate, 'HH:mm'); // Keep database format as HH:mm for sorted storage
 }
 
 export function formatShiftTime(timeStr) {
   if (!timeStr) return '';
-  const [hours, minutes] = timeStr.split(':').map(Number);
+  // Handle both HH:mm and full ISO strings
+  let hours, minutes;
+  if (timeStr.includes(':')) {
+    [hours, minutes] = timeStr.split(':').map(Number);
+  } else {
+    const d = new Date(timeStr);
+    hours = d.getHours();
+    minutes = d.getMinutes();
+  }
   const date = new Date();
   date.setHours(hours, minutes, 0, 0);
-  return format(date, 'h:mm a');
+  return format(date, 'h:mm a'); // 12-hour format without leading zero
 }
 
 export function parseHHMM(timeStr) {

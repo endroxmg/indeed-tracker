@@ -107,7 +107,7 @@ export default function OvertimeTracker() {
                 return (
                   <tr key={entry.id} style={{ borderBottom: '1px solid #F3F4F6' }}>
                     <td style={tdStyle}>{format(new Date(entry.date), 'dd MMM, EEE')}</td>
-                    <td style={tdStyle}>{format(entry.startTime?.toDate(), 'hh:mm a')} – {format(entry.endTime?.toDate(), 'hh:mm a')}</td>
+                    <td style={tdStyle}>{format(entry.startTime?.toDate(), 'h:mm a')} – {format(entry.endTime?.toDate(), 'h:mm a')}</td>
                     <td style={{ ...tdStyle, fontWeight: 700 }}>{entry.hours}h</td>
                     <td style={{ ...tdStyle, color: dayOvertime > 0 ? '#D97706' : '#9CA3AF' }}>+{dayOvertime}h</td>
                     <td style={tdStyle}>
