@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, Columns3, Clock, BarChart3, Users,
   LogOut, ChevronLeft, ChevronRight, Bell, Activity,
-  CalendarClock, Umbrella, IndianRupee,
+  CalendarClock, Umbrella, DollarSign,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import GlobalSearch from './GlobalSearch';
@@ -18,10 +18,10 @@ const NAV_ITEMS = [
   { path: '/shifts', label: 'Shifts & Attendance', icon: CalendarClock },
   { path: '/leaves', label: 'Leave Management', icon: Umbrella },
   { path: '/reports', label: 'Reports & MBR', icon: BarChart3 },
+  { path: '/salary', label: 'Salary Management', icon: DollarSign },
   { path: '/activity-log', label: 'Activity Log', icon: Activity },
 ];
 
-const SALARY_NAV = { path: '/salary', label: 'Salary', icon: IndianRupee };
 const ADMIN_NAV = { path: '/team', label: 'Team', icon: Users };
 
 const PAGE_TITLES = {
@@ -48,13 +48,7 @@ export default function Layout({ children, tickets = [], onSelectTicket, overdue
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const navItems = [...NAV_ITEMS];
-  if (isAdmin || isModerator || isDesigner) {
-    navItems.push(SALARY_NAV);
-  }
-  if (isAdmin) {
-    navItems.push(ADMIN_NAV);
-  }
+  const navItems = isAdmin ? [...NAV_ITEMS, ADMIN_NAV] : NAV_ITEMS;
   const pageTitle = PAGE_TITLES[location.pathname] || 'Dashboard';
   const sidebarWidth = collapsed ? 68 : 240;
 
