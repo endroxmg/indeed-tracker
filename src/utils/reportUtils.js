@@ -57,7 +57,7 @@ function toDate(val) {
 // Loops through statusHistory intervals and counts working
 // days where the ticket was in the given status,
 // clamped to [rangeStart, rangeEnd].
-export function getDaysInStatus(ticket, status, rangeStart, rangeEnd) {
+export function getDaysInStatus(ticket, status, rangeStart, rangeEnd, holidays = []) {
   const history = ticket.statusHistory || [];
   if (history.length === 0) return 0;
   const rStart = typeof rangeStart === 'string' ? parseISO(rangeStart) : rangeStart;
@@ -80,17 +80,17 @@ export function getDaysInStatus(ticket, status, rangeStart, rangeEnd) {
     const clampedEnd = minDate([entryEnd, rEnd]);
 
     if (isAfter(clampedStart, clampedEnd)) continue;
-    totalDays += getWorkingDaysInRange(clampedStart, clampedEnd);
+    totalDays += getWorkingDaysInRange(clampedStart, clampedEnd, holidays);
   }
   return totalDays;
 }
 
-export function getArcgateProductiveTime(ticket, rangeStart, rangeEnd) {
-  return getDaysInStatus(ticket, 'in_production', rangeStart, rangeEnd);
+export function getArcgateProductiveTime(ticket, rangeStart, rangeEnd, holidays = []) {
+  return getDaysInStatus(ticket, 'in_production', rangeStart, rangeEnd, holidays);
 }
 
-export function getIndeedReviewTime(ticket, rangeStart, rangeEnd) {
-  return getDaysInStatus(ticket, 'ready_for_feedback', rangeStart, rangeEnd);
+export function getIndeedReviewTime(ticket, rangeStart, rangeEnd, holidays = []) {
+  return getDaysInStatus(ticket, 'ready_for_feedback', rangeStart, rangeEnd, holidays);
 }
 
 // ─── Feedback Rounds ───────────────────────────────────────
@@ -193,7 +193,7 @@ export function ticketsActiveInRange(tickets, start, end) {
 }
 
 // ─── 6-month trend data ────────────────────────────────────
-export function getSixMonthTrendData(tickets, timeEntries, users) {
+export function getSixMonthTrendData(tickets, timeEntries, users, holidays = []) {
   const now = new Date();
   const months = eachMonthOfInterval({ start: subMonths(now, 5), end: now });
   const activeDesigners = users.filter(u => u.isActive && (u.roles?.includes('designer') || u.role === 'designer'));
@@ -211,7 +211,7 @@ export function getSixMonthTrendData(tickets, timeEntries, users) {
       ? Math.round(active.reduce((s, t) => s + getTotalFeedbackCount(t), 0) / active.length * 10) / 10
       : 0;
 
-    const workingDays = getWorkingDaysInRange(ms, isBefore(me, now) ? me : now);
+    const workingDays = getWorkingDaysInRange(ms, isBefore(me, now) ? me : now, holidays);
     const expectedHrs = workingDays * totalCapacity;
     const msStr = format(ms, 'yyyy-MM-dd');
     const meStr = format(isBefore(me, now) ? me : now, 'yyyy-MM-dd');

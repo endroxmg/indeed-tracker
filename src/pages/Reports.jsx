@@ -272,6 +272,7 @@ export default function Reports() {
           <TurnaroundTimeChart
             tickets={activeTickets}
             dateRange={dateRange}
+            publicHolidays={publicHolidays}
             onTicketClick={handleTicketClick}
             chartRef={chartRefs.turnaround}
           />
@@ -280,6 +281,7 @@ export default function Reports() {
           <TotalTimeChart
             tickets={activeTickets}
             dateRange={dateRange}
+            publicHolidays={publicHolidays}
             onTicketClick={handleTicketClick}
             chartRef={chartRefs.totalTime}
           />
@@ -316,6 +318,7 @@ export default function Reports() {
               tickets={tickets}
               timeEntries={allTimeEntries}
               users={users}
+              publicHolidays={publicHolidays}
               chartRef={chartRefs.monthlyTrend}
             />
             <CorrelationScatterChart

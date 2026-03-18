@@ -6,7 +6,8 @@ import {
   createInvite, subscribeInvites, deleteInvite, logActivity,
 } from '../services/firestoreService';
 import {
-  Shield, Clock, Send, Plus, Users, Edit, ExternalLink
+  Shield, Clock, Send, Plus, Users, Edit, ExternalLink,
+  UserPlus, Mail, UserCheck, UserX, X, Check
 } from 'lucide-react';
 import UserProfilePopup from '../components/team/UserProfilePopup';
 import { ROLE_LABELS, ROLE_COLORS, LDAP_ACCOUNTS } from '../utils/helpers';

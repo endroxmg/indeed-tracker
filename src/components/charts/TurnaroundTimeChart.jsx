@@ -3,10 +3,10 @@ import { TrendingUp } from 'lucide-react';
 import { ChartCard, EmptyChart, CustomTooltip } from './ChartCard';
 import { getArcgateProductiveTime, getIndeedReviewTime, formatVideoDuration } from '../../utils/reportUtils';
 
-export default function TurnaroundTimeChart({ tickets, dateRange, onTicketClick, chartRef }) {
+export default function TurnaroundTimeChart({ tickets, dateRange, publicHolidays, onTicketClick, chartRef }) {
   const data = tickets.map(t => {
-    const arcgate = getArcgateProductiveTime(t, dateRange.start, dateRange.end);
-    const indeed = getIndeedReviewTime(t, dateRange.start, dateRange.end);
+    const arcgate = getArcgateProductiveTime(t, dateRange.start, dateRange.end, publicHolidays);
+    const indeed = getIndeedReviewTime(t, dateRange.start, dateRange.end, publicHolidays);
     return {
       jiraId: t.jiraId,
       ticketId: t.id,

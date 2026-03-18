@@ -3,10 +3,10 @@ import { Clock } from 'lucide-react';
 import { ChartCard, EmptyChart, CustomTooltip } from './ChartCard';
 import { getArcgateProductiveTime, getIndeedReviewTime } from '../../utils/reportUtils';
 
-export default function TotalTimeChart({ tickets, dateRange, onTicketClick, chartRef }) {
+export default function TotalTimeChart({ tickets, dateRange, publicHolidays, onTicketClick, chartRef }) {
   const data = tickets.map(t => {
-    const arcgate = getArcgateProductiveTime(t, dateRange.start, dateRange.end);
-    const indeed = getIndeedReviewTime(t, dateRange.start, dateRange.end);
+    const arcgate = getArcgateProductiveTime(t, dateRange.start, dateRange.end, publicHolidays);
+    const indeed = getIndeedReviewTime(t, dateRange.start, dateRange.end, publicHolidays);
     return {
       jiraId: t.jiraId,
       ticketId: t.id,

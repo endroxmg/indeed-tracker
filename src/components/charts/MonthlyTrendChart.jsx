@@ -3,8 +3,8 @@ import { TrendingUp } from 'lucide-react';
 import { ChartCard, EmptyChart, CustomTooltip } from './ChartCard';
 import { getSixMonthTrendData } from '../../utils/reportUtils';
 
-export default function MonthlyTrendChart({ tickets, timeEntries, users, chartRef }) {
-  const data = getSixMonthTrendData(tickets, timeEntries, users);
+export default function MonthlyTrendChart({ tickets, timeEntries, users, publicHolidays, chartRef }) {
+  const data = getSixMonthTrendData(tickets, timeEntries, users, publicHolidays);
 
   if (data.length === 0) {
     return <ChartCard title="6-Month Trend Overview" icon={TrendingUp} chartRef={chartRef}><EmptyChart /></ChartCard>;
