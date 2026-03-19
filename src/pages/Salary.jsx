@@ -26,6 +26,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import TeamSalaryTable from '../components/salary/TeamSalaryTable';
 import MySalaryView from '../components/salary/MySalaryView';
 import SalaryProfileModal from '../components/salary/SalaryProfileModal';
+import StatCard from '../components/salary/StatCard';
 import { calculateMonthlySalary } from '../utils/salaryCalculator';
 
 export default function Salary() {
@@ -39,6 +40,8 @@ export default function Salary() {
   const [loading, setLoading] = useState(true);
   const [recalculating, setRecalculating] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+
+  const formatCurrency = (val) => `₹${Math.round(val || 0).toLocaleString('en-IN')}`;
 
   const yearMonth = format(currentMonth, 'yyyy-MM');
 

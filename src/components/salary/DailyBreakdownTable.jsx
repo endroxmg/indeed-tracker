@@ -28,7 +28,7 @@ export default function DailyBreakdownTable({ record }) {
       );
       const timeQ = query(
         collection(db, 'timeEntries'),
-        where('designerId', '==', record.userId),
+        where('userId', '==', record.userId),
         where('date', '>=', format(monthStart, 'yyyy-MM-dd')),
         where('date', '<=', format(monthEnd, 'yyyy-MM-dd'))
       );
