@@ -306,33 +306,6 @@ export default function Salary() {
   );
 }
 
-function StatCard({ label, value, icon: Icon, trend, color = '#1A1A2E' }) {
-  return (
-    <div style={{ 
-      background: '#fff', padding: 24, borderRadius: 24, border: '1px solid #E5E7EB',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.03)', position: 'relative', overflow: 'hidden'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-        <div style={{ background: `${color}10`, padding: 8, borderRadius: 12 }}>
-          <Icon size={20} color={color} />
-        </div>
-        {trend !== undefined && (
-          <div style={{ 
-            display: 'flex', alignItems: 'center', gap: 4, 
-            color: trend >= 0 ? '#16A34A' : '#DC2626', 
-            fontSize: 12, fontWeight: 600, padding: '4px 8px', borderRadius: 20,
-            background: trend >= 0 ? '#ECFDF5' : '#FEF2F2'
-          }}>
-            {trend >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-            {Math.abs(trend).toFixed(1)}%
-          </div>
-        )}
-      </div>
-      <div style={{ fontSize: 13, color: '#6B7280', fontWeight: 500, marginBottom: 4 }}>{label}</div>
-      <div style={{ fontSize: 24, fontWeight: 700, color: '#1A1A2E' }}>{value}</div>
-    </div>
-  );
-}
 
 const heroBtnStyle = {
   background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '10px 18px', borderRadius: 12,
