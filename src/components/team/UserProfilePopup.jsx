@@ -6,7 +6,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOf
 import { 
   X, User, PieChart, Calendar, BarChart2, 
   Edit2, CheckCircle, Clock, Umbrella,
-  TrendingUp, Star, Zap
+  TrendingUp, Star, Zap, IndianRupee, RefreshCcw
 } from 'lucide-react';
 import { 
   ATTENDANCE_STATUS_COLORS, ATTENDANCE_STATUS_LABELS,
@@ -59,6 +59,7 @@ export default function UserProfilePopup({ userId, onClose }) {
     { id: 'leaves', label: 'Leave Insights', icon: Umbrella },
     { id: 'attendance', label: 'Attendance', icon: Calendar },
     { id: 'work', label: 'Work Stats', icon: BarChart2 },
+    { id: 'salary', label: 'Salary', icon: IndianRupee },
   ];
 
   return (
@@ -88,6 +89,7 @@ export default function UserProfilePopup({ userId, onClose }) {
           {activeTab === 'leaves' && <LeaveInsightsTab user={userData} lb={lbData} />}
           {activeTab === 'attendance' && <AttendanceTab userId={userId} holidays={publicHolidays} />}
           {activeTab === 'work' && <WorkStatsTab userId={userId} user={userData} timeEntries={timeEntries} tickets={tickets} />}
+          {activeTab === 'salary' && <SalaryTab userId={userId} />}
         </div>
       </div>
     </div>
@@ -277,6 +279,74 @@ function DashboardMetric({ label, value, sub }) {
       <div style={{ fontSize: 12, color: '#6B7280' }}>{label}</div>
       <div style={{ fontSize: 24, fontWeight: 700, margin: '4px 0' }}>{value}</div>
       <div style={{ fontSize: 11, color: '#16A34A', fontWeight: 600 }}>{sub}</div>
+    </div>
+  );
+}
+
+function SalaryTab({ userId }) {
+  const [history, setHistory] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSalary = async () => {
+      setLoading(true);
+      const profileSnap = await getDoc(doc(db, 'salaryProfiles', userId));
+      setProfile(profileSnap.exists() ? profileSnap.data() : null);
+
+      const q = query(
+        collection(db, 'salaryHistory'), 
+        where('userId', '==', userId)
+      );
+      const historySnap = await getDocs(q);
+      const data = historySnap.docs.map(d => d.data());
+      // Sort by month
+      data.sort((a, b) => b.month.localeCompare(a.month));
+      setHistory(data);
+      setLoading(false);
+    };
+    fetchSalary();
+  }, [userId]);
+
+  if (loading) return <div style={{ textAlign: 'center', padding: 40 }}><RefreshCcw size={24} className="spinning" color="#0451CC" /></div>;
+  if (!profile) return <div style={{ textAlign: 'center', padding: 40, color: '#6B7280' }}>No salary profile configured for this user.</div>;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <DashboardMetric label="Monthly Base" value={`₹${profile.monthlySalary?.toLocaleString()}`} sub="Base Compensation" />
+        <DashboardMetric label="YTD Earnings" value={`₹${history.reduce((s, r) => s + (r.netSalary || 0), 0).toLocaleString()}`} sub="Current Financial Year" />
+      </div>
+
+      <div style={{ border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <thead>
+            <tr style={{ background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+              <th style={{ padding: '10px 16px', textAlign: 'left' }}>Month</th>
+              <th style={{ padding: '10px 16px', textAlign: 'right' }}>Base</th>
+              <th style={{ padding: '10px 16px', textAlign: 'right' }}>Bonus</th>
+              <th style={{ padding: '10px 16px', textAlign: 'right' }}>Deduction</th>
+              <th style={{ padding: '10px 16px', textAlign: 'right' }}>Net</th>
+            </tr>
+          </thead>
+          <tbody>
+            {history.slice(0, 6).map((r, i) => (
+              <tr key={i} style={{ borderBottom: i === history.length - 1 ? 'none' : '1px solid #F3F4F6' }}>
+                <td style={{ padding: '10px 16px', fontWeight: 600 }}>{r.month}</td>
+                <td style={{ padding: '10px 16px', textAlign: 'right' }}>₹{r.monthlySalary?.toLocaleString()}</td>
+                <td style={{ padding: '10px 16px', textAlign: 'right', color: '#16A34A' }}>+₹{(r.sundayBonusAmount + r.holidayBonusAmount + r.overtimeAmount).toLocaleString()}</td>
+                <td style={{ padding: '10px 16px', textAlign: 'right', color: '#DC2626' }}>-₹{r.totalDeductions?.toLocaleString()}</td>
+                <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 700, color: '#0451CC' }}>₹{r.netSalary?.toLocaleString()}</td>
+              </tr>
+            ))}
+            {history.length === 0 && (
+              <tr>
+                <td colSpan="5" style={{ padding: 24, textAlign: 'center', color: '#9CA3AF' }}>No history found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

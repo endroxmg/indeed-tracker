@@ -10,7 +10,7 @@ import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestor
 import { db } from '../firebase';
 import { getEnhancedTicketData } from '../utils/mbrOverrides';
 import EditTicketDataModal from '../components/reports/EditTicketDataModal';
-import { Edit2, Eye, Info, Calendar, Download, Loader2 } from 'lucide-react';
+import { Edit2, Eye, Info, Calendar, Download, Loader2, FileText } from 'lucide-react';
 
 // Chart components
 import UtilizationChart from '../components/charts/UtilizationChart';
@@ -425,7 +425,7 @@ export default function Reports() {
             background: '#fff', borderRadius: 16, padding: '32px 48px',
             textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
           }}>
-            <Loader size={32} color="#0451CC" className="spinning" style={{ margin: '0 auto 12px', display: 'block' }} />
+            <Loader2 size={32} color="#0451CC" className="spinning" style={{ margin: '0 auto 12px', display: 'block' }} />
             <h3 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 600, color: '#2D2D2D', margin: '0 0 4px' }}>Generating PDF…</h3>
             <p style={{ fontSize: 13, color: '#6B7280', margin: 0 }}>Capturing charts and building report</p>
           </div>

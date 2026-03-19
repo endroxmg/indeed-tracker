@@ -18,7 +18,9 @@ export default function DesignerWorkloadCards({ users, timeEntries, dateRange, t
     const expected = workingDays * (user.dailyCapacity || 8);
     const pct = expected > 0 ? Math.round((logged / expected) * 100) : 0;
     const diff = Math.round((logged - expected) * 100) / 100;
-    const anyOverridden = tickets.some(t => t._isOverridden && (t.assigneeId === user.uid || t.ldap === user.ldap));
+    const designerTickets = tickets.filter(t => t.assigneeId === user.uid || t.ldap === user.ldap);
+    const ticketsWorked = designerTickets.length;
+    const anyOverridden = designerTickets.some(t => t._isOverridden);
 
     return { user, workingDays, expected, logged, pct, diff, ticketsWorked, anyOverridden };
   });
