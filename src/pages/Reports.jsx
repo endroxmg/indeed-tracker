@@ -115,8 +115,8 @@ export default function Reports() {
     const workingDaysCount = getWorkingDaysInRange(dateRange.start, dateRange.end, publicHolidays);
     const dailyAvg = workingDaysCount > 0 ? (totalHours / workingDaysCount).toFixed(2) : '0.00';
     const totalCapacity = designers.reduce((s, u) => s + (u.dailyCapacity || 8), 0);
-    const expectedHours = workingDaysCount * totalCapacity;
-    const utilPct = expectedHours > 0 ? ((totalHours / expectedHours) * 100).toFixed(2) : '0.00';
+    const expectedHours = (workingDaysCount || 0) * totalCapacity;
+    const utilPct = (expectedHours > 0 && !isNaN(totalHours)) ? ((totalHours / expectedHours) * 100).toFixed(2) : '0.00';
 
     return [
       { label: 'Tickets Assigned', value: created.length },

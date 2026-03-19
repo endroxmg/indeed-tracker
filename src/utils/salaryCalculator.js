@@ -88,15 +88,12 @@ export function calculateMonthlySalary(
         const multiplier = isHalfDayLeave ? 0.5 : 1.0;
 
         if (type === 'normal') {
-          // Rule: If balance is 0, deduct.
-          // Note: Front-end usually prevents over-draft, but we check balance here.
-          // The leaveBalance passed is usually the current snapshot.
           if ((leaveBalance.normalLeaveBalance || 0) <= 0) {
             leaveWithoutBalanceCount += multiplier;
             leaveWithoutBalanceAmount += multiplier * dailyRate;
           }
         } else if (type === 'sick') {
-          if ((leaveBalance.sickLeaveAllotted - leaveBalance.sickLeaveTaken) <= 0) {
+          if (((leaveBalance.sickLeaveAllotted || 0) - (leaveBalance.sickLeaveTaken || 0)) <= 0) {
             sickLeaveWithoutBalanceCount += multiplier;
             sickLeaveWithoutBalanceAmount += multiplier * dailyRate;
           }
@@ -149,9 +146,9 @@ export function calculateMonthlySalary(
   earlyLeaveHalfDays = Math.floor(totalEarlyLeaveMinutes / 240);
   earlyLeaveDeductionAmount = earlyLeaveHalfDays * 0.5 * dailyRate;
 
-  const totalEarnings = monthlySalary + sundayBonusAmount + holidayBonusAmount + overtimeAmount;
-  const totalDeductions = halfDayDeductionAmount + earlyLeaveDeductionAmount + 
-                          leaveWithoutBalanceAmount + sickLeaveWithoutBalanceAmount + festivalLeaveWithoutBalanceAmount;
+  const totalEarnings = monthlySalary + (sundayBonusAmount || 0) + (holidayBonusAmount || 0) + (overtimeAmount || 0);
+  const totalDeductions = (halfDayDeductionAmount || 0) + (earlyLeaveDeductionAmount || 0) + 
+                          (leaveWithoutBalanceAmount || 0) + (sickLeaveWithoutBalanceAmount || 0) + (festivalLeaveWithoutBalanceAmount || 0);
   
   const netSalary = Math.max(0, totalEarnings - totalDeductions);
 

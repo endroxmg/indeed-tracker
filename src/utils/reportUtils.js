@@ -54,35 +54,50 @@ function toDate(val) {
 }
 
 // ─── Days a ticket spent in a specific status ──────────────
-// Loops through statusHistory intervals and counts working
-// days where the ticket was in the given status,
-// clamped to [rangeStart, rangeEnd].
+// Only counts a day if the ticket was in that status for > 8 hours 
+// within that specific working day.
 export function getDaysInStatus(ticket, status, rangeStart, rangeEnd, holidays = []) {
   const history = ticket.statusHistory || [];
   if (history.length === 0) return 0;
   const rStart = typeof rangeStart === 'string' ? parseISO(rangeStart) : rangeStart;
   const rEnd = typeof rangeEnd === 'string' ? parseISO(rangeEnd) : rangeEnd;
-  let totalDays = 0;
+  
+  const workingDates = getWorkingDatesInRange(rStart, rEnd, holidays);
+  let totalQualifyingDays = 0;
 
-  for (let i = 0; i < history.length; i++) {
-    const entry = history[i];
-    if (entry.status !== status) continue;
+  workingDates.forEach(day => {
+    const dayStart = day; 
+    const dayEnd = new Date(day.getTime() + 24 * 60 * 60 * 1000 - 1); // End of day
+    
+    let msInStatusThisDay = 0;
 
-    const entryStart = toDate(entry.timestamp);
-    // Find exit: next entry's timestamp, or rangeEnd if still in that status
-    const nextEntry = history[i + 1];
-    const entryEnd = nextEntry ? toDate(nextEntry.timestamp) : new Date();
+    for (let i = 0; i < history.length; i++) {
+      const entry = history[i];
+      if (entry.status !== status) continue;
 
-    if (!entryStart || !entryEnd) continue;
+      const entryStart = toDate(entry.timestamp);
+      const nextEntry = history[i + 1];
+      const entryEnd = nextEntry ? toDate(nextEntry.timestamp) : new Date();
 
-    // Clamp to range
-    const clampedStart = maxDate([entryStart, rStart]);
-    const clampedEnd = minDate([entryEnd, rEnd]);
+      if (!entryStart || !entryEnd) continue;
 
-    if (isAfter(clampedStart, clampedEnd)) continue;
-    totalDays += getWorkingDaysInRange(clampedStart, clampedEnd, holidays);
-  }
-  return totalDays;
+      // Intersection of [entryStart, entryEnd] and [dayStart, dayEnd]
+      const overlapStart = Math.max(entryStart.getTime(), dayStart.getTime());
+      const overlapEnd = Math.min(entryEnd.getTime(), dayEnd.getTime());
+
+      if (overlapStart < overlapEnd) {
+        msInStatusThisDay += (overlapEnd - overlapStart);
+      }
+    }
+
+    const hoursInStatus = msInStatusThisDay / (1000 * 60 * 60);
+    // User rule: Only count the day if it was in the section for more than 8 hours
+    if (hoursInStatus >= 8) {
+      totalQualifyingDays++;
+    }
+  });
+
+  return totalQualifyingDays;
 }
 
 export function getArcgateProductiveTime(ticket, rangeStart, rangeEnd, holidays = []) {

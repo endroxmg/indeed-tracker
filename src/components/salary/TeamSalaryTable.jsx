@@ -78,7 +78,7 @@ export default function TeamSalaryTable({ users, records, profiles, yearMonth, o
                   <TrendingUp size={12} /> Bonus
                 </div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#16A34A' }}>
-                  {record ? `+${formatCurrency(record.sundayBonusAmount + record.holidayBonusAmount + record.overtimeAmount)}` : '—'}
+                  {record ? `+${formatCurrency((record.sundayBonusAmount || 0) + (record.holidayBonusAmount || 0) + (record.overtimeAmount || 0))}` : '—'}
                 </div>
               </div>
               <div style={miniStatStyle}>

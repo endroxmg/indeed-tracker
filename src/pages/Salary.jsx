@@ -92,7 +92,8 @@ export default function Salary() {
     
     // Breakdown
     const base = salaryRecords.reduce((sum, r) => sum + (r.monthlySalary || 0), 0);
-    const bonus = salaryRecords.reduce((sum, r) => sum + (r.sundayBonusAmount + r.holidayBonusAmount + r.overtimeAmount || 0), 0);
+    const bonus = salaryRecords.reduce((sum, r) => 
+      sum + ((r.sundayBonusAmount || 0) + (r.holidayBonusAmount || 0) + (r.overtimeAmount || 0)), 0);
     const deduction = salaryRecords.reduce((sum, r) => sum + (r.totalDeductions || 0), 0);
 
     return { current, previous, diff, base, bonus, deduction };
