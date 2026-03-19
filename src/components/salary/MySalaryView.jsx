@@ -53,7 +53,7 @@ export default function MySalaryView({ record, currentMonth }) {
               </div>
               <div>
                 <div style={{ fontSize: 11, color: '#9CA3AF', textTransform: 'uppercase', marginBottom: 4 }}>Daily Rate</div>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>₹{record.dailyRate.toFixed(2)}</div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>₹{record?.dailyRate?.toFixed(2) || '0.00'}</div>
               </div>
             </div>
           </div>

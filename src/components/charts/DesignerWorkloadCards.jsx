@@ -31,7 +31,7 @@ export default function DesignerWorkloadCards({ users, timeEntries, dateRange, t
   return (
     <ChartCard title="Designer Workload Split" icon={Users} chartRef={chartRef}>
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(activeDesigners.length, 3)}, 1fr)`, gap: 20 }}>
-        {designerData.map(({ user, workingDays: wd, expected, logged, pct, diff, ticketsWorked }) => (
+        {designerData.map(({ user, workingDays: wd, expected, logged, pct, diff, ticketsWorked, anyOverridden }) => (
           <div key={user.uid} style={{
             border: '1px solid #E5E7EB', borderRadius: 12, padding: 20, textAlign: 'center',
             background: '#FAFAFA',

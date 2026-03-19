@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { subscribeTickets, subscribeUsers, getTimeEntriesForRange } from '../services/firestoreService';
-import { getWorkingDaysInRange, ticketsCreatedInRange, ticketsCompletedInRange, ticketsActiveInRange } from '../utils/reportUtils';
+import { getWorkingDaysInRange, ticketsCreatedInRange, ticketsCompletedInRange, ticketsActiveInRange, toDate } from '../utils/reportUtils';
 import { SkeletonCard } from '../components/Skeleton';
 import { useToast } from '../components/Toast';
 import TicketDetailModal from '../components/TicketDetailModal';
@@ -27,7 +27,7 @@ import FeedbackDonutChart from '../components/charts/FeedbackDonutChart';
 import { ChartSkeleton } from '../components/charts/ChartCard';
 
 export default function Reports() {
-  const { userDoc, publicHolidays, isAdmin, isModerator } = useAuth();
+  const { user, userDoc, publicHolidays, isAdmin, isModerator, loading: authLoading } = useAuth();
   const toast = useToast();
   const [tickets, setTickets] = useState([]);
   const [users, setUsers] = useState([]);
@@ -175,9 +175,14 @@ export default function Reports() {
   const inputStyle = { padding: '8px 12px', borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 13, fontFamily: '"Noto Sans", sans-serif' };
   const quickBtnStyle = { ...inputStyle, background: '#F9FAFB', cursor: 'pointer', fontWeight: 500, border: '1px solid #E5E7EB', transition: 'all 0.15s' };
 
+  if (authLoading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="loader"></div></div>;
+  if (!user) return <div style={{ padding: 40, textAlign: 'center' }}>Please log in to access reports.</div>;
+
   if (loading) return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
-      {Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
+    <div style={{ padding: 48 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
+        {Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
+      </div>
     </div>
   );
 

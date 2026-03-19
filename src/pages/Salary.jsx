@@ -248,7 +248,7 @@ export default function Salary() {
                 />
               ) : (
                 <MySalaryView 
-                  record={salaryRecords.find(r => r.userId === user.uid)}
+                  record={salaryRecords.find(r => r.userId === user?.uid)}
                   currentMonth={currentMonth}
                 />
               )

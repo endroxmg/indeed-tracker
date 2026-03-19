@@ -45,7 +45,7 @@ export function getWorkingDatesInRange(start, end, holidays = []) {
 }
 
 // ─── Timestamp → JS Date helper ───────────────────────────
-function toDate(val) {
+export function toDate(val) {
   if (!val) return null;
   if (val.toDate) return val.toDate();
   if (typeof val === 'string') return parseISO(val);

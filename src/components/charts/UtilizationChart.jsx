@@ -11,7 +11,7 @@ export default function UtilizationChart({ dateRange, timeEntries, users, public
 
   const data = workingDates.map(d => {
     const dateStr = format(d, 'yyyy-MM-dd');
-    const hours = getDailyTeamHours(dateStr, timeEntries);
+    const hours = getDailyTeamHours(timeEntries, dateStr);
     return {
       date: format(d, 'M/d'),
       fullDate: dateStr,
