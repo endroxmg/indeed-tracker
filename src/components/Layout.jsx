@@ -3,13 +3,14 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, Columns3, Clock, BarChart3, Users,
   LogOut, ChevronLeft, ChevronRight, Bell, Activity,
-  CalendarClock, Umbrella, IndianRupee,
+  CalendarClock, Umbrella, IndianRupee, Settings
 } from 'lucide-react';
 import { format } from 'date-fns';
 import GlobalSearch from './GlobalSearch';
 import InitialsAvatar from './InitialsAvatar';
 import { useState, useEffect } from 'react';
 import ChatBot from './ChatBot';
+import SettingsModal from './SettingsModal';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -40,6 +41,7 @@ export default function Layout({ children, tickets = [], onSelectTicket, overdue
   const { userDoc, logout, isAdmin, isModerator, isDesigner } = useAuth();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setCollapsed(window.innerWidth < 1280);
@@ -213,25 +215,46 @@ export default function Layout({ children, tickets = [], onSelectTicket, overdue
             </div>
           )}
           {!collapsed && (
-            <button
-              onClick={logout}
-              title="Logout"
-              style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                padding: 6, display: 'flex', borderRadius: 6,
-                color: 'rgba(255,255,255,0.4)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(220,38,38,0.15)';
-                e.currentTarget.style.color = '#FF6B6B';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'none';
-                e.currentTarget.style.color = 'rgba(255,255,255,0.4)';
-              }}
-            >
-              <LogOut size={16} />
-            </button>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button
+                onClick={() => setShowSettings(true)}
+                title="Settings"
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  padding: 6, display: 'flex', borderRadius: 6,
+                  color: 'rgba(255,255,255,0.4)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                  e.currentTarget.style.color = '#fff';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none';
+                  e.currentTarget.style.color = 'rgba(255,255,255,0.4)';
+                }}
+              >
+                <Settings size={16} />
+              </button>
+              <button
+                onClick={logout}
+                title="Logout"
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  padding: 6, display: 'flex', borderRadius: 6,
+                  color: 'rgba(255,255,255,0.4)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(220,38,38,0.15)';
+                  e.currentTarget.style.color = '#FF6B6B';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none';
+                  e.currentTarget.style.color = 'rgba(255,255,255,0.4)';
+                }}
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
           )}
         </div>
       </aside>
@@ -275,6 +298,9 @@ export default function Layout({ children, tickets = [], onSelectTicket, overdue
 
       {/* AI Help Bot */}
       <ChatBot />
+
+      {/* Settings Modal */}
+      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

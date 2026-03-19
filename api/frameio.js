@@ -3,7 +3,7 @@
 // to keep the FRAMEIO_TOKEN server-side only.
 
 export default async function handler(req, res) {
-  const token = process.env.FRAMEIO_TOKEN;
+  const token = req.headers['x-frameio-token'] || process.env.FRAMEIO_TOKEN;
   if (!token) {
     return res.status(500).json({ error: 'FRAMEIO_TOKEN not configured' });
   }
@@ -121,7 +121,14 @@ export default async function handler(req, res) {
       return res.status(200).json(comments);
     }
 
-    return res.status(400).json({ error: 'Invalid action' });
+    if (action === 'test') {
+      const meRes = await fetch('https://api.frame.io/v2/me', { headers });
+      if (!meRes.ok) throw new Error(`Token invalid: ${meRes.status}`);
+      const me = await meRes.json();
+      return res.status(200).json({ success: true, user: me.name, email: me.email });
+    }
+
+    return res.status(400).json({ error: 'Invalid action or missing parameters' });
   } catch (err) {
     console.error('Frame.io proxy error:', err);
     return res.status(500).json({ error: err.message });
@@ -134,6 +141,10 @@ function parseFrameioUrl(url) {
   try {
     const u = new URL(url);
 
+    // https://app.frame.io/projects/PROJECT_ID/assets/ASSET_ID
+    const projectAssetMatch = u.pathname.match(/\/projects\/[a-zA-Z0-9-]+\/assets\/([a-zA-Z0-9-]+)/);
+    if (projectAssetMatch) return { type: 'asset', assetId: projectAssetMatch[1] };
+
     // https://app.frame.io/reviews/TOKEN
     const reviewMatch = u.pathname.match(/\/reviews\/([a-zA-Z0-9-]+)/);
     if (reviewMatch) return { type: 'review', token: reviewMatch[1] };
@@ -144,7 +155,7 @@ function parseFrameioUrl(url) {
 
     // https://f.io/TOKEN or https://fra.me/TOKEN
     if (u.hostname === 'f.io' || u.hostname === 'fra.me') {
-      const token = u.pathname.replace('/', '');
+      const token = u.pathname.replace('/', '').split('?')[0];
       if (token) return { type: 'review', token };
     }
 

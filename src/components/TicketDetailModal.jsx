@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { X, ExternalLink, Clock, CheckCircle2, Circle, ArrowRight, Plus, RefreshCw, ChevronDown, ChevronRight, Edit3, Save, Trash2 } from 'lucide-react';
 import { TICKET_TYPE_COLORS, STATUS_COLORS, PRIORITY_COLORS, FEEDBACK_CATEGORY_COLORS, STATUS_LABELS, TYPE_LABELS, formatDate, formatDuration, daysInCurrentStage, LDAP_ACCOUNTS } from '../utils/helpers';
 import { useToast } from './Toast';
-import { updateTicket, logActivity, deleteTicket } from '../services/firestoreService';
+import { updateTicket, logActivity, deleteTicket, getGlobalSettings } from '../services/firestoreService';
 import { Timestamp } from 'firebase/firestore';
 import InitialsAvatar from './InitialsAvatar';
 
@@ -52,13 +52,25 @@ export default function TicketDetailModal({ ticket, users = [], currentUserId, o
     if (!ticket.frameioLink) { toast.warning('No Frame.io link set'); return; }
     setSyncing(true);
     try {
-      const res = await fetch(`/api/frameio?action=resolveReview&url=${encodeURIComponent(ticket.frameioLink)}`);
-      if (!res.ok) throw new Error('Sync failed');
+      // Fetch global token from config
+      const settings = await getGlobalSettings();
+      const token = settings.frameioToken;
+
+      const res = await fetch(`/api/frameio?action=resolveReview&url=${encodeURIComponent(ticket.frameioLink)}`, {
+        headers: token ? { 'x-frameio-token': token } : {}
+      });
+      
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Sync failed');
+      }
+
       const data = await res.json();
       const updates = {};
       if (data.duration) updates.videoDurationSec = data.duration;
       if (data.assetId) updates.frameioAssetId = data.assetId;
       updates.lastSyncedAt = Timestamp.now();
+      
       if (data.comments?.length > 0) {
         const versions = [...(ticket.versions || [])];
         const currentVersion = versions[versions.length - 1];

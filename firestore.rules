@@ -101,5 +101,11 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow write: if isLoggedIn();
     }
+
+    // Configuration
+    match /config/{id} {
+      allow read: if isLoggedIn();
+      allow write: if isAdmin();
+    }
   }
 }

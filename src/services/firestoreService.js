@@ -230,3 +230,22 @@ export async function createManualUser(data) {
   return id;
 }
 
+// ─── Settings ──────────────────────────────────────────────
+export async function getGlobalSettings() {
+  const snap = await getDoc(doc(db, 'config', 'global'));
+  return snap.exists() ? snap.data() : {};
+}
+
+export async function updateGlobalSettings(data) {
+  const { setDoc } = await import('firebase/firestore');
+  await setDoc(doc(db, 'config', 'global'), {
+    ...data,
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
+}
+
+export function subscribeGlobalSettings(callback) {
+  return onSnapshot(doc(db, 'config', 'global'), (snap) => {
+    callback(snap.exists() ? snap.data() : {});
+  });
+}
