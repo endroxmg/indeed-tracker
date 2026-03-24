@@ -3,9 +3,9 @@ import { GitBranch, Edit2 } from 'lucide-react';
 import { ChartCard, EmptyChart, CustomTooltip } from './ChartCard';
 
 function getVersionColor(count) {
-  if (count <= 1) return '#16A34A';
+  if (count <= 1) return '#10B981';
   if (count === 2) return '#D97706';
-  return '#DC2626';
+  return '#EF4444';
 }
 
 export default function VersionEfficiencyChart({ tickets, onTicketClick, chartRef, isEditMode }) {
@@ -29,12 +29,12 @@ export default function VersionEfficiencyChart({ tickets, onTicketClick, chartRe
     <ChartCard title="Version Efficiency" subtitle="How many versions did each ticket need?" icon={GitBranch} chartRef={chartRef}>
       <ResponsiveContainer width="100%" height={Math.max(data.length * 36 + 60, 240)}>
         <BarChart data={data} layout="vertical" margin={{ top: 5, right: 40, bottom: 5, left: 10 }}>
-          <CartesianGrid horizontal={false} vertical stroke="#F3F4F6" strokeDasharray="4 4" />
+          <CartesianGrid horizontal={false} vertical stroke="var(--color-border)" strokeDasharray="4 4" />
           <XAxis
             type="number"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#6B7280' }}
+            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-secondary-text)' }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
             allowDecimals={false}
           />
           <YAxis
@@ -44,19 +44,19 @@ export default function VersionEfficiencyChart({ tickets, onTicketClick, chartRe
               const d = data.find(item => item.jiraId === props.payload.value);
               return (
                 <g transform={`translate(${props.x},${props.y})`} style={{ cursor: 'pointer' }} onClick={() => onTicketClick(d?.ticketId)}>
-                  <text x={-20} y={0} dy={4} textAnchor="end" fontSize={11} fontFamily='"Poppins"' fontWeight={600} fill={isEditMode ? '#DC2626' : '#0451CC'}>
+                  <text x={-20} y={0} dy={4} textAnchor="end" fontSize={11} fontFamily='"Poppins"' fontWeight={600} fill={isEditMode ? '#EF4444' : 'var(--color-primary)'}>
                     {props.payload.value}
                   </text>
                   {isEditMode && (
                     <foreignObject x={-15} y={-8} width={12} height={12}>
-                      <Edit2 size={10} color="#DC2626" />
+                      <Edit2 size={10} color="#EF4444" />
                     </foreignObject>
                   )}
                 </g>
               );
             }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
             width={80}
           />
           <Tooltip content={<CustomTooltip formatter={v => `${v} version${v !== 1 ? 's' : ''}`} />} />
@@ -69,12 +69,12 @@ export default function VersionEfficiencyChart({ tickets, onTicketClick, chartRe
         </BarChart>
       </ResponsiveContainer>
       <div style={{
-        textAlign: 'center', fontSize: 12, color: '#6B7280', marginTop: 8,
-        padding: '8px 16px', background: '#F9FAFB', borderRadius: 8,
+        textAlign: 'center', fontSize: 12, color: 'var(--color-secondary-text)', marginTop: 8,
+        padding: '8px 16px', background: 'var(--color-surface-hover)', borderRadius: 8,
       }}>
-        <span style={{ color: '#16A34A', fontWeight: 600 }}>{oneVersion} tickets completed in 1 version ({onePct}%)</span>
-        <span style={{ margin: '0 8px', color: '#D1D5DB' }}>|</span>
-        <span style={{ color: '#DC2626', fontWeight: 600 }}>{multiVersion} tickets needed 2+ versions ({multiPct}%)</span>
+        <span style={{ color: '#10B981', fontWeight: 600 }}>{oneVersion} tickets completed in 1 version ({onePct}%)</span>
+        <span style={{ margin: '0 8px', color: 'var(--color-border)' }}>|</span>
+        <span style={{ color: '#EF4444', fontWeight: 600 }}>{multiVersion} tickets needed 2+ versions ({multiPct}%)</span>
       </div>
     </ChartCard>
   );

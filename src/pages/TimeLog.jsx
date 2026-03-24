@@ -15,7 +15,7 @@ function InitialsAvatar({ name, size = 28 }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
-      background: '#2557A7', color: '#fff',
+      background: 'var(--color-primary)', color: '#fff',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: size * 0.4, fontWeight: 700, fontFamily: '"Poppins", sans-serif',
       flexShrink: 0,
@@ -73,11 +73,11 @@ export default function TimeLog() {
   };
 
   const getCellColor = (hours) => {
-    if (hours === 0) return { bg: '#fff', color: '#999' };
-    if (hours < 5) return { bg: '#FEF3C7', color: '#92400E' };
-    if (hours < 8) return { bg: '#E8EDF7', color: '#2557A7' };
-    if (hours === 8) return { bg: '#2557A7', color: '#fff' };
-    return { bg: '#0D7A3F', color: '#fff' };
+    if (hours === 0) return { bg: 'var(--color-surface)', color: 'var(--color-secondary-text)' };
+    if (hours < 5) return { bg: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B' };
+    if (hours < 8) return { bg: 'var(--color-primary-light)', color: 'var(--color-primary)' };
+    if (hours === 8) return { bg: 'var(--color-primary)', color: '#fff' };
+    return { bg: 'rgba(16, 185, 129, 0.15)', color: '#10B981' };
   };
 
   const handleSaveTime = async (userId, rows) => {
@@ -127,10 +127,10 @@ export default function TimeLog() {
       const pct = expected > 0 ? Math.round((logged / expected) * 100) : 0;
 
       let statusColor, statusLabel;
-      if (pct >= 100) { statusColor = { bg: '#E8EDF7', text: '#2557A7' }; statusLabel = 'Exceeded'; }
-      else if (pct >= 90) { statusColor = { bg: '#ECFDF5', text: '#065F46' }; statusLabel = 'On Target'; }
-      else if (pct >= 70) { statusColor = { bg: '#FEF3C7', text: '#92400E' }; statusLabel = 'Good'; }
-      else { statusColor = { bg: '#FEE2E2', text: '#991B1B' }; statusLabel = 'Low'; }
+      if (pct >= 100) { statusColor = { bg: 'var(--color-primary-light)', text: 'var(--color-primary)' }; statusLabel = 'Exceeded'; }
+      else if (pct >= 90) { statusColor = { bg: 'rgba(16, 185, 129, 0.15)', text: '#10B981' }; statusLabel = 'On Target'; }
+      else if (pct >= 70) { statusColor = { bg: 'rgba(245, 158, 11, 0.15)', text: '#F59E0B' }; statusLabel = 'Good'; }
+      else { statusColor = { bg: 'rgba(239, 68, 68, 0.15)', text: '#EF4444' }; statusLabel = 'Low'; }
 
       return { user, workDays, expected, logged, pct, statusColor, statusLabel };
     });
@@ -140,6 +140,15 @@ export default function TimeLog() {
 
   return (
     <div>
+      <div style={{ marginBottom: 32 }}>
+        <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 24, color: '#fff', margin: '0 0 8px' }}>
+          Time Log
+        </h2>
+        <p style={{ fontSize: 14, color: 'var(--color-secondary-text)', margin: 0, fontWeight: 500 }}>
+          Track and log working hours across the team.
+        </p>
+      </div>
+
       {/* Header with Log Time button */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -148,19 +157,19 @@ export default function TimeLog() {
         {/* Week Navigator */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => setWeekStart(subWeeks(weekStart, 1))} style={{
-            background: '#fff', border: '1px solid #D4D2D0', borderRadius: 8,
-            padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center',
-          }}>
-            <ChevronLeft size={16} color="#1A1A2E" />
+            background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 10,
+            padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.2s',
+          }} className="hover:bg-[var(--color-surface-hover)]">
+            <ChevronLeft size={18} color="var(--color-secondary-text)" />
           </button>
-          <span style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 16, color: '#1A1A2E' }}>
+          <span style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 16, color: '#fff' }}>
             Week of {format(weekStart, 'dd MMM yyyy')}
           </span>
           <button onClick={() => setWeekStart(addWeeks(weekStart, 1))} style={{
-            background: '#fff', border: '1px solid #D4D2D0', borderRadius: 8,
-            padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center',
-          }}>
-            <ChevronRight size={16} color="#1A1A2E" />
+            background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 10,
+            padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.2s',
+          }} className="hover:bg-[var(--color-surface-hover)]">
+            <ChevronRight size={18} color="var(--color-secondary-text)" />
           </button>
         </div>
 
@@ -172,22 +181,22 @@ export default function TimeLog() {
             userId: userDoc.uid,
           })}
           className="btn-primary"
-          style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px' }}
         >
-          <Plus size={16} /> Log Time
+          <Plus size={18} /> Log Time
         </button>
       </div>
 
       {/* Weekly Grid */}
       <div style={{
-        background: '#fff', borderRadius: 14, border: '1px solid #D4D2D0',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+        background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border)',
+        boxShadow: 'var(--shadow-card)',
         overflow: 'hidden', marginBottom: 32,
       }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ background: '#F3F2F1' }}>
-              <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 700, color: '#767676', fontFamily: '"Poppins", sans-serif', width: 180 }}>
+            <tr style={{ background: 'var(--color-surface-hover)' }}>
+              <th style={{ padding: '16px 20px', textAlign: 'left', fontSize: 12, fontWeight: 700, color: 'var(--color-secondary-text)', fontFamily: '"Poppins", sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', width: 220 }}>
                 LDAP Account
               </th>
               {weekDays.map((day) => {
@@ -195,17 +204,17 @@ export default function TimeLog() {
                 const isToday = format(day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
                 return (
                   <th key={day.toISOString()} style={{
-                    padding: '12px 8px', textAlign: 'center', fontSize: 12, fontWeight: 700,
-                    color: isSunday ? '#C4C4C4' : isToday ? '#2557A7' : '#767676',
-                    fontFamily: '"Poppins", sans-serif',
-                    background: isToday ? '#E8EDF7' : undefined,
+                    padding: '16px 8px', textAlign: 'center', fontSize: 12, fontWeight: 700,
+                    color: isSunday ? 'rgba(255,255,255,0.3)' : isToday ? 'var(--color-primary)' : 'var(--color-secondary-text)',
+                    fontFamily: '"Poppins", sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em',
+                    background: isToday ? 'var(--color-primary-light)' : undefined,
                   }}>
                     {format(day, 'EEE')}<br />
-                    <span style={{ fontWeight: 500, fontSize: 11 }}>{format(day, 'dd MMM')}</span>
+                    <span style={{ fontWeight: 600, fontSize: 11 }}>{format(day, 'dd MMM')}</span>
                   </th>
                 );
               })}
-              <th style={{ padding: '12px 8px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#767676', fontFamily: '"Poppins", sans-serif' }}>
+              <th style={{ padding: '16px 8px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: 'var(--color-secondary-text)', fontFamily: '"Poppins", sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Total
               </th>
             </tr>
@@ -214,22 +223,22 @@ export default function TimeLog() {
             {designers.map((user) => {
               const weekTotal = weekDays.reduce((s, d) => s + getHoursForCell(user.uid, d), 0);
               return (
-                <tr key={user.uid} style={{ borderBottom: '1px solid #F3F2F1' }}>
-                  <td style={{ padding: '10px 16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <InitialsAvatar name={user.ldap || user.name} size={28} />
+                <tr key={user.uid} style={{ borderBottom: '1px solid var(--color-border)', transition: 'background 0.2s' }} className="hover:bg-[var(--color-surface-hover)]">
+                  <td style={{ padding: '12px 20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <InitialsAvatar name={user.ldap || user.name} size={36} />
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1A2E', fontFamily: 'monospace', letterSpacing: '-0.02em' }}>{user.ldap || 'LDAP Missing'}</span>
-                        <span style={{ fontSize: 10, color: '#767676', fontWeight: 500 }}>{user.name}</span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', fontFamily: 'monospace', letterSpacing: '-0.02em' }}>{user.ldap || 'LDAP Missing'}</span>
+                        <span style={{ fontSize: 12, color: 'var(--color-secondary-text)', fontWeight: 500 }}>{user.name}</span>
                       </div>
                     </div>
                   </td>
                   {weekDays.map((day) => {
                     const isSunday = getDay(day) === 0;
                     const hours = getHoursForCell(user.uid, day);
-                    const cellColor = isSunday ? { bg: '#F9F9F9', color: '#C4C4C4' } : getCellColor(hours);
+                    const cellColor = isSunday ? { bg: 'transparent', color: 'rgba(255,255,255,0.2)' } : getCellColor(hours);
                     return (
-                      <td key={day.toISOString()} style={{ padding: '6px 4px', textAlign: 'center' }}>
+                      <td key={day.toISOString()} style={{ padding: '8px 6px', textAlign: 'center' }}>
                         <button
                           onClick={() => !isSunday && setLogModal({
                             date: day,
@@ -238,22 +247,22 @@ export default function TimeLog() {
                           })}
                           disabled={isSunday}
                           style={{
-                            width: '100%', padding: '10px 4px', borderRadius: 8,
-                            border: isSunday ? 'none' : '1px solid transparent',
+                            width: '100%', padding: '12px 4px', borderRadius: 10,
+                            border: isSunday ? 'none' : '1px solid rgba(255,255,255,0.05)',
                             background: cellColor.bg, color: cellColor.color,
                             fontSize: 14, fontWeight: 700, cursor: isSunday ? 'default' : 'pointer',
                             transition: 'all 0.2s ease',
                             fontFamily: '"Poppins", sans-serif',
                           }}
-                          onMouseEnter={(e) => { if (!isSunday) e.currentTarget.style.borderColor = '#2557A7'; }}
-                          onMouseLeave={(e) => { if (!isSunday) e.currentTarget.style.borderColor = 'transparent'; }}
+                          onMouseEnter={(e) => { if (!isSunday && hours === 0) { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.background = 'var(--color-surface-hover)'; } }}
+                          onMouseLeave={(e) => { if (!isSunday && hours === 0) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; e.currentTarget.style.background = cellColor.bg; } }}
                         >
                           {isSunday ? '—' : hours > 0 ? `${hours}h` : '—'}
                         </button>
                       </td>
                     );
                   })}
-                  <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 700, fontSize: 14, fontFamily: '"Poppins", sans-serif', color: '#2557A7' }}>
+                  <td style={{ padding: '12px 8px', textAlign: 'center', fontWeight: 800, fontSize: 15, fontFamily: '"Poppins", sans-serif', color: 'var(--color-primary)' }}>
                     {weekTotal}h
                   </td>
                 </tr>
@@ -265,41 +274,44 @@ export default function TimeLog() {
 
       {/* Month Summary */}
       <div style={{
-        background: '#fff', borderRadius: 14, border: '1px solid #D4D2D0',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+        background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border)',
+        boxShadow: 'var(--shadow-card)',
         overflow: 'hidden',
       }}>
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid #D4D2D0' }}>
-          <h3 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 15, margin: 0, display: 'flex', alignItems: 'center', gap: 8, color: '#1A1A2E' }}>
-            <Calendar size={16} color="#2557A7" /> Month Summary — {format(weekStart, 'MMMM yyyy')}
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center' }}>
+          <div style={{ background: 'var(--color-primary-light)', padding: 8, borderRadius: 10, marginRight: 12 }}>
+            <Calendar size={18} color="var(--color-primary)" />
+          </div>
+          <h3 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 16, margin: 0, color: '#fff' }}>
+            Month Summary — <span style={{ fontWeight: 500, color: 'var(--color-secondary-text)' }}>{format(weekStart, 'MMMM yyyy')}</span>
           </h3>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ background: '#F3F2F1' }}>
+            <tr style={{ background: 'var(--color-surface-hover)' }}>
               {['LDAP Account', 'Working Days', 'Expected Hrs', 'Logged Hrs', 'Utilization', 'Status'].map((h) => (
                 <th key={h} style={{
-                  padding: '10px 16px', textAlign: 'left', fontSize: 12, fontWeight: 700,
-                  color: '#767676', fontFamily: '"Poppins", sans-serif',
+                  padding: '16px 24px', textAlign: 'left', fontSize: 12, fontWeight: 700,
+                  color: 'var(--color-secondary-text)', fontFamily: '"Poppins", sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em'
                 }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {monthSummary.map(({ user, workDays, expected, logged, pct, statusColor, statusLabel }) => (
-              <tr key={user.uid} style={{ borderBottom: '1px solid #F3F2F1' }}>
-                <td style={{ padding: '10px 16px' }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A2E', fontFamily: 'monospace' }}>{user.ldap || 'LDAP Missing'}</div>
-                  <div style={{ fontSize: 11, color: '#767676' }}>{user.name}</div>
+              <tr key={user.uid} style={{ borderBottom: '1px solid var(--color-border)', transition: 'background 0.2s' }} className="hover:bg-[var(--color-surface-hover)]">
+                <td style={{ padding: '16px 24px' }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', fontFamily: 'monospace' }}>{user.ldap || 'LDAP Missing'}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-secondary-text)' }}>{user.name}</div>
                 </td>
-                <td style={{ padding: '10px 16px', fontSize: 14, color: '#1A1A2E' }}>{workDays}</td>
-                <td style={{ padding: '10px 16px', fontSize: 14, color: '#1A1A2E' }}>{expected}h</td>
-                <td style={{ padding: '10px 16px', fontSize: 14, fontWeight: 700, color: '#2557A7' }}>{logged}h</td>
-                <td style={{ padding: '10px 16px', fontSize: 14, fontWeight: 700, color: '#1A1A2E' }}>{pct}%</td>
-                <td style={{ padding: '10px 16px' }}>
+                <td style={{ padding: '16px 24px', fontSize: 14, color: '#fff', fontWeight: 600 }}>{workDays}</td>
+                <td style={{ padding: '16px 24px', fontSize: 14, color: '#fff', fontWeight: 600 }}>{expected}h</td>
+                <td style={{ padding: '16px 24px', fontSize: 15, fontWeight: 800, color: 'var(--color-primary)' }}>{logged}h</td>
+                <td style={{ padding: '16px 24px', fontSize: 14, fontWeight: 700, color: '#fff' }}>{pct}%</td>
+                <td style={{ padding: '16px 24px' }}>
                   <span style={{
-                    padding: '3px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700,
-                    background: statusColor.bg, color: statusColor.text,
+                    padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700,
+                    background: statusColor.bg, color: statusColor.text, textTransform: 'uppercase', letterSpacing: '0.05em', border: `1px solid ${statusColor.text}40`
                   }}>{statusLabel}</span>
                 </td>
               </tr>

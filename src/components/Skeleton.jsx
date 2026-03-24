@@ -11,7 +11,7 @@ export function SkeletonCard() {
   return (
     <div style={{
       background: '#fff', borderRadius: 16, padding: 24,
-      border: '1px solid #E5E7EB',
+      border: '1px solid var(--color-border)',
       boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)',
     }}>
       <Skeleton width="40%" height={14} style={{ marginBottom: 12 }} />

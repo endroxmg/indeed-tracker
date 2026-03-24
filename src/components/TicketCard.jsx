@@ -6,49 +6,51 @@ export default function TicketCard({ ticket, users = [], onClick }) {
   const assignee = users.find((u) => u.uid === ticket.assigneeId);
   const overdue = isOverdue(ticket);
   const daysInStage = daysInCurrentStage(ticket.statusHistory);
-  const priorityColor = PRIORITY_COLORS[ticket.priority] || {};
-
-  // Priority accent bar color
-  const accentColor = ticket.priority === 'high' ? '#C91B1B'
-    : ticket.priority === 'medium' ? '#D97706' : '#2557A7';
+  
+  // Custom dark theme accent colors
+  const accentColor = ticket.priority === 'high' ? '#EF4444'
+    : ticket.priority === 'medium' ? '#F59E0B' : 'var(--color-primary)';
 
   return (
     <div
       onClick={onClick}
       style={{
-        background: '#FFFFFF',
-        borderRadius: 10,
-        border: overdue ? '1px solid #FCA5A5' : '1px solid #E8E8E8',
+        background: 'var(--color-surface-hover)',
+        borderRadius: 12,
+        border: overdue ? '1px solid #EF4444' : '1px solid var(--color-border)',
         cursor: 'pointer',
-        transition: 'all 0.15s ease',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
         overflow: 'hidden',
+        position: 'relative'
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
-        e.currentTarget.style.transform = 'translateY(-1px)';
+        e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.borderColor = accentColor;
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.04)';
+        e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
         e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.borderColor = overdue ? '#EF4444' : 'var(--color-border)';
       }}
     >
-      {/* Priority accent bar */}
-      <div style={{ height: 3, background: accentColor }} />
+      {/* Sleek edge accent bar instead of top bar */}
+      <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 4, background: accentColor }} />
 
-      <div style={{ padding: '12px 14px' }}>
+      <div style={{ padding: '16px 16px 16px 20px' }}>
         {/* Row 1: Jira ID + Type */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
           <span style={{
-            fontWeight: 700, fontSize: 12, color: '#2557A7',
-            fontFamily: '"Poppins", sans-serif', letterSpacing: '0.01em',
+            fontWeight: 700, fontSize: 13, color: 'var(--color-primary)',
+            fontFamily: '"Poppins", sans-serif', letterSpacing: '0.02em',
           }}>
             {ticket.jiraId}
           </span>
           <span style={{
-            fontSize: 10, fontWeight: 600, padding: '2px 7px',
-            borderRadius: 4, background: '#F3F2F1', color: '#767676',
-            textTransform: 'uppercase', letterSpacing: '0.03em',
+            fontSize: 10, fontWeight: 700, padding: '3px 8px',
+            borderRadius: 6, background: 'rgba(255,255,255,0.05)', color: 'var(--color-secondary-text)',
+            textTransform: 'uppercase', letterSpacing: '0.04em',
           }}>
             {TYPE_LABELS[ticket.type]}
           </span>
@@ -56,8 +58,8 @@ export default function TicketCard({ ticket, users = [], onClick }) {
 
         {/* Title — max 2 lines */}
         <h4 style={{
-          fontSize: 13, fontWeight: 600, color: '#1A1A2E',
-          margin: '0 0 10px', lineHeight: 1.45,
+          fontSize: 14, fontWeight: 500, color: '#fff',
+          margin: '0 0 16px', lineHeight: 1.5,
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
         }}>
@@ -66,39 +68,40 @@ export default function TicketCard({ ticket, users = [], onClick }) {
 
         {/* Bottom: LDAP / assignee + meta */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {ticket.ldap ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{
-                fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 4,
-                background: '#F0FDF4', color: '#166534', fontFamily: 'monospace',
-              }}>
-                {ticket.ldap}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {assignee ? (
+              <InitialsAvatar name={assignee.name} size={24} bg="var(--color-surface)" color="#fff" />
+            ) : (
+              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 10, color: '#777' }}>?</span>
+              </div>
+            )}
+            
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: 12, color: 'var(--color-secondary-text)', fontWeight: 500 }}>
+                {assignee ? assignee.name.split(' ')[0] : 'Unassigned'}
               </span>
-              {assignee && (
-                <span style={{ fontSize: 10, color: '#999' }}>· {assignee.name.split(' ')[0]}</span>
+              {ticket.ldap && (
+                <span style={{ fontSize: 10, color: 'var(--color-primary)', fontWeight: 600, fontFamily: 'monospace' }}>
+                  {ticket.ldap}
+                </span>
               )}
             </div>
-          ) : assignee ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <InitialsAvatar name={assignee.name} size={20} />
-              <span style={{ fontSize: 11, color: '#767676', fontWeight: 500 }}>{assignee.name.split(' ')[0]}</span>
-            </div>
-          ) : (
-            <span style={{ fontSize: 11, color: '#C4C4C4', fontStyle: 'italic' }}>Unassigned</span>
-          )}
+          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {daysInStage > 0 && (
               <span style={{
-                fontSize: 10, fontWeight: 600, padding: '1px 6px',
-                borderRadius: 4, display: 'flex', alignItems: 'center', gap: 2,
-                background: daysInStage > 3 ? '#FEF2F2' : '#F9F9F9',
-                color: daysInStage > 3 ? '#B91C1C' : '#999',
+                fontSize: 11, fontWeight: 600, padding: '2px 8px',
+                borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4,
+                background: daysInStage > 3 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.05)',
+                color: daysInStage > 3 ? '#EF4444' : 'var(--color-secondary-text)',
+                border: `1px solid ${daysInStage > 3 ? 'rgba(239, 68, 68, 0.2)' : 'var(--color-border)'}`
               }}>
-                <Clock size={9} /> {daysInStage}d
+                <Clock size={12} /> {daysInStage}d
               </span>
             )}
-            {overdue && <AlertTriangle size={13} color="#C91B1B" />}
+            {overdue && <AlertTriangle size={16} color="#EF4444" />}
           </div>
         </div>
       </div>

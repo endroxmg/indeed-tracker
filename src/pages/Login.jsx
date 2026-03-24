@@ -16,18 +16,19 @@ export default function Login() {
       {/* Logo above card — white on dark */}
       <div style={{ textAlign: 'center' }}>
         <img
-          src="/indeed-logo.svg"
+          src="/indeed-logo-white.svg"
           alt="Indeed"
-          style={{ height: 40, filter: 'brightness(0) invert(1)' }}
+          style={{ height: 40 }}
         />
       </div>
 
       {/* Login card */}
       <div style={{
-        background: '#FFFFFF',
+        background: 'var(--color-surface)',
         borderRadius: 16,
         padding: '48px 48px',
         width: 420,
+        border: '1px solid var(--color-border)',
         boxShadow: '0 24px 80px rgba(0,0,0,0.3)',
         textAlign: 'center',
       }}>
@@ -35,16 +36,16 @@ export default function Login() {
           fontFamily: '"Poppins", sans-serif',
           fontWeight: 700,
           fontSize: 22,
-          color: '#1A1A2E',
+          color: '#fff',
           margin: '0 0 4px',
         }}>
-          Content Creation Tracker
+          Content Creation Tool
         </h1>
 
         <p style={{
           fontFamily: '"Noto Sans", sans-serif',
           fontSize: 14,
-          color: '#767676',
+          color: 'var(--color-secondary-text)',
           margin: '0 0 36px',
           lineHeight: 1.5,
         }}>
@@ -60,24 +61,24 @@ export default function Login() {
             gap: 12,
             width: '100%',
             padding: '14px 24px',
-            background: '#FFFFFF',
-            border: '2px solid #D4D2D0',
+            background: 'var(--color-surface-hover)',
+            border: '2px solid var(--color-border)',
             borderRadius: 10,
             cursor: 'pointer',
             fontSize: 15,
             fontWeight: 600,
-            color: '#1A1A2E',
+            color: '#fff',
             fontFamily: '"Noto Sans", sans-serif',
             transition: 'all 0.2s ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = '#2557A7';
-            e.currentTarget.style.background = '#F8FAFF';
+            e.currentTarget.style.borderColor = 'var(--color-primary)';
+            e.currentTarget.style.background = 'var(--color-sidebar-hover)';
             e.currentTarget.style.boxShadow = '0 2px 12px rgba(37,87,167,0.15)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = '#D4D2D0';
-            e.currentTarget.style.background = '#FFFFFF';
+            e.currentTarget.style.borderColor = 'var(--color-border)';
+            e.currentTarget.style.background = 'var(--color-surface-hover)';
             e.currentTarget.style.boxShadow = 'none';
           }}
         >
@@ -90,8 +91,8 @@ export default function Login() {
           Continue with Google
         </button>
 
-        <div style={{ marginTop: 28, paddingTop: 18, borderTop: '1px solid #E8E8E8' }}>
-          <p style={{ fontSize: 12, color: '#999', lineHeight: 1.5 }}>
+        <div style={{ marginTop: 28, paddingTop: 18, borderTop: '1px solid var(--color-border)' }}>
+          <p style={{ fontSize: 12, color: 'var(--color-secondary-text)', lineHeight: 1.5 }}>
             Only authorized team members can access this tool.
           </p>
         </div>

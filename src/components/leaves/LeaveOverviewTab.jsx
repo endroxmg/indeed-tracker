@@ -53,7 +53,7 @@ function UserLeaveCard({ user, balance }) {
           <div style={avatarStyle}>{user.name.charAt(0)}</div>
           <div>
             <div style={{ fontSize: 16, fontWeight: 700 }}>{user.name}</div>
-            <div style={{ fontSize: 12, color: '#6B7280' }}>{user.role}</div>
+            <div style={{ fontSize: 12, color: 'var(--color-secondary-text)' }}>{user.role}</div>
           </div>
         </div>
       </div>
@@ -67,7 +67,7 @@ function UserLeaveCard({ user, balance }) {
             <div style={{ 
               ...progressFillStyle, 
               width: `${Math.min((balance.normalLeaveBalance / 18) * 100, 100)}%`,
-              background: '#0451CC'
+              background: 'var(--color-primary)'
             }} />
           </div>
           <div style={subStatsStyle}>
@@ -84,7 +84,7 @@ function UserLeaveCard({ user, balance }) {
             {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} style={{ 
                 width: 8, height: 8, borderRadius: '50%',
-                background: i <= (6 - balance.sickLeaveTaken) ? '#DC2626' : '#E5E7EB'
+                background: i <= (6 - balance.sickLeaveTaken) ? '#DC2626' : 'var(--color-border)'
               }} />
             ))}
           </div>
@@ -112,7 +112,7 @@ function UserLeaveCard({ user, balance }) {
         <div style={{ ...balColumnStyle, borderRight: 'none' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#0451CC' }}>{balance.compOffBalance} Comp-off</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-primary)' }}>{balance.compOffBalance} Comp-off</div>
               <div style={balLabelStyle}>Available Balance</div>
             </div>
             <div>
@@ -124,7 +124,7 @@ function UserLeaveCard({ user, balance }) {
                   background: '#D97706'
                 }} />
               </div>
-              <div style={{ fontSize: 10, color: '#6B7280', marginTop: 4 }}>
+              <div style={{ fontSize: 10, color: 'var(--color-secondary-text)', marginTop: 4 }}>
                 {240 - balance.earlyLeaveMinutesTotal} mins until next deduction
               </div>
             </div>
@@ -138,11 +138,11 @@ function UserLeaveCard({ user, balance }) {
           <div key={m} style={timelineItemStyle}>
              <div style={{ 
                width: 12, height: 12, borderRadius: '50%', 
-               background: i < new Date().getMonth() - 2 ? '#16A34A' : (i === new Date().getMonth() - 2 ? '#0451CC' : '#E5E7EB'),
+               background: i < new Date().getMonth() - 2 ? '#16A34A' : (i === new Date().getMonth() - 2 ? 'var(--color-primary)' : 'var(--color-border)'),
                marginBottom: 8
              }} />
-             <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280' }}>{m}</div>
-             <div style={{ fontSize: 9, color: '#9CA3AF' }}>+1.5</div>
+             <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-secondary-text)' }}>{m}</div>
+             <div style={{ fontSize: 9, color: 'var(--color-secondary-text)' }}>+1.5</div>
           </div>
         ))}
       </div>
@@ -150,15 +150,15 @@ function UserLeaveCard({ user, balance }) {
   );
 }
 
-const cardStyle = { background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' };
+const cardStyle = { background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border)', padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' };
 const cardHeaderStyle = { display: 'flex', justifyContent: 'space-between', marginBottom: 24 };
-const avatarStyle = { width: 44, height: 44, borderRadius: 12, background: '#0451CC', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700 };
-const balanceGridStyle = { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderBottom: '1px solid #F3F4F6', paddingBottom: 24 };
-const balColumnStyle = { padding: '0 24px', borderRight: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' };
-const balValueStyle = { fontSize: 32, fontWeight: 700, color: '#1A1A2E', fontFamily: 'Poppins' };
-const balLabelStyle = { fontSize: 12, fontWeight: 600, color: '#6B7280', margin: '4px 0' };
-const progressContainerStyle = { width: '100%', height: 6, background: '#F3F4F6', borderRadius: 10, marginTop: 8, overflow: 'hidden' };
+const avatarStyle = { width: 44, height: 44, borderRadius: 12, background: 'var(--color-primary)', color: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700 };
+const balanceGridStyle = { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, borderBottom: '1px solid var(--color-border)', paddingBottom: 24 };
+const balColumnStyle = { padding: '0 24px', borderRight: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' };
+const balValueStyle = { fontSize: 32, fontWeight: 700, color: '#fff', fontFamily: 'Poppins' };
+const balLabelStyle = { fontSize: 12, fontWeight: 600, color: 'var(--color-secondary-text)', margin: '4px 0' };
+const progressContainerStyle = { width: '100%', height: 6, background: 'var(--color-surface-hover)', borderRadius: 10, marginTop: 8, overflow: 'hidden' };
 const progressFillStyle = { height: '100%', borderRadius: 10, transition: 'width 0.3s ease' };
-const subStatsStyle = { marginTop: 16, display: 'flex', gap: 12, fontSize: 11, fontWeight: 500, color: '#9CA3AF' };
+const subStatsStyle = { marginTop: 16, display: 'flex', gap: 12, fontSize: 11, fontWeight: 500, color: 'var(--color-secondary-text)' };
 const timelineContainerStyle = { display: 'flex', justifyContent: 'space-between', marginTop: 24, padding: '0 12px' };
 const timelineItemStyle = { display: 'flex', flexDirection: 'column', alignItems: 'center' };

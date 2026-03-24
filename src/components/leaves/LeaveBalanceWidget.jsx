@@ -42,7 +42,7 @@ export default function LeaveBalanceWidget() {
     <div style={cardStyle}>
       <div style={headerStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Umbrella size={20} color="#0451CC" />
+          <Umbrella size={20} color="var(--color-primary)" />
           <h3 style={titleStyle}>Team Leave Balances</h3>
         </div>
         <div style={badgeStyle}>FY {currentFY}</div>
@@ -78,9 +78,9 @@ export default function LeaveBalanceWidget() {
                     {sickRem}/6
                   </td>
                   <td style={tdStyle}>
-                    {bal.festivalLeaveUsed ? <span style={{ color: '#9CA3AF' }}>✗</span> : <span style={{ color: '#16A34A' }}>✓</span>}
+                    {bal.festivalLeaveUsed ? <span style={{ color: 'var(--color-secondary-text)' }}>✗</span> : <span style={{ color: '#16A34A' }}>✓</span>}
                   </td>
-                  <td style={{ ...tdStyle, color: bal.compOffBalance > 0 ? '#0451CC' : '#9CA3AF', fontWeight: 600 }}>
+                  <td style={{ ...tdStyle, color: bal.compOffBalance > 0 ? 'var(--color-primary)' : 'var(--color-secondary-text)', fontWeight: 600 }}>
                     {bal.compOffBalance || 0}
                   </td>
                 </tr>
@@ -97,14 +97,14 @@ export default function LeaveBalanceWidget() {
   );
 }
 
-const cardStyle = { background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' };
+const cardStyle = { background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border)', padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' };
 const headerStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 };
 const titleStyle = { fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'Poppins' };
-const badgeStyle = { background: '#EAF0FD', color: '#0451CC', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700 };
+const badgeStyle = { background: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700 };
 const contentStyle = { marginBottom: 16 };
-const thRowStyle = { borderBottom: '1px solid #F3F4F6' };
-const thStyle = { padding: '8px 4px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase' };
+const thRowStyle = { borderBottom: '1px solid var(--color-border)' };
+const thStyle = { padding: '8px 4px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'var(--color-secondary-text)', textTransform: 'uppercase' };
 const trStyle = { borderBottom: '1px solid #F9FAFB' };
 const tdStyle = { padding: '12px 4px', fontSize: 13 };
-const avatarSmallStyle = { width: 24, height: 24, borderRadius: 6, background: '#F3F4F6', color: '#4B5563', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' };
-const footerStyle = { fontSize: 11, color: '#9CA3AF', textAlign: 'center' };
+const avatarSmallStyle = { width: 24, height: 24, borderRadius: 6, background: 'var(--color-surface-hover)', color: 'var(--color-secondary-text)', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' };
+const footerStyle = { fontSize: 11, color: 'var(--color-secondary-text)', textAlign: 'center' };

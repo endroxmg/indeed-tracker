@@ -47,12 +47,12 @@ export default function PendingAccess() {
         <button onClick={logout} style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           gap: 8, width: '100%', padding: '12px',
-          background: '#FFFFFF', border: '2px solid #D4D2D0', borderRadius: 10,
+          background: '#FFFFFF', border: '2px solid var(--color-border)', borderRadius: 10,
           cursor: 'pointer', fontSize: 14, fontWeight: 600, color: '#1A1A2E',
           transition: 'all 0.2s ease',
         }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#C91B1B'; e.currentTarget.style.color = '#C91B1B'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#D4D2D0'; e.currentTarget.style.color = '#1A1A2E'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.color = '#1A1A2E'; }}
         >
           <LogOut size={16} /> Sign Out
         </button>

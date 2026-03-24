@@ -10,11 +10,11 @@ export default function CorrelationScatterChart({ tickets, chartRef }) {
     return (
       <ChartCard title="Does Longer Video = More Feedback?" icon={Search} chartRef={chartRef}>
         <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-          <Search size={40} color="#D1D5DB" style={{ margin: '0 auto 12px', display: 'block' }} />
-          <h4 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 600, color: '#6B7280', margin: '0 0 4px', fontSize: 14 }}>
+          <Search size={40} color="var(--color-border)" style={{ margin: '0 auto 12px', display: 'block' }} />
+          <h4 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 600, color: 'var(--color-secondary-text)', margin: '0 0 4px', fontSize: 14 }}>
             Not enough data to show correlation yet
           </h4>
-          <p style={{ fontSize: 12, color: '#9CA3AF', margin: 0 }}>Need at least 3 tickets with video duration recorded</p>
+          <p style={{ fontSize: 12, color: 'var(--color-secondary-text)', margin: 0 }}>Need at least 3 tickets with video duration recorded</p>
         </div>
       </ChartCard>
     );
@@ -40,7 +40,7 @@ export default function CorrelationScatterChart({ tickets, chartRef }) {
     const { cx, cy, payload } = props;
     const r = Math.min(4 + payload.rounds * 2, 14);
     return (
-      <circle cx={cx} cy={cy} r={r} fill="#0451CC" fillOpacity={0.6} stroke="#0451CC" strokeWidth={1.5} />
+      <circle cx={cx} cy={cy} r={r} fill="var(--color-primary)" fillOpacity={0.6} stroke="var(--color-primary)" strokeWidth={1.5} />
     );
   };
 
@@ -49,7 +49,7 @@ export default function CorrelationScatterChart({ tickets, chartRef }) {
     const d = payload[0].payload;
     return (
       <div style={{
-        background: '#fff', border: '1px solid #E5E7EB', borderRadius: 8,
+        background: '#fff', border: '1px solid var(--color-border)', borderRadius: 8,
         padding: '10px 14px', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', fontSize: 12,
       }}>
         <div style={{ fontWeight: 700, marginBottom: 4 }}>{d.jiraId}</div>
@@ -64,23 +64,23 @@ export default function CorrelationScatterChart({ tickets, chartRef }) {
     <ChartCard title="Does Longer Video = More Feedback?" icon={Search} chartRef={chartRef}>
       <ResponsiveContainer width="100%" height={300}>
         <ScatterChart margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
-          <CartesianGrid horizontal vertical={false} stroke="#F3F4F6" strokeDasharray="4 4" />
+          <CartesianGrid horizontal vertical={false} stroke="var(--color-border)" strokeDasharray="4 4" />
           <XAxis
             dataKey="x"
             name="Duration (min)"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#6B7280' }}
+            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-secondary-text)' }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
-            label={{ value: 'Video Duration (minutes)', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: '#6B7280' } }}
+            axisLine={{ stroke: 'var(--color-border)' }}
+            label={{ value: 'Video Duration (minutes)', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'var(--color-secondary-text)' } }}
           />
           <YAxis
             dataKey="y"
             name="Feedback Count"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#6B7280' }}
+            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-secondary-text)' }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
             allowDecimals={false}
-            label={{ value: 'Total Feedback Count', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#6B7280' } }}
+            label={{ value: 'Total Feedback Count', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: 'var(--color-secondary-text)' } }}
           />
           <ZAxis dataKey="rounds" range={[40, 200]} />
           <Tooltip content={<CustomScatterTooltip />} />
@@ -91,7 +91,7 @@ export default function CorrelationScatterChart({ tickets, chartRef }) {
                 { x: trendPoints[0].x, y: Math.max(0, trendPoints[0].y) },
                 { x: trendPoints[1].x, y: Math.max(0, trendPoints[1].y) },
               ]}
-              stroke="#6B7280"
+              stroke="var(--color-secondary-text)"
               strokeDasharray="6 4"
               strokeWidth={1.5}
             />

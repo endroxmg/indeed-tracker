@@ -60,24 +60,25 @@ export default function DailyLogTab() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
       {/* Today Team Status */}
       <section>
-        <div style={sectionTitleStyle}>Today, {format(today, 'dd MMMM yyyy')}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+        <div style={sectionTitleStyle}>Today, <span style={{ color: 'var(--color-primary)', fontWeight: 800 }}>{format(today, 'dd MMMM yyyy')}</span></div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24 }}>
           {users.map(user => {
             const att = attendance[user.id];
             return (
               <div key={user.id} style={userCardStyle}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                   <div style={avatarStyle}>{user.name.charAt(0)}</div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700 }}>{user.name}</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{user.name}</div>
                     <div style={{ 
-                      display: 'inline-block', padding: '2px 8px', borderRadius: 20, 
-                      fontSize: 10, fontWeight: 600, marginTop: 4,
-                      background: ATTENDANCE_STATUS_COLORS[att?.status || 'working']?.bg,
-                      color: ATTENDANCE_STATUS_COLORS[att?.status || 'working']?.text
+                      display: 'inline-block', padding: '4px 10px', borderRadius: 20, 
+                      fontSize: 10, fontWeight: 800, marginTop: 6,
+                      background: ATTENDANCE_STATUS_COLORS[att?.status || 'working']?.bg || 'var(--color-surface-hover)',
+                      color: ATTENDANCE_STATUS_COLORS[att?.status || 'working']?.text || 'var(--color-secondary-text)',
+                      textTransform: 'uppercase', letterSpacing: '0.05em', border: `1px solid ${ATTENDANCE_STATUS_COLORS[att?.status || 'working']?.text || '#6B7280'}40`
                     }}>
                       {ATTENDANCE_STATUS_LABELS[att?.status || 'working']}
                     </div>
@@ -86,19 +87,23 @@ export default function DailyLogTab() {
                 
                 <div style={cardInfoStyle}>
                   {att?.status === 'working' ? (
-                    <div style={{ fontSize: 13, color: '#4B5563', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Clock size={14} /> {formatShiftTime(att.shiftStart)} – {formatShiftTime(att.shiftEnd)}
+                    <div style={{ fontSize: 13, color: 'var(--color-secondary-text)', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600 }}>
+                      <Clock size={16} color="var(--color-primary)" /> {formatShiftTime(att.shiftStart)} – {formatShiftTime(att.shiftEnd)}
                     </div>
                   ) : att?.leaveType ? (
-                    <div style={{ fontSize: 13, color: '#DC2626', fontWeight: 500 }}>
-                      On {att.leaveType.charAt(0).toUpperCase() + att.leaveType.slice(1)} Leave
+                    <div style={{ fontSize: 14, color: '#EF4444', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Umbrella size={16} /> On {att.leaveType.charAt(0).toUpperCase() + att.leaveType.slice(1)} Leave
                     </div>
-                  ) : null}
+                  ) : (
+                    <div style={{ fontSize: 13, color: 'var(--color-secondary-text)', fontWeight: 500 }}>
+                      Shift data pending
+                    </div>
+                  )}
                 </div>
 
-                <div style={{ marginTop: 12, borderTop: '1px solid #F3F4F6', paddingTop: 12 }}>
-                  <button onClick={() => handleQuickEdit(user)} style={quickEditBtnStyle}>
-                    <Edit3 size={14} /> Edit Today
+                <div style={{ marginTop: 20, borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
+                  <button onClick={() => handleQuickEdit(user)} style={quickEditBtnStyle} className="hover:border-[var(--color-primary)] hover:text-white transition-all">
+                    <Edit3 size={16} /> Edit Today
                   </button>
                 </div>
               </div>
@@ -113,20 +118,23 @@ export default function DailyLogTab() {
         <div style={tableContainerStyle}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-                <th style={thStyle}>User</th>
+              <tr style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface-hover)' }}>
+                <th style={thStyle}>Team Member</th>
                 {[0, 1, 2, 3, 4, 5, 6].map(i => {
                   const d = addDays(today, i);
-                  return <th key={i} style={thStyle}>{format(d, 'EEE dd')}</th>
+                  return <th key={i} style={{ ...thStyle, textAlign: 'center' }}>
+                    <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{format(d, 'EEE')}</div>
+                    <div style={{ fontSize: 14, color: '#fff', marginTop: 2 }}>{format(d, 'dd')}</div>
+                  </th>
                 })}
               </tr>
             </thead>
             <tbody>
               {users.slice(0, 5).map(u => (
-                <tr key={u.id} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                  <td style={tdStyle}>{u.name}</td>
+                <tr key={u.id} style={{ borderBottom: '1px solid var(--color-border)' }} className="hover:bg-[var(--color-surface-hover)] transition-colors">
+                  <td style={tdStyle}><span style={{ fontWeight: 600, color: '#fff' }}>{u.name}</span></td>
                   {[0, 1, 2, 3, 4, 5, 6].map(i => (
-                    <td key={i} style={tdStyle}><div style={compactIndicatorStyle} /></td>
+                    <td key={i} style={{ ...tdStyle, textAlign: 'center' }}><div style={compactIndicatorStyle} /></td>
                   ))}
                 </tr>
               ))}
@@ -138,21 +146,27 @@ export default function DailyLogTab() {
       {/* Recent Activity */}
       <section>
         <div style={sectionTitleStyle}>Recent Attendance Log</div>
-        <div style={logContainerStyle}>
-          {recentLogs.map(log => (
-            <div key={log.id} style={logItemStyle}>
-              <div style={avatarStyleSmall}>{log.userName?.charAt(0) || 'S'}</div>
-              <div style={{ flex: 1 }}>
-                <span style={{ fontWeight: 600 }}>{log.userName || 'System'}</span>
-                <span style={{ margin: '0 8px', color: '#6B7280' }}>•</span>
-                <span style={{ color: '#2D2D2D' }}>{log.action}</span>
-                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
-                  {log.timestamp ? format(log.timestamp.toDate(), 'dd MMM, h:mm a') : 'Just now'}
+        {recentLogs.length === 0 ? (
+          <div style={{ padding: 32, background: 'var(--color-surface)', borderRadius: 16, border: '1px dashed var(--color-border)', textAlign: 'center', color: 'var(--color-secondary-text)' }}>
+             No recent attendance changes.
+          </div>
+        ) : (
+          <div style={logContainerStyle}>
+            {recentLogs.map((log, index) => (
+              <div key={log.id} style={{ ...logItemStyle, borderBottom: index === recentLogs.length - 1 ? 'none' : '1px solid var(--color-border)' }}>
+                <div style={avatarStyleSmall}>{log.userName?.charAt(0) || 'S'}</div>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontWeight: 700, color: '#fff' }}>{log.userName || 'System'}</span>
+                  <span style={{ margin: '0 10px', color: 'var(--color-border)' }}>•</span>
+                  <span style={{ color: 'var(--color-secondary-text)', fontWeight: 500 }}>{log.action}</span>
+                  <div style={{ fontSize: 11, color: 'var(--color-secondary-text)', marginTop: 4, fontWeight: 500 }}>
+                    {log.timestamp ? format(log.timestamp.toDate(), 'dd MMM, h:mm a') : 'Just now'}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {showEditModal && (
@@ -166,15 +180,15 @@ export default function DailyLogTab() {
   );
 }
 
-const sectionTitleStyle = { fontSize: 16, fontWeight: 700, color: '#1A1A2E', marginBottom: 16, borderLeft: '4px solid #0451CC', paddingLeft: 12 };
-const userCardStyle = { background: '#fff', padding: 16, borderRadius: 16, border: '1px solid #E5E7EB', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' };
-const avatarStyle = { width: 44, height: 44, borderRadius: 12, background: '#0451CC', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700 };
-const cardInfoStyle = { marginTop: 12, minHeight: 20 };
-const quickEditBtnStyle = { background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, color: '#4B5563', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, width: '100%', justifyContent: 'center' };
-const tableContainerStyle = { background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', overflow: 'hidden' };
-const thStyle = { padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#6B7280', background: '#F9FAFB' };
-const tdStyle = { padding: '12px 16px', fontSize: 13 };
-const compactIndicatorStyle = { width: 12, height: 12, borderRadius: '50%', background: '#ECFDF5', border: '2px solid #16A34A', margin: '0 auto' };
-const logContainerStyle = { display: 'flex', flexDirection: 'column', gap: 12 };
-const logItemStyle = { display: 'flex', alignItems: 'flex-start', gap: 12, padding: 12, background: '#fff', borderRadius: 12, border: '1px solid #F3F4F6' };
-const avatarStyleSmall = { width: 28, height: 28, borderRadius: 8, background: '#6B7280', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 };
+const sectionTitleStyle = { fontFamily: '"Poppins"', fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 24, borderLeft: '4px solid var(--color-primary)', paddingLeft: 16 };
+const userCardStyle = { background: 'var(--color-surface)', padding: 24, borderRadius: 20, border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-card)' };
+const avatarStyle = { width: 48, height: 48, borderRadius: 14, background: 'var(--color-primary-light)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 800, border: '1px solid rgba(37, 87, 167, 0.3)' };
+const cardInfoStyle = { marginTop: 16, minHeight: 24, background: 'var(--color-background)', padding: '12px 16px', borderRadius: 10, border: '1px solid var(--color-border)' };
+const quickEditBtnStyle = { background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '10px 16px', fontSize: 13, fontWeight: 700, color: 'var(--color-secondary-text)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, width: '100%', justifyContent: 'center' };
+const tableContainerStyle = { background: 'var(--color-surface)', borderRadius: 20, border: '1px solid var(--color-border)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' };
+const thStyle = { padding: '16px 20px', textAlign: 'left', fontSize: 12, fontWeight: 700, color: 'var(--color-secondary-text)' };
+const tdStyle = { padding: '16px 20px', fontSize: 14 };
+const compactIndicatorStyle = { width: 14, height: 14, borderRadius: '50%', background: 'rgba(16, 185, 129, 0.15)', border: '2px solid #10B981', margin: '0 auto', boxShadow: '0 0 6px rgba(16, 185, 129, 0.4)' };
+const logContainerStyle = { display: 'flex', flexDirection: 'column', background: 'var(--color-surface)', borderRadius: 20, border: '1px solid var(--color-border)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' };
+const logItemStyle = { display: 'flex', alignItems: 'flex-start', gap: 16, padding: '20px 24px', background: 'transparent' };
+const avatarStyleSmall = { width: 32, height: 32, borderRadius: 10, background: 'var(--color-border)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700 };

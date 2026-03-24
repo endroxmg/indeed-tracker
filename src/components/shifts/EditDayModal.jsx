@@ -152,10 +152,10 @@ export default function EditDayModal({ user, date, onClose }) {
       <div style={modalStyle}>
         <div style={headerStyle}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: 18, fontWeight: 700, fontFamily: 'Poppins' }}>{user.name}</span>
-            <span style={{ fontSize: 13, color: '#6B7280' }}>{format(date, 'EEEE, dd MMM yyyy')}</span>
+            <span style={{ fontSize: 20, fontWeight: 700, fontFamily: '"Poppins"', color: '#fff' }}>{user.name}</span>
+            <span style={{ fontSize: 13, color: 'var(--color-secondary-text)' }}>{format(date, 'EEEE, dd MMM yyyy')}</span>
           </div>
-          <div style={{ fontSize: 12, background: '#F3F4F6', padding: '4px 12px', borderRadius: 20, color: '#4B5563', fontWeight: 600 }}>
+          <div style={{ fontSize: 11, background: 'var(--color-background)', padding: '6px 14px', borderRadius: 20, color: 'var(--color-primary)', fontWeight: 700, border: '1px solid rgba(37, 87, 167, 0.3)' }}>
             12-Hour Format Active
           </div>
           <button onClick={onClose} style={closeBtnStyle}><X size={20} /></button>
@@ -164,23 +164,23 @@ export default function EditDayModal({ user, date, onClose }) {
         <div style={contentStyle}>
           {/* Shift Timing */}
           <div style={sectionStyle}>
-            <div style={sectionTitleStyle}><Clock size={16} /> Shift Timing</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div style={sectionTitleStyle}><Clock size={16} color="var(--color-primary)" /> Shift Timing</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
               <div>
                 <label style={labelStyle}>Shift Start</label>
                   <input 
                     type="time" 
                     value={shiftStart} 
                     onChange={(e) => setShiftStart(e.target.value)}
-                    style={inputStyle}
+                    style={inputStyle} className="focus:border-[var(--color-primary)] outline-none"
                   />
-                  <div style={{ fontSize: 11, color: '#0451CC', marginTop: 4, fontWeight: 500 }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-primary)', marginTop: 8, fontWeight: 600 }}>
                     Starts at {formatShiftTime(shiftStart)}
                   </div>
                 </div>
               <div>
                 <label style={labelStyle}>Shift End (9hrs)</label>
-                <div style={{ ...inputStyle, background: '#F0FDF4', color: '#16A34A', fontWeight: 700 }}>
+                <div style={{ ...inputStyle, background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.3)' }}>
                   {formatShiftTime(calculateShiftEnd(shiftStart))}
                 </div>
               </div>
@@ -189,18 +189,19 @@ export default function EditDayModal({ user, date, onClose }) {
 
           {/* Attendance Status */}
           <div style={sectionStyle}>
-            <div style={sectionTitleStyle}><CheckCircle size={16} /> Attendance Status</div>
+            <div style={sectionTitleStyle}><CheckCircle size={16} color="var(--color-primary)" /> Attendance Status</div>
             <div style={radioGridStyle}>
               {['working', 'half_day', 'early_leave', 'leave', 'comp_off', 'week_off'].map(s => {
                 const isDisabled = s === 'week_off' && !hasSundayShift;
                 return (
                   <label key={s} style={{ 
                     ...radioLabelStyle, 
-                    borderColor: status === s ? '#0451CC' : '#E5E7EB',
-                    background: status === s ? '#EAF0FD' : '#fff',
-                    opacity: isDisabled ? 0.5 : 1,
+                    borderColor: status === s ? 'var(--color-primary)' : 'var(--color-border)',
+                    background: status === s ? 'var(--color-primary-light)' : 'var(--color-surface)',
+                    color: status === s ? '#fff' : 'var(--color-secondary-text)',
+                    opacity: isDisabled ? 0.4 : 1,
                     cursor: isDisabled ? 'not-allowed' : 'pointer'
-                  }} title={isDisabled ? 'Sunday shift required for Week-off' : ''}>
+                  }} title={isDisabled ? 'Sunday shift required for Week-off' : ''} className={!isDisabled && status !== s ? 'hover:bg-[var(--color-surface-hover)]' : ''}>
                     <input 
                       type="radio" 
                       name="status" 
@@ -211,50 +212,52 @@ export default function EditDayModal({ user, date, onClose }) {
                       style={{ position: 'absolute', opacity: 0 }}
                     />
                     {ATTENDANCE_STATUS_LABELS[s]}
-                    {isDisabled && <AlertTriangle size={10} style={{ marginTop: 2, color: '#DC2626' }} />}
+                    {isDisabled && <AlertTriangle size={12} style={{ marginTop: 4, color: '#EF4444' }} />}
                   </label>
                 );
               })}
             </div>
 
             {!hasSundayShift && (
-              <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, color: '#C91B1B', fontSize: 11, fontWeight: 500 }}>
+              <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8, color: '#EF4444', fontSize: 11, fontWeight: 600, background: 'rgba(239, 68, 68, 0.1)', padding: '8px 12px', borderRadius: 8 }}>
                 <Info size={14} />
                 <span>Week-off is disabled (No Sunday shift scheduled for this week)</span>
               </div>
             )}
 
             {status === 'early_leave' && (
-              <div style={{ marginTop: 16, padding: '12px', background: '#FFF7ED', borderRadius: 8 }}>
+              <div style={{ marginTop: 20, padding: '16px', background: 'var(--color-surface-hover)', borderRadius: 12, border: '1px solid var(--color-border)' }}>
                 <div style={labelStyle}>Minutes Early (1–60)</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                   <input 
                     type="range" min="1" max="60" 
                     value={earlyLeaveMinutes} 
                     onChange={(e) => setEarlyLeaveMinutes(e.target.value)}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, accentColor: 'var(--color-primary)' }}
                   />
-                  <span style={{ fontWeight: 600 }}>{earlyLeaveMinutes} mins</span>
+                  <span style={{ fontWeight: 700, color: '#fff' }}>{earlyLeaveMinutes} mins</span>
                 </div>
-                <div style={{ fontSize: 11, color: '#C2410C', marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: '#F59E0B', marginTop: 8, fontWeight: 500 }}>
                   Current Total: {leaveBalance?.earlyLeaveMinutesTotal || 0} mins ({240 - (leaveBalance?.earlyLeaveMinutesTotal || 0)} until next deduction)
                 </div>
               </div>
             )}
 
             {status === 'leave' && (
-              <div style={{ marginTop: 16 }}>
+              <div style={{ marginTop: 20 }}>
                 <label style={labelStyle}>Leave Type</label>
                 <div style={radioGridStyle}>
                   {[
                     { id: 'normal', label: 'Normal Leave', bal: leaveBalance?.normalLeaveBalance },
                     { id: 'sick', label: 'Sick Leave', bal: 6 - (leaveBalance?.sickLeaveTaken || 0) },
-                    { id: 'festival', label: 'Festival Leave', used: leaveBalance?.festivalLeaveUsed }
+                    { id: 'festival', label: 'Festival', used: leaveBalance?.festivalLeaveUsed }
                   ].map(l => (
                     <label key={l.id} style={{ 
                       ...radioLabelStyle, 
-                      borderColor: leaveType === l.id ? '#0451CC' : '#E5E7EB',
-                      opacity: (l.id === 'sick' && l.bal <= 0) || (l.id === 'festival' && l.used) ? 0.5 : 1
+                      borderColor: leaveType === l.id ? 'var(--color-primary)' : 'var(--color-border)',
+                      background: leaveType === l.id ? 'var(--color-primary-light)' : 'var(--color-surface)',
+                      color: leaveType === l.id ? '#fff' : 'var(--color-secondary-text)',
+                      opacity: (l.id === 'sick' && l.bal <= 0) || (l.id === 'festival' && l.used) ? 0.3 : 1
                     }}>
                       <input 
                         type="radio" name="leaveType" value={l.id}
@@ -263,9 +266,9 @@ export default function EditDayModal({ user, date, onClose }) {
                         onChange={(e) => setLeaveType(e.target.value)}
                         style={{ position: 'absolute', opacity: 0 }}
                       />
-                      <div style={{ fontSize: 12 }}>{l.label}</div>
-                      <div style={{ fontSize: 10, color: '#6B7280' }}>
-                        {l.id === 'festival' ? (l.used ? 'Used' : 'Available') : `${l.bal} remaining`}
+                      <div style={{ fontSize: 12, fontWeight: 700 }}>{l.label}</div>
+                      <div style={{ fontSize: 10, color: 'inherit', opacity: 0.8, marginTop: 4 }}>
+                        {l.id === 'festival' ? (l.used ? 'Used' : 'Available') : `${l.bal} left`}
                       </div>
                     </label>
                   ))}
@@ -281,14 +284,14 @@ export default function EditDayModal({ user, date, onClose }) {
               value={notes} 
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any specific details..."
-              style={{ ...inputStyle, minHeight: 80, resize: 'none' }}
+              style={{ ...inputStyle, minHeight: 100, resize: 'none' }} className="focus:border-[var(--color-primary)] outline-none"
             />
           </div>
         </div>
 
         <div style={footerStyle}>
-          <button onClick={onClose} style={cancelBtnStyle}>Cancel</button>
-          <button onClick={handleSave} disabled={loading} style={saveBtnStyle}>
+          <button onClick={onClose} className="btn-secondary" style={{ padding: '12px 24px' }}>Cancel</button>
+          <button onClick={handleSave} disabled={loading} className="btn-primary" style={{ padding: '12px 24px' }}>
             {loading ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
@@ -297,17 +300,15 @@ export default function EditDayModal({ user, date, onClose }) {
   );
 }
 
-const overlayStyle = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' };
-const modalStyle = { width: 560, background: '#fff', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', overflow: 'hidden' };
-const headerStyle = { padding: '20px 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
-const sectionStyle = { marginBottom: 24 };
-const sectionTitleStyle = { fontSize: 14, fontWeight: 600, color: '#1A1A2E', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 };
-const contentStyle = { padding: 24, maxHeight: '70vh', overflowY: 'auto' };
-const labelStyle = { fontSize: 12, fontWeight: 600, color: '#6B7280', marginBottom: 6, display: 'block' };
-const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 14, fontFamily: 'inherit' };
-const radioGridStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 };
-const radioLabelStyle = { padding: '10px', borderRadius: 8, border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s ease', position: 'relative', fontSize: 12, fontWeight: 500 };
-const footerStyle = { padding: '16px 24px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'flex-end', gap: 12 };
-const saveBtnStyle = { background: '#0451CC', color: '#fff', padding: '10px 24px', borderRadius: 8, border: 'none', fontWeight: 600, cursor: 'pointer' };
-const cancelBtnStyle = { background: '#fff', color: '#1A1A2E', padding: '10px 24px', borderRadius: 8, border: '1px solid #E5E7EB', cursor: 'pointer' };
-const closeBtnStyle = { background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF' };
+const overlayStyle = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' };
+const modalStyle = { width: 560, background: 'var(--color-surface)', borderRadius: 24, border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-modal)', overflow: 'hidden' };
+const headerStyle = { padding: '24px 32px', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
+const sectionStyle = { marginBottom: 32 };
+const sectionTitleStyle = { fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, textTransform: 'uppercase', letterSpacing: '0.05em' };
+const contentStyle = { padding: '32px', maxHeight: '70vh', overflowY: 'auto' };
+const labelStyle = { fontSize: 12, fontWeight: 700, color: 'var(--color-secondary-text)', marginBottom: 10, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const inputStyle = { width: '100%', padding: '14px 16px', borderRadius: 10, border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: '#fff', fontSize: 14, fontFamily: 'inherit', transition: 'border-color 0.2s' };
+const radioGridStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 };
+const radioLabelStyle = { padding: '14px 10px', borderRadius: 12, border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s ease', position: 'relative', fontSize: 13, fontWeight: 600 };
+const footerStyle = { padding: '20px 32px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'flex-end', gap: 16, background: 'rgba(0,0,0,0.2)' };
+const closeBtnStyle = { background: 'var(--color-surface-hover)', border: 'none', cursor: 'pointer', color: 'var(--color-secondary-text)', padding: 8, borderRadius: 10, display: 'flex' };

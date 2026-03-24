@@ -214,70 +214,82 @@ export default function Team() {
   };
 
   const cardStyle = {
-    background: '#fff', borderRadius: 12, border: '1px solid #D4D2D0',
-    boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+    background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border)',
+    boxShadow: 'var(--shadow-card)',
   };
 
   const inputStyle = {
-    width: '100%', padding: '10px 14px', borderRadius: 8,
-    border: '1px solid #D4D2D0', fontSize: 14, color: '#1A1A2E',
+    width: '100%', padding: '12px 16px', borderRadius: 10,
+    border: '1px solid var(--color-border)', fontSize: 14, color: '#fff',
+    background: 'var(--color-background)', transition: 'border-color 0.2s',
   };
 
   return (
     <div>
+      <div style={{ marginBottom: 32 }}>
+        <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 24, color: '#fff', margin: '0 0 8px' }}>
+          Team Management
+        </h2>
+        <p style={{ fontSize: 14, color: 'var(--color-secondary-text)', margin: 0, fontWeight: 500 }}>
+          Manage access, roles, and capacity for team members.
+        </p>
+      </div>
+
       {/* Top Actions */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 32 }}>
         <button onClick={() => setShowAddUser(true)} className="btn-primary"
-          style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <UserPlus size={16} /> Add Team Member
+          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px' }}>
+          <UserPlus size={18} /> Add Team Member
         </button>
         <button onClick={() => setShowInvite(true)} className="btn-secondary"
-          style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Mail size={16} /> Invite by Email
+          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px' }}>
+          <Mail size={18} /> Invite by Email
         </button>
       </div>
 
       {/* Pending Access Requests */}
       {pendingUsers.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
+        <div style={{ marginBottom: 32 }}>
           <h3 style={{
-            fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 15,
-            color: '#1A1A2E', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8,
+            fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 16,
+            color: '#fff', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 10,
           }}>
-            <Clock size={18} color="#D97706" />
+            <div style={{ background: 'rgba(245, 158, 11, 0.15)', padding: 6, borderRadius: 8 }}><Clock size={16} color="#F59E0B" /></div>
             Pending Access Requests
             <span style={{
-              background: '#FFF7ED', color: '#9A3412', padding: '2px 10px',
-              borderRadius: 20, fontSize: 12, fontWeight: 700,
+              background: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', padding: '2px 10px',
+              borderRadius: 20, fontSize: 12, fontWeight: 700, border: '1px solid rgba(245, 158, 11, 0.2)'
             }}>{pendingUsers.length}</span>
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
             {pendingUsers.map((user) => (
               <div key={user.id} style={{
-                ...cardStyle, padding: 16,
-                borderLeft: '4px solid #D97706',
+                ...cardStyle, padding: 20,
+                borderLeft: '4px solid #F59E0B',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                  <InitialsAvatar name={user.name || user.email} size={40} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+                  <InitialsAvatar name={user.name || user.email} size={48} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: '#1A1A2E' }}>{user.name || 'Unknown'}</div>
-                    <div style={{ fontSize: 12, color: '#767676', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: '#fff' }}>{user.name || 'Unknown'}</div>
+                    <div style={{ fontSize: 13, color: 'var(--color-secondary-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 10 }}>
                   <button onClick={() => approveUser(user)} style={{
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                    padding: '8px 12px', borderRadius: 8, border: 'none',
-                    background: '#0D7A3F', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                  }}>
-                    <UserCheck size={14} /> Approve
+                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    padding: '10px 16px', borderRadius: 10, border: 'none',
+                    background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                    transition: 'all 0.2s', border: '1px solid rgba(16, 185, 129, 0.3)'
+                  }} className="hover:bg-[rgba(16,185,129,0.25)]">
+                    <UserCheck size={16} /> Approve
                   </button>
                   <button onClick={() => rejectUser(user)} style={{
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                    padding: '8px 12px', borderRadius: 8, border: '1px solid #D4D2D0',
-                    background: '#fff', color: '#C91B1B', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                  }}>
-                    <UserX size={14} /> Reject
+                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    padding: '10px 16px', borderRadius: 10, border: '1px solid rgba(239, 68, 68, 0.3)',
+                    background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }} className="hover:bg-[rgba(239,68,68,0.2)]">
+                    <UserX size={16} /> Reject
                   </button>
                 </div>
               </div>
@@ -288,30 +300,27 @@ export default function Team() {
 
       {/* Pending Invites */}
       {pendingInvites.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
+        <div style={{ marginBottom: 32 }}>
           <h3 style={{
-            fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 15,
-            color: '#1A1A2E', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8,
+            fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 16,
+            color: '#fff', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 10,
           }}>
-            <Send size={18} color="#2557A7" /> Pending Invitations
+            <div style={{ background: 'var(--color-primary-light)', padding: 6, borderRadius: 8 }}><Send size={16} color="var(--color-primary)" /></div> 
+            Pending Invitations
           </h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
             {pendingInvites.map((inv) => (
               <div key={inv.id} style={{
-                ...cardStyle, padding: '10px 16px',
-                display: 'flex', alignItems: 'center', gap: 10,
+                ...cardStyle, padding: '12px 20px',
+                display: 'flex', alignItems: 'center', gap: 12,
               }}>
-                <Mail size={14} color="#2557A7" />
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#1A1A2E' }}>{inv.email}</span>
-                <span style={{ fontSize: 11, color: '#999' }}>pending</span>
+                <Mail size={16} color="var(--color-primary)" />
+                <span style={{ fontSize: 14, fontWeight: 500, color: '#fff' }}>{inv.email}</span>
+                <span style={{ fontSize: 11, color: 'var(--color-secondary-text)', background: 'var(--color-surface-hover)', padding: '2px 8px', borderRadius: 12 }}>pending</span>
                 <button onClick={() => cancelInvite(inv)} style={{
-                  background: 'none', border: 'none', cursor: 'pointer', padding: 4,
-                  display: 'flex', borderRadius: 4,
-                }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#FEE2E2'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-                >
-                  <X size={14} color="#C91B1B" />
+                  background: 'none', border: 'none', cursor: 'pointer', padding: 6, display: 'flex', borderRadius: 8, transition: 'all 0.2s', marginLeft: 8
+                }} className="hover:bg-[rgba(239,68,68,0.1)]">
+                  <X size={16} color="#EF4444" />
                 </button>
               </div>
             ))}
@@ -320,21 +329,22 @@ export default function Team() {
       )}
 
       {/* Active Team Members */}
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 40 }}>
         <h3 style={{
-          fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 15,
-          color: '#1A1A2E', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8,
+          fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 16,
+          color: '#fff', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 10,
         }}>
-          <Users size={18} color="#0D7A3F" /> Active Team ({activeUsers.length})
+          <div style={{ background: 'rgba(16, 185, 129, 0.15)', padding: 6, borderRadius: 8 }}><Users size={16} color="#10B981" /></div> 
+          Active Team ({activeUsers.length})
         </h3>
         <div style={{ ...cardStyle, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: '#F3F2F1' }}>
+              <tr style={{ background: 'var(--color-surface-hover)' }}>
                 {['Member', 'Email', 'LDAP Account', 'Role', 'Capacity', 'Actions'].map((h) => (
                   <th key={h} style={{
-                    padding: '10px 16px', textAlign: 'left', fontSize: 12,
-                    fontWeight: 700, color: '#767676', fontFamily: '"Poppins", sans-serif',
+                    padding: '16px 20px', textAlign: 'left', fontSize: 12,
+                    fontWeight: 700, color: 'var(--color-secondary-text)', fontFamily: '"Poppins", sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em'
                   }}>{h}</th>
                 ))}
               </tr>
@@ -344,26 +354,25 @@ export default function Team() {
                 <tr 
                   key={user.id} 
                   onClick={() => setSelectedProfileId(user.uid || user.id)}
-                  style={{ borderBottom: '1px solid #F3F2F1', cursor: 'pointer', transition: 'background 0.2s' }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#F9FAFB'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  style={{ borderBottom: '1px solid var(--color-border)', cursor: 'pointer', transition: 'all 0.2s' }}
+                  className="hover:bg-[var(--color-surface-hover)]"
                 >
-                  <td style={{ padding: '12px 16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <InitialsAvatar name={user.name} size={32} />
+                  <td style={{ padding: '16px 20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <InitialsAvatar name={user.name} size={36} />
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: 14, color: '#1A1A2E' }}>{user.name}</div>
+                        <div style={{ fontWeight: 600, fontSize: 15, color: '#fff' }}>{user.name}</div>
                         {user.isManual && (
-                          <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: '#FFF7ED', color: '#9A3412', fontWeight: 700, textTransform: 'uppercase' }}>Manual</span>
+                          <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', fontWeight: 700, textTransform: 'uppercase', border: '1px solid rgba(245, 158, 11, 0.2)' }}>Manual</span>
                         )}
                       </div>
                     </div>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, color: '#767676' }}>{user.email}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, color: '#1A1A2E', fontFamily: 'monospace' }}>
-                    {user.ldap || <span style={{ color: '#C91B1B', fontWeight: 600 }}>Not Set</span>}
+                  <td style={{ padding: '16px 20px', fontSize: 13, color: 'var(--color-secondary-text)' }}>{user.email}</td>
+                  <td style={{ padding: '16px 20px', fontSize: 13, color: 'var(--color-primary)', fontFamily: 'monospace', fontWeight: 600 }}>
+                    {user.ldap || <span style={{ color: '#EF4444', fontWeight: 600 }}>Not Set</span>}
                   </td>
-                  <td style={{ padding: '12px 16px' }}>
+                  <td style={{ padding: '16px 20px' }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                       {['designer', 'moderator', 'admin'].map(roleKey => {
                         const userRoles = user.roles || (user.role ? [user.role] : []);
@@ -380,47 +389,47 @@ export default function Team() {
                             style={{
                               fontSize: 10,
                               fontWeight: 700,
-                              padding: '2px 8px',
-                              borderRadius: 4,
+                              padding: '4px 10px',
+                              borderRadius: 6,
                               cursor: (roleKey === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com') ? 'not-allowed' : 'pointer',
-                              border: isAssigned ? 'none' : '1px dashed #D4D2D0',
+                              border: isAssigned ? 'none' : '1px dashed var(--color-border)',
                               background: isAssigned ? colors.bg : 'transparent',
-                              color: isAssigned ? colors.text : '#767676',
+                              color: isAssigned ? colors.text : 'var(--color-secondary-text)',
                               textTransform: 'uppercase',
                               letterSpacing: '0.05em',
                               transition: 'all 0.2s ease',
                               display: 'flex',
                               alignItems: 'center',
-                              gap: 2,
-                              opacity: (roleKey === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com' && !isAssigned) ? 0.4 : 1
+                              gap: 4,
+                              opacity: (roleKey === 'admin' && user.email?.toLowerCase() !== 'jayveer7773@gmail.com' && !isAssigned) ? 0.3 : 1
                             }}
                           >
-                            {isAssigned && <Check size={10} />}
+                            {isAssigned && <Check size={12} />}
                             {label}
                           </button>
                         );
                       })}
                     </div>
                   </td>
-                  <td style={{ padding: '12px 16px' }}>
-                    <span style={{ fontWeight: 600, fontSize: 14, color: '#1A1A2E' }}>{user.dailyCapacity || 8}h</span>
+                  <td style={{ padding: '16px 20px' }}>
+                    <span style={{ fontWeight: 600, fontSize: 15, color: '#fff' }}>{user.dailyCapacity || 8}h</span>
                   </td>
 
-                  <td style={{ padding: '12px 16px' }}>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                  <td style={{ padding: '16px 20px' }}>
+                    <div style={{ display: 'flex', gap: 10 }} onClick={e => e.stopPropagation()}>
                       <button onClick={() => handleEditUser(user)} style={{
-                        padding: '6px', borderRadius: 8, border: '1px solid #D4D2D0',
-                        background: '#fff', cursor: 'pointer', color: '#2557A7',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center'
-                      }} title="Edit User">
-                        <Edit size={14} />
+                        padding: '8px', borderRadius: 10, border: '1px solid var(--color-primary)',
+                        background: 'transparent', cursor: 'pointer', color: 'var(--color-primary)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s'
+                      }} className="hover:bg-[var(--color-primary-light)]" title="Edit User">
+                        <Edit size={16} />
                       </button>
                       {(!user.roles?.includes('admin') && user.role !== 'admin') && (
                         <button onClick={() => toggleActive(user)} style={{
-                          padding: '6px 14px', borderRadius: 8, border: '1px solid #D4D2D0',
-                          background: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                          color: '#C91B1B',
-                        }}>Deactivate</button>
+                          padding: '8px 16px', borderRadius: 10, border: '1px solid rgba(239, 68, 68, 0.3)',
+                          background: 'rgba(239, 68, 68, 0.1)', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                          color: '#EF4444', transition: 'all 0.2s'
+                        }} className="hover:bg-[rgba(239,68,68,0.2)]">Deactivate</button>
                       )}
                     </div>
                   </td>
@@ -435,24 +444,24 @@ export default function Team() {
       {inactiveUsers.length > 0 && (
         <div>
           <h3 style={{
-            fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 15,
-            color: '#767676', margin: '0 0 12px',
+            fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 16,
+            color: 'var(--color-secondary-text)', margin: '0 0 16px',
           }}>Inactive ({inactiveUsers.length})</h3>
-          <div style={{ ...cardStyle, overflow: 'hidden' }}>
+          <div style={{ ...cardStyle, overflow: 'hidden', opacity: 0.8 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <tbody>
                 {inactiveUsers.map((user) => (
-                  <tr key={user.id} style={{ borderBottom: '1px solid #F3F2F1', opacity: 0.6 }}>
-                    <td style={{ padding: '10px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <InitialsAvatar name={user.name} size={28} />
-                        <span style={{ fontSize: 14, color: '#767676' }}>{user.name}</span>
+                  <tr key={user.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                    <td style={{ padding: '16px 20px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <InitialsAvatar name={user.name} size={32} />
+                        <span style={{ fontSize: 15, color: '#fff', fontWeight: 500 }}>{user.name}</span>
                       </div>
                     </td>
-                    <td style={{ padding: '10px 16px', fontSize: 13, color: '#999' }}>{user.email}</td>
-                    <td style={{ padding: '10px 16px' }}>
+                    <td style={{ padding: '16px 20px', fontSize: 13, color: 'var(--color-secondary-text)' }}>{user.email}</td>
+                    <td style={{ padding: '16px 20px' }}>
                       <button onClick={() => toggleActive(user)} className="btn-primary"
-                        style={{ padding: '5px 14px', fontSize: 12 }}>Reactivate</button>
+                        style={{ padding: '8px 16px', fontSize: 13 }}>Reactivate</button>
                     </td>
                   </tr>
                 ))}
@@ -465,41 +474,48 @@ export default function Team() {
       {/* Add User Modal */}
       {showAddUser && (
         <div style={{
-          position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)',
+          position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }} onClick={() => setShowAddUser(false)}>
           <div style={{
-            background: '#fff', borderRadius: 16, width: 440, padding: 32,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+            background: 'var(--color-surface)', borderRadius: 24, width: 480, padding: 32,
+            boxShadow: 'var(--shadow-modal)', border: '1px solid var(--color-border)'
           }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 18, margin: '0 0 4px', color: '#1A1A2E' }}>
-              Add Team Member
-            </h2>
-            <p style={{ fontSize: 13, color: '#767676', margin: '0 0 24px' }}>
-              Add a user manually — you can log time for them even before they sign in.
-            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+              <div>
+                <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 20, margin: '0 0 4px', color: '#fff' }}>
+                  Add Team Member
+                </h2>
+                <p style={{ fontSize: 13, color: 'var(--color-secondary-text)', margin: 0 }}>
+                  Add a user manually to begin tracking their time metrics.
+                </p>
+              </div>
+              <button onClick={() => setShowAddUser(false)} style={{ background: 'var(--color-surface-hover)', border: 'none', padding: 8, borderRadius: 10, cursor: 'pointer' }}>
+                <X size={20} color="var(--color-secondary-text)" />
+              </button>
+            </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Name *</label>
+                <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-secondary-text)', marginBottom: 8, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name *</label>
                 <input style={inputStyle} placeholder="Full name" value={newUser.name}
-                  onChange={(e) => setNewUser((p) => ({ ...p, name: e.target.value }))} />
+                  onChange={(e) => setNewUser((p) => ({ ...p, name: e.target.value }))} className="focus:border-[var(--color-primary)]" />
               </div>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Email *</label>
+                <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-secondary-text)', marginBottom: 8, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email *</label>
                 <input style={inputStyle} type="email" placeholder="email@example.com" value={newUser.email}
-                  onChange={(e) => setNewUser((p) => ({ ...p, email: e.target.value }))} />
+                  onChange={(e) => setNewUser((p) => ({ ...p, email: e.target.value }))} className="focus:border-[var(--color-primary)]" />
               </div>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Daily Capacity (hrs)</label>
+                <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-secondary-text)', marginBottom: 8, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Daily Capacity (hrs)</label>
                 <input style={inputStyle} type="number" min="1" max="24" value={newUser.dailyCapacity}
-                  onChange={(e) => setNewUser((p) => ({ ...p, dailyCapacity: parseInt(e.target.value) || 8 }))} />
+                  onChange={(e) => setNewUser((p) => ({ ...p, dailyCapacity: parseInt(e.target.value) || 8 }))} className="focus:border-[var(--color-primary)]" />
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24 }}>
-              <button onClick={() => setShowAddUser(false)} className="btn-secondary">Cancel</button>
-              <button onClick={handleAddManualUser} className="btn-primary">Add Member</button>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 32 }}>
+              <button onClick={() => setShowAddUser(false)} className="btn-secondary" style={{ padding: '10px 24px' }}>Cancel</button>
+              <button onClick={handleAddManualUser} className="btn-primary" style={{ padding: '10px 24px' }}>Add Member</button>
             </div>
           </div>
         </div>
@@ -508,35 +524,42 @@ export default function Team() {
       {/* Edit User Modal */}
       {editingUser && (
         <div style={{
-          position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)',
+          position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }} onClick={() => setEditingUser(null)}>
           <div style={{
-            background: '#fff', borderRadius: 16, width: 440, padding: 32,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+            background: 'var(--color-surface)', borderRadius: 24, width: 480, padding: 32,
+            boxShadow: 'var(--shadow-modal)', border: '1px solid var(--color-border)'
           }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 18, margin: '0 0 4px', color: '#1A1A2E' }}>
-              Edit Team Member
-            </h2>
-            <p style={{ fontSize: 13, color: '#767676', margin: '0 0 24px' }}>
-              Update details for {editingUser.name}.
-            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+              <div>
+                <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 20, margin: '0 0 4px', color: '#fff' }}>
+                  Edit Team Member
+                </h2>
+                <p style={{ fontSize: 13, color: 'var(--color-secondary-text)', margin: 0 }}>
+                  Update details for {editingUser.name}.
+                </p>
+              </div>
+              <button onClick={() => setEditingUser(null)} style={{ background: 'var(--color-surface-hover)', border: 'none', padding: 8, borderRadius: 10, cursor: 'pointer' }}>
+                <X size={20} color="var(--color-secondary-text)" />
+              </button>
+            </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Name *</label>
+                <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-secondary-text)', marginBottom: 8, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name *</label>
                 <input style={inputStyle} placeholder="Full name" value={editData.name}
-                  onChange={(e) => setEditData((p) => ({ ...p, name: e.target.value }))} />
+                  onChange={(e) => setEditData((p) => ({ ...p, name: e.target.value }))} className="focus:border-[var(--color-primary)]" />
               </div>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Email *</label>
+                <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-secondary-text)', marginBottom: 8, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email *</label>
                 <input style={inputStyle} type="email" placeholder="email@example.com" value={editData.email}
-                  onChange={(e) => setEditData((p) => ({ ...p, email: e.target.value }))} />
+                  onChange={(e) => setEditData((p) => ({ ...p, email: e.target.value }))} className="focus:border-[var(--color-primary)]" />
               </div>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>LDAP Account</label>
+                <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-secondary-text)', marginBottom: 8, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>LDAP Account</label>
                 <select style={inputStyle} value={editData.ldap}
-                  onChange={(e) => setEditData((p) => ({ ...p, ldap: e.target.value }))}>
+                  onChange={(e) => setEditData((p) => ({ ...p, ldap: e.target.value }))} className="focus:border-[var(--color-primary)]">
                   <option value="">Select LDAP Account</option>
                   {LDAP_ACCOUNTS.map(acc => (
                     <option key={acc.id} value={acc.id}>{acc.label}</option>
@@ -544,13 +567,13 @@ export default function Team() {
                 </select>
               </div>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Daily Capacity (hrs)</label>
+                <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-secondary-text)', marginBottom: 8, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Daily Capacity (hrs)</label>
                 <input style={inputStyle} type="number" min="1" max="24" value={editData.dailyCapacity}
-                  onChange={(e) => setEditData((p) => ({ ...p, dailyCapacity: parseFloat(e.target.value) || 8 }))} />
+                  onChange={(e) => setEditData((p) => ({ ...p, dailyCapacity: parseFloat(e.target.value) || 8 }))} className="focus:border-[var(--color-primary)]" />
               </div>
               <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#1A1A2E', marginBottom: 6, display: 'block', fontFamily: '"Poppins"' }}>Roles</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-secondary-text)', marginBottom: 8, display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Roles</label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                   {['designer', 'moderator', 'admin'].map(roleKey => {
                     const currentRoles = editingUser.roles || (editingUser.role ? [editingUser.role] : []);
                     const isAssigned = currentRoles.includes(roleKey);
@@ -569,13 +592,13 @@ export default function Team() {
                           setEditData(p => ({ ...p, roles: next }));
                         }}
                         style={{
-                          fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 6, 
+                          fontSize: 12, fontWeight: 700, padding: '6px 14px', borderRadius: 8, 
                           cursor: (roleKey === 'admin' && editData.email?.toLowerCase() !== 'jayveer7773@gmail.com') ? 'not-allowed' : 'pointer',
-                          border: isStaged ? 'none' : '1px solid #D4D2D0',
-                          background: isStaged ? colors.bg : '#fff',
-                          color: isStaged ? colors.text : '#767676',
-                          transition: 'all 0.2s',
-                          opacity: (roleKey === 'admin' && editData.email?.toLowerCase() !== 'jayveer7773@gmail.com' && !isStaged) ? 0.4 : 1
+                          border: isStaged ? 'none' : '1px solid var(--color-border)',
+                          background: isStaged ? colors.bg : 'var(--color-surface)',
+                          color: isStaged ? colors.text : 'var(--color-secondary-text)',
+                          transition: 'all 0.2s', textTransform: 'uppercase', letterSpacing: '0.05em',
+                          opacity: (roleKey === 'admin' && editData.email?.toLowerCase() !== 'jayveer7773@gmail.com' && !isStaged) ? 0.3 : 1
                         }}
                       >
                         {label}
@@ -586,9 +609,9 @@ export default function Team() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24 }}>
-              <button onClick={() => setEditingUser(null)} className="btn-secondary">Cancel</button>
-              <button onClick={saveUserEdits} className="btn-primary">Save Changes</button>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 32 }}>
+              <button onClick={() => setEditingUser(null)} className="btn-secondary" style={{ padding: '10px 24px' }}>Cancel</button>
+              <button onClick={saveUserEdits} className="btn-primary" style={{ padding: '10px 24px' }}>Save Changes</button>
             </div>
           </div>
         </div>

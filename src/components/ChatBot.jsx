@@ -65,8 +65,8 @@ export default function ChatBot() {
         onClick={() => setIsOpen(true)}
         style={{
           position: 'fixed', bottom: 24, right: 24, zIndex: 1000,
-          width: 56, height: 56, borderRadius: '50%', background: '#0451CC',
-          color: '#fff', boxShadow: '0 8px 32px rgba(4, 81, 204, 0.3)',
+          width: 56, height: 56, borderRadius: '50%', background: 'var(--color-primary)',
+          color: '#fff', boxShadow: '0 8px 32px rgba(37, 87, 167, 0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', border: 'none', transition: 'transform 0.2s',
         }}
@@ -82,20 +82,20 @@ export default function ChatBot() {
     <div style={{
       position: 'fixed', bottom: 24, right: 24, zIndex: 1000,
       width: isMinimized ? 200 : 380, height: isMinimized ? 48 : 520,
-      background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB',
-      boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+      background: 'var(--color-surface)', borderRadius: 20, border: '1px solid var(--color-border)',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
       display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease',
       overflow: 'hidden'
     }}>
       {/* Header */}
       <div style={{
-        padding: '12px 16px', background: '#0451CC', color: '#fff',
+        padding: '14px 18px', background: 'var(--color-primary)', color: '#fff',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        cursor: 'pointer'
+        cursor: 'pointer', borderRadius: '20px 20px 0 0'
       }} onClick={() => isMinimized && setIsMinimized(false)}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <Sparkles size={18} />
-          <span style={{ fontWeight: 600, fontSize: 14, fontFamily: '"Poppins"' }}>AI Assistant</span>
+          <span style={{ fontWeight: 700, fontSize: 14, fontFamily: '"Poppins"' }}>AI Assistant</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button onClick={(e) => { e.stopPropagation(); setIsMinimized(!isMinimized); }} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 4 }}>
@@ -110,19 +110,19 @@ export default function ChatBot() {
       {!isMinimized && (
         <>
           {/* Chat Messages */}
-          <div ref={scrollRef} style={{ flex: 1, padding: 16, overflowY: 'auto', background: '#F9FAFB', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div ref={scrollRef} style={{ flex: 1, padding: 16, overflowY: 'auto', background: 'var(--color-background)', display: 'flex', flexDirection: 'column', gap: 12 }}>
             {!hasApiKey && (
-              <div style={{ background: '#FEF3C7', padding: 12, borderRadius: 8, fontSize: 12, color: '#92400E', border: '1px solid #FDE68A' }}>
-                <p style={{ margin: '0 0 8px', fontWeight: 600 }}>Gemini API Key Required</p>
+              <div style={{ background: 'rgba(245, 158, 11, 0.15)', padding: 14, borderRadius: 12, fontSize: 12, color: '#F59E0B', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+                <p style={{ margin: '0 0 8px', fontWeight: 700 }}>Gemini API Key Required</p>
                 <div style={{ display: 'flex', gap: 6 }}>
                   <input 
                     type="password" 
                     placeholder="Enter API Key..." 
                     value={tempKey} 
                     onChange={e => setTempKey(e.target.value)}
-                    style={{ flex: 1, padding: '4px 8px', borderRadius: 4, border: '1px solid #FDE68A', fontSize: 11 }}
+                    style={{ flex: 1, padding: '6px 10px', borderRadius: 8, border: '1px solid var(--color-border)', fontSize: 11, background: 'var(--color-surface)', color: '#fff', outline: 'none' }}
                   />
-                  <button onClick={handleSetKey} style={{ background: '#92400E', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 8px', cursor: 'pointer' }}>Set</button>
+                  <button onClick={handleSetKey} className="btn-primary" style={{ padding: '6px 12px', fontSize: 11 }}>Set</button>
                 </div>
               </div>
             )}
@@ -131,27 +131,27 @@ export default function ChatBot() {
               <div key={i} style={{
                 alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
                 maxWidth: '85%',
-                background: m.role === 'user' ? '#0451CC' : '#fff',
-                color: m.role === 'user' ? '#fff' : '#1A1A2E',
+                background: m.role === 'user' ? 'var(--color-primary)' : 'var(--color-surface)',
+                color: '#fff',
                 padding: '10px 14px',
                 borderRadius: m.role === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
                 fontSize: 13,
-                boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
                 lineHeight: 1.5,
-                border: m.role === 'ai' ? '1px solid #E5E7EB' : 'none'
+                border: m.role === 'ai' ? '1px solid var(--color-border)' : 'none'
               }}>
                 {m.text}
               </div>
             ))}
             {isLoading && (
-              <div style={{ alignSelf: 'flex-start', background: '#fff', padding: '10px 14px', borderRadius: '14px 14px 14px 2px', border: '1px solid #E5E7EB' }}>
-                <Loader2 size={16} className="spinning" color="#0451CC" />
+              <div style={{ alignSelf: 'flex-start', background: 'var(--color-surface)', padding: '10px 14px', borderRadius: '14px 14px 14px 2px', border: '1px solid var(--color-border)' }}>
+                <Loader2 size={16} className="spinning" color="var(--color-primary)" />
               </div>
             )}
           </div>
 
           {/* Input Area */}
-          <div style={{ padding: 16, borderTop: '1px solid #E5E7EB', background: '#fff' }}>
+          <div style={{ padding: 16, borderTop: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
             <div style={{ position: 'relative' }}>
               <input
                 type="text"
@@ -161,9 +161,10 @@ export default function ChatBot() {
                 placeholder="Ask me anything..."
                 disabled={!hasApiKey || isLoading}
                 style={{
-                  width: '100%', padding: '10px 40px 10px 14px', borderRadius: 12,
-                  border: '1px solid #E5E7EB', fontSize: 13,
-                  outline: 'none', fontFamily: '"Noto Sans", sans-serif'
+                  width: '100%', padding: '12px 40px 12px 16px', borderRadius: 12,
+                  border: '1px solid var(--color-border)', fontSize: 13, background: 'var(--color-background)',
+                  color: '#fff', outline: 'none', fontFamily: '"Noto Sans", sans-serif',
+                  transition: 'border-color 0.2s'
                 }}
               />
               <button 
@@ -171,7 +172,7 @@ export default function ChatBot() {
                 disabled={!hasApiKey || isLoading || !input.trim()}
                 style={{
                   position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', color: (isLoading || !input.trim()) ? '#D1D5DB' : '#0451CC',
+                  background: 'none', border: 'none', color: (isLoading || !input.trim()) ? 'var(--color-border)' : 'var(--color-primary)',
                   cursor: 'pointer', display: 'flex', alignItems: 'center'
                 }}
               >

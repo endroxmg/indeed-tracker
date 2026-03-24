@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { X, Save, Key, Cpu, Bell, Shield, Wallet, Globe, Loader2, RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { updateGlobalSettings, getGlobalSettings } from '../services/firestoreService';
@@ -17,7 +18,7 @@ export default function SettingsModal({ onClose }) {
     geminiApiKey: '',
     jiraDomain: '',
     notificationsEnabled: true,
-    theme: 'light',
+    theme: 'dark', // Updated default
     currency: 'INR'
   });
 
@@ -80,40 +81,42 @@ export default function SettingsModal({ onClose }) {
 
   const modalStyle = {
     position: 'fixed', inset: 0, zIndex: 2000,
-    background: 'rgba(26,26,46,0.6)', backdropFilter: 'blur(8px)',
+    background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     padding: 20
   };
 
   const contentStyle = {
-    background: '#fff', borderRadius: 20, width: 640, maxWidth: '100%',
+    background: 'var(--color-surface)', borderRadius: 24, width: 720, maxWidth: '100%',
     maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column',
-    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
+    boxShadow: 'var(--shadow-modal)', border: '1px solid var(--color-border)'
   };
 
   const sidebarTabStyle = (id) => ({
-    padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 12,
+    padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12,
     cursor: 'pointer', borderRadius: 12, fontSize: 13, fontWeight: 600,
-    color: activeTab === id ? '#2557A7' : '#6B7280',
-    background: activeTab === id ? '#E8EDF7' : 'transparent',
-    transition: 'all 0.2s', margin: '2px 0'
+    color: activeTab === id ? 'var(--color-primary)' : 'var(--color-secondary-text)',
+    background: activeTab === id ? 'var(--color-primary-light)' : 'transparent',
+    border: activeTab === id ? '1px solid rgba(37, 87, 167, 0.2)' : '1px solid transparent',
+    transition: 'all 0.2s', margin: '4px 0'
   });
 
   const sectionLabelStyle = {
-    fontSize: 11, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase',
+    fontSize: 12, fontWeight: 700, color: 'var(--color-secondary-text)', textTransform: 'uppercase',
     letterSpacing: '0.05em', marginBottom: 12, display: 'block'
   };
 
   const inputStyle = {
-    width: '100%', padding: '10px 14px', borderRadius: 10,
-    border: '1px solid #E5E7EB', fontSize: 13, fontFamily: '"Poppins", sans-serif',
-    outline: 'none', transition: 'border-color 0.2s'
+    width: '100%', padding: '12px 16px', borderRadius: 12,
+    border: '1px solid var(--color-border)', fontSize: 13, fontFamily: '"Poppins", sans-serif',
+    outline: 'none', transition: 'border-color 0.2s', background: 'var(--color-background)',
+    color: '#fff'
   };
 
   if (loading) return (
     <div style={modalStyle}>
       <div style={{ ...contentStyle, padding: 40, alignItems: 'center', justifyContent: 'center' }}>
-        <Loader2 className="spinning" color="#2557A7" size={32} />
+        <Loader2 className="spinning" color="var(--color-primary)" size={32} />
       </div>
     </div>
   );
@@ -122,19 +125,19 @@ export default function SettingsModal({ onClose }) {
     <div style={modalStyle} onClick={onClose}>
       <div style={contentStyle} onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--color-surface)' }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1A1A2E', margin: 0, fontFamily: '"Poppins"' }}>Settings</h2>
-            <p style={{ fontSize: 12, color: '#6B7280', margin: 0 }}>Configure your experience and integration keys</p>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: '#fff', margin: 0, fontFamily: '"Poppins"' }}>Global Settings</h2>
+            <p style={{ fontSize: 13, color: 'var(--color-secondary-text)', margin: '4px 0 0' }}>Configure integrations and workspace preferences</p>
           </div>
-          <button onClick={onClose} style={{ background: '#F9FAFB', border: 'none', borderRadius: 10, padding: 8, cursor: 'pointer' }}>
-            <X size={20} color="#6B7280" />
+          <button onClick={onClose} style={{ background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', borderRadius: 12, padding: 8, cursor: 'pointer', transition: 'all 0.2s' }} className="hover:bg-[var(--color-border)]">
+            <X size={20} color="var(--color-secondary-text)" />
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', flex: 1, minHeight: 400 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', flex: 1, minHeight: 460 }}>
           {/* Sidebar */}
-          <div style={{ padding: 16, borderRight: '1px solid #F3F4F6', background: '#FAFBFC' }}>
+          <div style={{ padding: '24px 16px', borderRight: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
             <div style={sidebarTabStyle('api')} onClick={() => setActiveTab('api')}>
               <Key size={18} /> API & Integrations
             </div>
@@ -150,28 +153,30 @@ export default function SettingsModal({ onClose }) {
           </div>
 
           {/* Tab Content */}
-          <div style={{ padding: 24, overflowY: 'auto' }}>
+          <div style={{ padding: '32px 40px', overflowY: 'auto', background: 'var(--color-background)' }}>
             {activeTab === 'api' && (
               <div className="fade-in">
                 <span style={sectionLabelStyle}>External Services</span>
                 {!isAdmin && (
-                  <div style={{ background: '#FFF7ED', border: '1px solid #FFEDD5', padding: 12, borderRadius: 10, marginBottom: 20, color: '#9A3412', fontSize: 12 }}>
+                  <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: 16, borderRadius: 12, marginBottom: 24, color: '#F59E0B', fontSize: 13, display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <Shield size={18} />
                     <strong>Notice:</strong> Only administrators can modify global API keys.
                   </div>
                 )}
                 
-                <div style={{ marginBottom: 24 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <label style={{ ...sectionLabelStyle, fontSize: 10, textTransform: 'none', color: '#6B7280', margin: 0 }}>Frame.io Personal Access Token</label>
+                <div style={{ marginBottom: 32 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <label style={{ ...sectionLabelStyle, fontSize: 13, textTransform: 'none', margin: 0 }}>Frame.io Personal Access Token</label>
                     <button 
                       onClick={handleTestFrameio} 
                       disabled={testing || !settings.frameioToken}
                       style={{ 
-                        fontSize: 10, padding: '4px 8px', borderRadius: 6, border: '1px solid #2557A7',
-                        background: '#fff', color: '#2557A7', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4
+                        fontSize: 11, padding: '6px 12px', borderRadius: 8, border: '1px solid var(--color-primary)',
+                        background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, transition: 'all 0.2s'
                       }}
+                      className="hover:bg-[var(--color-primary-light)]"
                     >
-                      {testing ? <Loader2 size={10} className="spinning" /> : <RefreshCw size={10} />}
+                      {testing ? <Loader2 size={12} className="spinning" /> : <RefreshCw size={12} />}
                       Test
                     </button>
                   </div>
@@ -179,40 +184,42 @@ export default function SettingsModal({ onClose }) {
                     type="password" 
                     value={settings.frameioToken} 
                     onChange={e => { setSettings(p => ({ ...p, frameioToken: e.target.value })); setTestResult(null); }}
-                    placeholder="fio-u-..."
+                    placeholder="Enter Frame.io developer token..."
                     style={inputStyle}
                     disabled={!isAdmin}
+                    className="focus:border-[var(--color-primary)] opacity-100 disabled:opacity-50"
                   />
                   {testResult && (
                     <div style={{ 
-                      marginTop: 8, padding: '8px 12px', borderRadius: 8, fontSize: 11,
-                      background: testResult.success ? '#F0FDF4' : '#FEF2F2',
-                      color: testResult.success ? '#166534' : '#991B1B',
-                      display: 'flex', alignItems: 'center', gap: 8, border: '1px solid',
-                      borderColor: testResult.success ? '#DCFCE7' : '#FEE2E2'
+                      marginTop: 12, padding: '10px 16px', borderRadius: 10, fontSize: 12,
+                      background: testResult.success ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                      color: testResult.success ? '#10B981' : '#EF4444',
+                      display: 'flex', alignItems: 'center', gap: 10, border: '1px solid',
+                      borderColor: testResult.success ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'
                     }}>
-                      {testResult.success ? <CheckCircle size={14} /> : <AlertTriangle size={14} />}
+                      {testResult.success ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
                       {testResult.message}
                     </div>
                   )}
-                  <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 6 }}>Used for syncing comments and video metadata. Generate this in Frame.io Developer Tools.</p>
+                  <p style={{ fontSize: 12, color: 'var(--color-secondary-text)', marginTop: 8 }}>Used for syncing comments and video metadata. Generate this in Frame.io Developer Tools.</p>
                 </div>
 
-                <div style={{ marginBottom: 20 }}>
-                  <label style={{ ...sectionLabelStyle, fontSize: 10, textTransform: 'none', color: '#6B7280' }}>Gemini API Key</label>
+                <div style={{ marginBottom: 32 }}>
+                  <label style={{ ...sectionLabelStyle, fontSize: 13, textTransform: 'none' }}>Gemini API Key</label>
                   <input 
                     type="password" 
                     value={settings.geminiApiKey} 
                     onChange={e => setSettings(p => ({ ...p, geminiApiKey: e.target.value }))}
-                    placeholder="AIza..."
+                    placeholder="AIzaSy..."
                     style={inputStyle}
                     disabled={!isAdmin}
+                    className="focus:border-[var(--color-primary)] opacity-100 disabled:opacity-50"
                   />
-                  <p style={{ fontSize: 11, color: '#9CA3AF', marginTop: 6 }}>Used for AI-assisted task updates and summaries.</p>
+                  <p style={{ fontSize: 12, color: 'var(--color-secondary-text)', marginTop: 8 }}>Used for AI-assisted task updates and summaries.</p>
                 </div>
 
-                <div style={{ marginBottom: 20 }}>
-                  <label style={{ ...sectionLabelStyle, fontSize: 10, textTransform: 'none', color: '#6B7280' }}>Jira Workspace Domain</label>
+                <div style={{ marginBottom: 32 }}>
+                  <label style={{ ...sectionLabelStyle, fontSize: 13, textTransform: 'none' }}>Jira Workspace Domain</label>
                   <input 
                     type="text" 
                     value={settings.jiraDomain} 
@@ -220,6 +227,7 @@ export default function SettingsModal({ onClose }) {
                     placeholder="your-org.atlassian.net"
                     style={inputStyle}
                     disabled={!isAdmin}
+                    className="focus:border-[var(--color-primary)] opacity-100 disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -227,48 +235,56 @@ export default function SettingsModal({ onClose }) {
 
             {activeTab === 'general' && (
               <div className="fade-in">
-                <span style={sectionLabelStyle}>Preference</span>
-                <div style={{ marginBottom: 20 }}>
-                  <label style={{ ...sectionLabelStyle, fontSize: 10, textTransform: 'none', color: '#6B7280' }}>Default Currency</label>
+                <span style={sectionLabelStyle}>Preferences</span>
+                <div style={{ marginBottom: 32 }}>
+                  <label style={{ ...sectionLabelStyle, fontSize: 13, textTransform: 'none' }}>Default Currency</label>
                   <select 
                     value={settings.currency} 
                     onChange={e => setSettings(p => ({ ...p, currency: e.target.value }))}
                     style={inputStyle}
+                    className="focus:border-[var(--color-primary)]"
                   >
                     <option value="INR">Indian Rupee (₹)</option>
                     <option value="USD">US Dollar ($)</option>
                   </select>
                 </div>
+                
+                <div style={{ marginBottom: 32 }}>
+                  <label style={{ ...sectionLabelStyle, fontSize: 13, textTransform: 'none' }}>Theme</label>
+                  <select 
+                    value={settings.theme} 
+                    onChange={e => setSettings(p => ({ ...p, theme: e.target.value }))}
+                    style={inputStyle}
+                    className="focus:border-[var(--color-primary)]"
+                  >
+                    <option value="dark">Dark Theme (Default)</option>
+                    <option value="light">Light Theme</option>
+                  </select>
+                  <p style={{ fontSize: 12, color: 'var(--color-secondary-text)', marginTop: 8 }}>This application is primarily designed for Dark Mode.</p>
+                </div>
               </div>
             )}
 
             {activeTab === 'notifications' && (
-              <div className="fade-in" style={{ textAlign: 'center', padding: 40, color: '#9CA3AF' }}>
-                <Bell size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
-                <p style={{ fontSize: 14 }}>Notification preferences coming soon.</p>
+              <div className="fade-in" style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--color-secondary-text)' }}>
+                <Bell size={48} style={{ marginBottom: 16, opacity: 0.2 }} />
+                <p style={{ fontSize: 14, fontWeight: 500 }}>Notification preferences coming soon.</p>
               </div>
             )}
 
             {activeTab === 'security' && (
-              <div className="fade-in" style={{ textAlign: 'center', padding: 40, color: '#9CA3AF' }}>
-                <Shield size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
-                <p style={{ fontSize: 14 }}>Role-based access controls and audit logs.</p>
+              <div className="fade-in" style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--color-secondary-text)' }}>
+                <Shield size={48} style={{ marginBottom: 16, opacity: 0.2 }} />
+                <p style={{ fontSize: 14, fontWeight: 500 }}>Role-based access controls and audit logs.</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #F3F4F6', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-          <button onClick={onClose} style={{
-            padding: '10px 20px', borderRadius: 12, border: '1px solid #E5E7EB',
-            background: '#fff', fontSize: 13, fontWeight: 600, color: '#4B5563', cursor: 'pointer'
-          }}>Cancel</button>
-          <button onClick={handleSave} disabled={saving || !isAdmin} style={{
-            padding: '10px 24px', borderRadius: 12, border: 'none',
-            background: isAdmin ? '#2557A7' : '#D1D5DB', fontSize: 13, fontWeight: 700, color: '#fff', 
-            cursor: isAdmin ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 8
-          }}>
+        <div style={{ padding: '20px 32px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'flex-end', gap: 16, background: 'var(--color-surface)' }}>
+          <button onClick={onClose} className="btn-secondary" style={{ padding: '10px 24px' }}>Cancel</button>
+          <button onClick={handleSave} disabled={saving || !isAdmin} className={isAdmin ? 'btn-primary' : 'btn-secondary'} style={{ padding: '10px 24px', display: 'flex', alignItems: 'center', gap: 10, opacity: isAdmin ? 1 : 0.5 }}>
             {saving ? <Loader2 size={16} className="spinning" /> : <Save size={16} />}
             Save Changes
           </button>

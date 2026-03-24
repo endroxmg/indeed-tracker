@@ -78,64 +78,64 @@ export default function ShiftScheduleTab() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Week Navigator */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button 
             onClick={() => setCurrentDate(subWeeks(currentDate, 1))}
-            style={navBtnStyle}
-          ><ChevronLeft size={18} /></button>
-          <div style={{ fontSize: 16, fontWeight: 600, fontFamily: 'Poppins' }}>
+            style={navBtnStyle} className="hover:bg-[var(--color-surface-hover)]"
+          ><ChevronLeft size={18} color="var(--color-secondary-text)" /></button>
+          <div style={{ fontSize: 16, fontWeight: 700, fontFamily: '"Poppins"', color: '#fff' }}>
             Week of {format(weekDays[0], 'dd MMM yyyy')}
           </div>
           <button 
             onClick={() => setCurrentDate(addWeeks(currentDate, 1))}
-            style={navBtnStyle}
-          ><ChevronRight size={18} /></button>
+            style={navBtnStyle} className="hover:bg-[var(--color-surface-hover)]"
+          ><ChevronRight size={18} color="var(--color-secondary-text)" /></button>
           <button 
             onClick={() => setCurrentDate(new Date())}
-            style={todayBtnStyle}
+            style={todayBtnStyle} className="hover:bg-[var(--color-surface-hover)]"
           >Today</button>
         </div>
       </div>
 
       {/* Roster Grid */}
       <div style={{ 
-        background: '#fff', 
+        background: 'var(--color-surface)', 
         borderRadius: 16, 
-        border: '1px solid #E5E7EB', 
+        border: '1px solid var(--color-border)', 
         overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+        boxShadow: 'var(--shadow-card)'
       }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid #E5E7EB', background: '#F9FAFB' }}>
+            <tr style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface-hover)' }}>
               <th style={{ ...thStyle, width: 220 }}>Team Members</th>
               {weekDays.map(day => (
                 <th key={day.toString()} style={{ ...thStyle, textAlign: 'center' }}>
-                  <div style={{ fontSize: 11, color: '#6B7280', fontWeight: 500 }}>{format(day, 'EEE')}</div>
-                  <div style={{ fontSize: 14 }}>{format(day, 'dd')}</div>
+                  <div style={{ fontSize: 11, color: 'var(--color-secondary-text)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{format(day, 'EEE')}</div>
+                  <div style={{ fontSize: 15, color: '#fff' }}>{format(day, 'dd')}</div>
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {users.map(user => (
-              <tr key={user.id} style={{ borderBottom: '1px solid #E5E7EB' }}>
+              <tr key={user.id} style={{ borderBottom: '1px solid var(--color-border)' }} className="hover:bg-[var(--color-surface-hover)] transition-colors duration-200">
                 <td style={tdNameStyle}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <div style={{ 
-                      width: 32, height: 32, borderRadius: '50%', 
-                      background: '#0451CC', color: '#fff', 
+                      width: 36, height: 36, borderRadius: '50%', 
+                      background: 'var(--color-primary)', color: '#fff', 
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 12, fontWeight: 600
+                      fontSize: 14, fontWeight: 700
                     }}>
                       {user.name.charAt(0)}
                     </div>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 600 }}>{user.name}</div>
-                      <div style={{ fontSize: 11, color: '#6B7280' }}>{user.role}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{user.name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--color-secondary-text)' }}>{user.role}</div>
                     </div>
                   </div>
                 </td>
@@ -153,37 +153,39 @@ export default function ShiftScheduleTab() {
                       onClick={() => handleCellClick(user, day)}
                       style={{ 
                         ...tdDateStyle, 
-                        background: isSun ? '#F3F4F6' : (holiday ? '#FEF9C3' : '#fff'),
+                        background: isSun ? 'rgba(255,255,255,0.02)' : (holiday ? 'rgba(245, 158, 11, 0.1)' : 'transparent'),
                         cursor: 'pointer'
                       }}
+                      className="hover:bg-[rgba(255,255,255,0.05)] transition-colors duration-200"
                     >
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                         {holiday ? (
                           <>
-                            <div style={{ fontSize: 10, color: '#92400E', textAlign: 'center', fontWeight: 500 }}>
+                            <div style={{ fontSize: 10, color: '#F59E0B', textAlign: 'center', fontWeight: 600 }}>
                               {holiday.name}
                             </div>
-                            <div style={{ fontSize: 10, color: '#6B7280' }}>
+                            <div style={{ fontSize: 10, color: 'var(--color-secondary-text)' }}>
                               {isSun && !shift ? 'Sunday' : ''}
                             </div>
                           </>
                         ) : null}
 
                         {shift ? (
-                          <div style={{ fontSize: 12, fontWeight: 500, color: '#2D2D2D' }}>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>
                             {formatShiftTime(shift.shiftStart)} – {formatShiftTime(shift.shiftEnd)}
                           </div>
                         ) : !holiday && !isSun ? (
-                          <div style={{ fontSize: 12, color: '#9CA3AF' }}>—</div>
+                          <div style={{ fontSize: 12, color: 'var(--color-secondary-text)' }}>—</div>
                         ) : isSun && !shift ? (
-                          <div style={{ fontSize: 12, color: '#9CA3AF' }}>—</div>
+                          <div style={{ fontSize: 12, color: 'var(--color-secondary-text)' }}>—</div>
                         ) : null}
 
                         {att && (
                           <div style={{ 
-                            padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 600,
-                            background: ATTENDANCE_STATUS_COLORS[att.status]?.bg || '#F3F4F6',
-                            color: ATTENDANCE_STATUS_COLORS[att.status]?.text || '#374151'
+                            padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700,
+                            background: ATTENDANCE_STATUS_COLORS[att.status]?.bg || 'var(--color-surface-hover)',
+                            color: ATTENDANCE_STATUS_COLORS[att.status]?.text || 'var(--color-secondary-text)',
+                            textTransform: 'uppercase', letterSpacing: '0.05em', border: `1px solid ${ATTENDANCE_STATUS_COLORS[att.status]?.text || '#6B7280'}40`
                           }}>
                             {ATTENDANCE_STATUS_LABELS[att.status]}
                           </div>
@@ -209,14 +211,14 @@ export default function ShiftScheduleTab() {
   );
 }
 
-const thStyle = { padding: '12px 16px', textAlign: 'left', fontFamily: 'Poppins', fontWeight: 600 };
-const tdNameStyle = { padding: '12px 16px' };
-const tdDateStyle = { padding: '12px 8px', borderLeft: '1px solid #E5E7EB', verticalAlign: 'middle' };
+const thStyle = { padding: '16px 20px', textAlign: 'left', fontFamily: '"Poppins"', fontWeight: 700, color: 'var(--color-secondary-text)' };
+const tdNameStyle = { padding: '16px 20px' };
+const tdDateStyle = { padding: '16px 8px', borderLeft: '1px solid var(--color-border)', verticalAlign: 'middle' };
 const navBtnStyle = { 
-  background: '#fff', border: '1px solid #E5E7EB', borderRadius: 8, padding: '6px', 
-  cursor: 'pointer', display: 'flex', alignItems: 'center' 
+  background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '8px', 
+  cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.2s'
 };
 const todayBtnStyle = { 
-  background: '#fff', border: '1px solid #E5E7EB', borderRadius: 8, padding: '6px 16px', 
-  fontSize: 13, fontWeight: 500, cursor: 'pointer' 
+  background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '8px 20px', 
+  fontSize: 13, fontWeight: 600, cursor: 'pointer', color: '#fff', transition: 'all 0.2s'
 };

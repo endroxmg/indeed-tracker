@@ -20,10 +20,10 @@ export default function TeamSalaryTable({ users, records, profiles, yearMonth, o
   return (
     <div style={{ padding: '0 0 24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: '#1A1A2E' }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: '#fff' }}>
           Team Payroll Breakdown — {format(new Date(yearMonth + '-01'), 'MMMM yyyy')}
         </h2>
-        <div style={{ fontSize: 13, background: '#EAF0FD', color: '#0451CC', padding: '4px 12px', borderRadius: 20, fontWeight: 600 }}>
+        <div style={{ fontSize: 13, background: 'var(--color-primary-light)', color: 'var(--color-primary)', padding: '4px 12px', borderRadius: 20, fontWeight: 600 }}>
           {users.length} Active Members
         </div>
       </div>
@@ -34,10 +34,10 @@ export default function TeamSalaryTable({ users, records, profiles, yearMonth, o
             {/* Header: User Info & Status */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <InitialsAvatar name={user.name} size={44} bg="#0451CC" color="#fff" />
+                <InitialsAvatar name={user.name} size={44} bg="var(--color-primary)" color='var(--color-surface)' />
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: '#1A1A2E' }}>{user.name}</div>
-                  <div style={{ fontSize: 12, color: '#6B7280' }}>Base: {profile.monthlySalary ? formatCurrency(profile.monthlySalary) : 'Not Set'}</div>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: '#fff' }}>{user.name}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-secondary-text)' }}>Base: {profile.monthlySalary ? formatCurrency(profile.monthlySalary) : 'Not Set'}</div>
                 </div>
               </div>
               
@@ -53,14 +53,14 @@ export default function TeamSalaryTable({ users, records, profiles, yearMonth, o
                   {record.isFinalized ? 'Finalized' : 'Draft'}
                 </div>
               ) : (
-                <div style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 700, textTransform: 'uppercase' }}>No Data</div>
+                <div style={{ fontSize: 10, color: 'var(--color-secondary-text)', fontWeight: 700, textTransform: 'uppercase' }}>No Data</div>
               )}
             </div>
 
             {/* Main Value */}
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 4 }}>Net Payable</div>
-              <div style={{ fontSize: 32, fontWeight: 800, color: '#0451CC', letterSpacing: '-0.02em' }}>
+              <div style={{ fontSize: 12, color: 'var(--color-secondary-text)', marginBottom: 4 }}>Net Payable</div>
+              <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>
                 {record ? formatCurrency(record.netSalary) : '—'}
               </div>
             </div>
@@ -68,7 +68,7 @@ export default function TeamSalaryTable({ users, records, profiles, yearMonth, o
             {/* Breakdown Mini-Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 24 }}>
               <div style={miniStatStyle}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#6B7280', fontSize: 10, marginBottom: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-secondary-text)', fontSize: 10, marginBottom: 4 }}>
                   <Wallet size={12} /> Base
                 </div>
                 <div style={{ fontSize: 13, fontWeight: 700 }}>{record ? formatCurrency(record.baseSalary) : '—'}</div>
@@ -96,8 +96,8 @@ export default function TeamSalaryTable({ users, records, profiles, yearMonth, o
               <button 
                 onClick={() => onRecalculate(user.id)}
                 style={{ 
-                  flex: 1, padding: '10px', borderRadius: 12, border: '1px solid #E5E7EB',
-                  background: '#fff', color: '#1A1A2E', fontSize: 13, fontWeight: 600,
+                  flex: 1, padding: '10px', borderRadius: 12, border: '1px solid var(--color-border)',
+                  background: 'var(--color-surface)', color: '#fff', fontSize: 13, fontWeight: 600,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   cursor: 'pointer', transition: 'all 0.2s'
                 }}
@@ -108,7 +108,7 @@ export default function TeamSalaryTable({ users, records, profiles, yearMonth, o
               <button 
                 style={{ 
                   padding: '10px 14px', borderRadius: 12, border: 'none',
-                  background: '#0451CC', color: '#fff', fontSize: 13, fontWeight: 600,
+                  background: 'var(--color-primary)', color: 'var(--color-surface)', fontSize: 13, fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center'
                 }}
                 title="View Detailed Payslip"
@@ -121,20 +121,20 @@ export default function TeamSalaryTable({ users, records, profiles, yearMonth, o
       </div>
 
       <style>{`
-        .card-btn-secondary:hover { background: #F9FAFB; border-color: #D1D5DB; }
+        .card-btn-secondary:hover { background: #F9FAFB; border-color: var(--color-border); }
       `}</style>
     </div>
   );
 }
 
 const cardStyle = {
-  background: '#fff', borderRadius: 24, padding: 24,
-  border: '1px solid #E5E7EB', boxShadow: '0 4px 15px rgba(0,0,0,0.02)',
+  background: 'var(--color-surface)', borderRadius: 24, padding: 24,
+  border: '1px solid var(--color-border)', boxShadow: '0 4px 15px rgba(0,0,0,0.02)',
   transition: 'transform 0.2s, box-shadow 0.2s',
   cursor: 'default'
 };
 
 const miniStatStyle = {
-  background: '#F9FAFB', padding: '10px 12px', borderRadius: 12,
-  border: '1px solid #F3F4F6'
+  background: 'var(--color-background)', padding: '10px 12px', borderRadius: 12,
+  border: '1px solid var(--color-border)'
 };

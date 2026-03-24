@@ -36,7 +36,7 @@ export default function FeedbackDonutChart({ tickets, chartRef }) {
     const d = payload[0].payload;
     return (
       <div style={{
-        background: '#fff', border: '1px solid #E5E7EB', borderRadius: 8,
+        background: '#fff', border: '1px solid var(--color-border)', borderRadius: 8,
         padding: '10px 14px', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', fontSize: 12,
       }}>
         <div style={{ fontWeight: 700, marginBottom: 2 }}>{d.name}</div>
@@ -74,8 +74,8 @@ export default function FeedbackDonutChart({ tickets, chartRef }) {
             transform: 'translate(-50%, -50%)',
             textAlign: 'center', pointerEvents: 'none',
           }}>
-            <div style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 26, color: '#0451CC' }}>{total}</div>
-            <div style={{ fontSize: 11, color: '#6B7280', fontWeight: 500 }}>Total Feedback</div>
+            <div style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 26, color: 'var(--color-primary)' }}>{total}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-secondary-text)', fontWeight: 500 }}>Total Feedback</div>
           </div>
         </div>
 
@@ -84,12 +84,12 @@ export default function FeedbackDonutChart({ tickets, chartRef }) {
           {data.map(d => (
             <div key={d.name} style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '5px 0',
-              borderBottom: '1px solid #F3F4F6',
+              borderBottom: '1px solid var(--color-border)',
             }}>
               <span style={{ width: 10, height: 10, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-              <span style={{ fontSize: 12, color: '#2D2D2D', flex: 1 }}>{d.name}</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#2D2D2D', minWidth: 30, textAlign: 'right' }}>{d.value}</span>
-              <span style={{ fontSize: 11, color: '#6B7280', minWidth: 35, textAlign: 'right' }}>{d.pct}%</span>
+              <span style={{ fontSize: 12, color: '#fff', flex: 1 }}>{d.name}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#fff', minWidth: 30, textAlign: 'right' }}>{d.value}</span>
+              <span style={{ fontSize: 11, color: 'var(--color-secondary-text)', minWidth: 35, textAlign: 'right' }}>{d.pct}%</span>
             </div>
           ))}
         </div>

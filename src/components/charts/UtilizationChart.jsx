@@ -11,7 +11,7 @@ export default function UtilizationChart({ dateRange, timeEntries, users, public
 
   const data = workingDates.map(d => {
     const dateStr = format(d, 'yyyy-MM-dd');
-    const hours = getDailyTeamHours(timeEntries, dateStr);
+    const hours = getDailyTeamHours(dateStr, timeEntries);
     return {
       date: format(d, 'M/d'),
       fullDate: dateStr,
@@ -32,28 +32,28 @@ export default function UtilizationChart({ dateRange, timeEntries, users, public
   const rangeLabel = `Time Range: ${dateRange.start} – ${dateRange.end} (${workingDates.length} days)`;
 
   const renderLabel = ({ x, y, value }) => (
-    <text x={x} y={y - 8} textAnchor="middle" fontSize={10} fontWeight={600} fill="#0451CC">{value}</text>
+    <text x={x} y={y - 8} textAnchor="middle" fontSize={10} fontWeight={600} fill="var(--color-primary)">{value}</text>
   );
 
   return (
     <ChartCard title="Task Allocation" icon={Gauge} rightLabel={rangeLabel} chartRef={chartRef}>
-      <h4 style={{ textAlign: 'center', fontFamily: '"Poppins", sans-serif', fontWeight: 600, fontSize: 14, color: '#0451CC', margin: '0 0 12px' }}>
+      <h4 style={{ textAlign: 'center', fontFamily: '"Poppins", sans-serif', fontWeight: 600, fontSize: 14, color: 'var(--color-primary)', margin: '0 0 12px' }}>
         Team Utilization vs Available Capacity
       </h4>
       <ResponsiveContainer width="100%" height={320}>
         <LineChart data={data} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
-          <CartesianGrid horizontal vertical={false} stroke="#F3F4F6" strokeDasharray="4 4" />
-          <XAxis dataKey="date" tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#6B7280' }} tickLine={false} axisLine={{ stroke: '#E5E7EB' }} />
-          <YAxis domain={[0, maxY]} tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#6B7280' }} tickLine={false} axisLine={{ stroke: '#E5E7EB' }} />
+          <CartesianGrid horizontal vertical={false} stroke="var(--color-border)" strokeDasharray="4 4" />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-secondary-text)' }} tickLine={false} axisLine={{ stroke: 'var(--color-border)' }} />
+          <YAxis domain={[0, maxY]} tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-secondary-text)' }} tickLine={false} axisLine={{ stroke: 'var(--color-border)' }} />
           <Tooltip content={<CustomTooltip formatter={(v, n) => n === 'capacity' ? `${v} hrs` : `${v} hrs`} />} />
           <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 12, fontFamily: '"Noto Sans"' }} />
           <Line
             type="monotone"
             dataKey="utilization"
             name="Utilization"
-            stroke="#0451CC"
+            stroke="var(--color-primary)"
             strokeWidth={2}
-            dot={{ r: 4, fill: '#0451CC', stroke: '#fff', strokeWidth: 2 }}
+            dot={{ r: 4, fill: 'var(--color-primary)', stroke: '#fff', strokeWidth: 2 }}
             label={renderLabel}
             isAnimationActive
           />

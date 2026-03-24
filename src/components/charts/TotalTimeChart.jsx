@@ -27,15 +27,15 @@ export default function TotalTimeChart({ tickets, dateRange, publicHolidays, onT
     <ChartCard title="Total Time to Complete" subtitle="Total Time to Completion Breakdown" icon={Clock} chartRef={chartRef}>
       <ResponsiveContainer width="100%" height={Math.max(data.length * 40 + 60, 300)}>
         <BarChart data={data} layout="vertical" margin={{ top: 10, right: 50, bottom: 5, left: 10 }}>
-          <CartesianGrid horizontal={false} vertical stroke="#F3F4F6" strokeDasharray="4 4" />
+          <CartesianGrid horizontal={false} vertical stroke="var(--color-border)" strokeDasharray="4 4" />
           <XAxis
             type="number"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#6B7280' }}
+            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-secondary-text)' }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
             allowDecimals={false}
             domain={[0, maxVal]}
-            label={{ value: 'Days', position: 'insideBottom', style: { fontSize: 11, fill: '#6B7280' } }}
+            label={{ value: 'Days', position: 'insideBottom', style: { fontSize: 11, fill: 'var(--color-secondary-text)' } }}
           />
           <YAxis
             dataKey="jiraId"
@@ -44,19 +44,19 @@ export default function TotalTimeChart({ tickets, dateRange, publicHolidays, onT
               const d = data.find(item => item.jiraId === props.payload.value);
               return (
                 <g transform={`translate(${props.x},${props.y})`} style={{ cursor: 'pointer' }} onClick={() => onTicketClick(d?.ticketId)}>
-                  <text x={-20} y={0} dy={4} textAnchor="end" fontSize={11} fontFamily='"Poppins"' fontWeight={600} fill={isEditMode ? '#DC2626' : '#0451CC'}>
+                  <text x={-20} y={0} dy={4} textAnchor="end" fontSize={11} fontFamily='"Poppins"' fontWeight={600} fill={isEditMode ? '#EF4444' : 'var(--color-primary)'}>
                     {props.payload.value}
                   </text>
                   {isEditMode && (
                     <foreignObject x={-15} y={-8} width={12} height={12}>
-                      <Edit2 size={10} color="#DC2626" />
+                      <Edit2 size={10} color="#EF4444" />
                     </foreignObject>
                   )}
                 </g>
               );
             }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
             width={80}
           />
           <Tooltip content={<CustomTooltip formatter={(v, name) => `${v} days`} />} />
@@ -66,7 +66,7 @@ export default function TotalTimeChart({ tickets, dateRange, publicHolidays, onT
           </Bar>
           <Bar dataKey="indeed" name="Indeed Review Time" stackId="a" fill="#FDE68A" barSize={24}>
             <LabelList dataKey="indeed" position="center" fontSize={10} fontWeight={700} fill="#92400E" formatter={v => v > 0 ? v : ''} />
-            <LabelList dataKey="total" position="right" fontSize={10} fontWeight={700} fill="#2D2D2D" />
+            <LabelList dataKey="total" position="right" fontSize={10} fontWeight={700} fill="#fff" />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

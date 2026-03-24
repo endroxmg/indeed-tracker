@@ -24,33 +24,33 @@ export default function FeedbackVsLengthChart({ tickets, onTicketClick, chartRef
     <ChartCard title="Feedback Count vs Video Length" icon={MessageSquare} chartRef={chartRef}>
       <ResponsiveContainer width="100%" height={340}>
         <ComposedChart data={data} margin={{ top: 20, right: 30, bottom: 5, left: 0 }}>
-          <CartesianGrid horizontal vertical={false} stroke="#F3F4F6" strokeDasharray="4 4" />
+          <CartesianGrid horizontal vertical={false} stroke="var(--color-border)" strokeDasharray="4 4" />
           <XAxis
             dataKey="jiraId"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#0451CC', fontWeight: 600, cursor: 'pointer' }}
+            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-primary)', fontWeight: 600, cursor: 'pointer' }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
           />
           <YAxis
             yAxisId="left"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#6B7280' }}
+            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-secondary-text)' }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
             allowDecimals={false}
-            label={{ value: '# Feedback', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#6B7280' } }}
+            label={{ value: '# Feedback', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: 'var(--color-secondary-text)' } }}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#6B7280' }}
+            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-secondary-text)' }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
             tickFormatter={v => {
               const m = Math.floor(v);
               const s = Math.round((v - m) * 60);
               return `${m}:${String(s).padStart(2, '0')}`;
             }}
-            label={{ value: 'Video Length (MM:SS)', angle: 90, position: 'insideRight', style: { fontSize: 11, fill: '#6B7280' } }}
+            label={{ value: 'Video Length (MM:SS)', angle: 90, position: 'insideRight', style: { fontSize: 11, fill: 'var(--color-secondary-text)' } }}
           />
           <Tooltip content={<CustomTooltip formatter={(v, name) => {
             if (name === 'Video Length (Minutes)') {
@@ -61,20 +61,20 @@ export default function FeedbackVsLengthChart({ tickets, onTicketClick, chartRef
             return v;
           }} />} />
           <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 12, fontFamily: '"Noto Sans"' }} />
-          <Bar yAxisId="left" dataKey="feedbackCount" name="# Feedback" fill="#0451CC" radius={[3, 3, 0, 0]} barSize={32}>
-            <LabelList dataKey="feedbackCount" position="top" fontSize={10} fontWeight={600} fill="#0451CC" />
+          <Bar yAxisId="left" dataKey="feedbackCount" name="# Feedback" fill="var(--color-primary)" radius={[3, 3, 0, 0]} barSize={32}>
+            <LabelList dataKey="feedbackCount" position="top" fontSize={10} fontWeight={600} fill="var(--color-primary)" />
           </Bar>
           <Line
             yAxisId="right"
             type="monotone"
             dataKey="durationMin"
             name="Video Length (Minutes)"
-            stroke="#DC2626"
+            stroke="#EF4444"
             strokeWidth={2}
-            dot={{ r: 4, fill: '#DC2626', stroke: '#fff', strokeWidth: 2 }}
+            dot={{ r: 4, fill: '#EF4444', stroke: '#fff', strokeWidth: 2 }}
             connectNulls={false}
             label={({ x, y, value }) => value ? (
-              <text x={x} y={y - 10} textAnchor="middle" fontSize={9} fontWeight={600} fill="#DC2626">
+              <text x={x} y={y - 10} textAnchor="middle" fontSize={9} fontWeight={600} fill="#EF4444">
                 {formatVideoDuration(value * 60)}
               </text>
             ) : null}

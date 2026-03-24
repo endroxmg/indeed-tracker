@@ -14,16 +14,16 @@ import InitialsAvatar from '../components/InitialsAvatar';
 import { SkeletonCard } from '../components/Skeleton';
 
 const TYPE_ICONS = {
-  ticket_created: { icon: Plus, color: '#16A34A', bg: '#F0FDF4' },
-  ticket_moved: { icon: ArrowRight, color: '#0451CC', bg: '#EFF6FF' },
-  ticket_completed: { icon: CheckCircle2, color: '#0D7A3F', bg: '#ECFDF5' },
-  ticket_deleted: { icon: Trash2, color: '#DC2626', bg: '#FEF2F2' },
-  ticket_updated: { icon: Edit3, color: '#D97706', bg: '#FFF7ED' },
-  user_approved: { icon: UserCheck, color: '#16A34A', bg: '#F0FDF4' },
-  user_created: { icon: UserCheck, color: '#0451CC', bg: '#EFF6FF' },
-  user_invited: { icon: Send, color: '#7C3AED', bg: '#F5F3FF' },
-  role_changed: { icon: GitBranch, color: '#D97706', bg: '#FFF7ED' },
-  time_logged: { icon: Clock, color: '#0891B2', bg: '#ECFEFF' },
+  ticket_created: { icon: Plus, color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)' },
+  ticket_moved: { icon: ArrowRight, color: 'var(--color-primary)', bg: 'var(--color-primary-light)' },
+  ticket_completed: { icon: CheckCircle2, color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)' },
+  ticket_deleted: { icon: Trash2, color: '#EF4444', bg: 'rgba(239, 68, 68, 0.15)' },
+  ticket_updated: { icon: Edit3, color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)' },
+  user_approved: { icon: UserCheck, color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)' },
+  user_created: { icon: UserCheck, color: 'var(--color-primary)', bg: 'var(--color-primary-light)' },
+  user_invited: { icon: Send, color: '#2557A7', bg: 'rgba(37, 87, 167, 0.15)' },
+  role_changed: { icon: GitBranch, color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)' },
+  time_logged: { icon: Clock, color: '#06B6D4', bg: 'rgba(6, 182, 212, 0.15)' },
 };
 
 const TYPE_LABELS = {
@@ -119,131 +119,136 @@ export default function ActivityLog() {
     return format(d, 'dd MMM yyyy, hh:mm a');
   };
 
-  const inputStyle = { padding: '7px 12px', borderRadius: 8, border: '1px solid #D4D2D0', fontSize: 13, fontFamily: '"Noto Sans", sans-serif' };
+  const inputStyle = { padding: '8px 14px', borderRadius: 10, border: '1px solid var(--color-border)', fontSize: 13, fontFamily: '"Noto Sans", sans-serif', background: 'var(--color-surface)', color: '#fff', outline: 'none' };
 
   if (loading) return (
-    <div style={{ display: 'grid', gap: 12 }}>
-      {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+    <div style={{ display: 'grid', gap: 16 }}>
+      {Array.from({ length: 8 }).map((_, i) => <div key={i} style={{ height: 80, background: 'var(--color-surface)', borderRadius: 16 }} className="animate-pulse" />)}
     </div>
   );
 
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 20, color: '#1A1A2E', margin: '0 0 4px' }}>
+      <div style={{ marginBottom: 28 }}>
+        <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 24, color: '#fff', margin: '0 0 8px' }}>
           Activity Log
         </h2>
-        <p style={{ fontSize: 13, color: '#767676', margin: 0 }}>
-          Track every action across the platform
+        <p style={{ fontSize: 14, color: 'var(--color-secondary-text)', margin: 0, fontWeight: 500 }}>
+          Track every action across the platform.
         </p>
       </div>
 
       {/* Filters */}
       <div style={{
-        background: '#fff', borderRadius: 12, padding: '12px 20px',
-        border: '1px solid #E5E7EB', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-        marginBottom: 20,
-        display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+        background: 'var(--color-surface)', borderRadius: 16, padding: '16px 24px',
+        border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-card)',
+        marginBottom: 28,
+        display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F3F2F1', padding: '6px 12px', borderRadius: 8, border: '1px solid #D4D2D0' }}>
-          <Search size={14} color="#767676" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--color-background)', padding: '8px 14px', borderRadius: 10, border: '1px solid var(--color-border)', flex: 1, minWidth: 200 }}>
+          <Search size={16} color="var(--color-secondary-text)" />
           <input
             value={filters.search}
             onChange={e => setFilters(p => ({ ...p, search: e.target.value }))}
             placeholder="Search logs..."
-            style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: 13, width: 180, color: '#1A1A2E' }}
+            style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: 14, width: '100%', color: '#fff' }}
           />
         </div>
 
         <select
           value={filters.type}
           onChange={e => setFilters(p => ({ ...p, type: e.target.value }))}
-          style={inputStyle}
+          style={{ ...inputStyle, minWidth: 160 }}
+          className="focus:border-[var(--color-primary)] transition-colors"
         >
-          <option value="all">All Types</option>
+          <option value="all">All Event Types</option>
           {Object.entries(TYPE_LABELS).map(([key, label]) => (
             <option key={key} value={key}>{label}</option>
           ))}
         </select>
 
-        <Calendar size={14} color="#767676" />
-        <input type="date" value={filters.dateFrom} onChange={e => setFilters(p => ({ ...p, dateFrom: e.target.value }))} style={inputStyle} />
-        <span style={{ color: '#999', fontSize: 12 }}>to</span>
-        <input type="date" value={filters.dateTo} onChange={e => setFilters(p => ({ ...p, dateTo: e.target.value }))} style={inputStyle} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--color-surface-hover)', padding: '4px 12px', borderRadius: 10, border: '1px solid var(--color-border)' }}>
+          <Calendar size={16} color="var(--color-secondary-text)" />
+          <input type="date" value={filters.dateFrom} onChange={e => setFilters(p => ({ ...p, dateFrom: e.target.value }))} style={{ ...inputStyle, background: 'transparent', border: 'none', padding: '4px 0' }} />
+          <span style={{ color: 'var(--color-secondary-text)', fontSize: 13, fontWeight: 600 }}>to</span>
+          <input type="date" value={filters.dateTo} onChange={e => setFilters(p => ({ ...p, dateTo: e.target.value }))} style={{ ...inputStyle, background: 'transparent', border: 'none', padding: '4px 0' }} />
+        </div>
 
-        <div style={{ flex: 1 }} />
-        <span style={{ fontSize: 12, color: '#767676', fontWeight: 500 }}>
-          {filteredLogs.length} log{filteredLogs.length !== 1 ? 's' : ''}
-        </span>
+        <div style={{ flexShrink: 0, marginLeft: 'auto' }}>
+          <span style={{ fontSize: 13, color: 'var(--color-secondary-text)', fontWeight: 600, background: 'var(--color-surface-hover)', padding: '6px 14px', borderRadius: 20, border: '1px solid var(--color-border)' }}>
+            <strong style={{ color: '#fff' }}>{filteredLogs.length}</strong> event{filteredLogs.length !== 1 ? 's' : ''} found
+          </span>
+        </div>
       </div>
 
       {/* Log List */}
       {filteredLogs.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 60 }}>
-          <Activity size={40} color="#D1D5DB" style={{ margin: '0 auto 12px', display: 'block' }} />
-          <h3 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 600, color: '#6B7280', margin: '0 0 4px', fontSize: 15 }}>
+        <div style={{ textAlign: 'center', padding: 80, background: 'var(--color-surface)', borderRadius: 24, border: '1px dashed var(--color-border)' }}>
+          <div style={{ background: 'var(--color-surface-hover)', width: 64, height: 64, borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <Activity size={32} color="var(--color-secondary-text)" />
+          </div>
+          <h3 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, color: '#fff', margin: '0 0 8px', fontSize: 18 }}>
             No activity found
           </h3>
-          <p style={{ fontSize: 13, color: '#9CA3AF', margin: 0 }}>Try adjusting your filters or date range</p>
+          <p style={{ fontSize: 14, color: 'var(--color-secondary-text)', margin: 0, fontWeight: 500 }}>Try adjusting your filters or search terms.</p>
         </div>
       ) : (
         <div style={{
-          background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden',
+          background: 'var(--color-surface)', borderRadius: 20, border: '1px solid var(--color-border)',
+          boxShadow: 'var(--shadow-card)', overflow: 'hidden',
         }}>
           {visibleLogs.map((log, i) => {
             const user = getUser(log.userId);
-            const typeConfig = TYPE_ICONS[log.type] || { icon: Activity, color: '#6B7280', bg: '#F3F4F6' };
+            const typeConfig = TYPE_ICONS[log.type] || { icon: Activity, color: 'var(--color-secondary-text)', bg: 'var(--color-surface-hover)' };
             const Icon = typeConfig.icon;
             const isLast = i === visibleLogs.length - 1;
 
             return (
               <div key={log.id} style={{
-                display: 'flex', alignItems: 'flex-start', gap: 14,
-                padding: '14px 20px',
-                borderBottom: isLast ? 'none' : '1px solid #F3F4F6',
-                transition: 'background 0.1s',
+                display: 'flex', alignItems: 'flex-start', gap: 16,
+                padding: '20px 24px',
+                borderBottom: isLast ? 'none' : '1px solid var(--color-border)',
+                transition: 'background 0.2s',
               }}
-                onMouseEnter={e => e.currentTarget.style.background = '#FAFAFA'}
-                onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+                className="hover:bg-[var(--color-surface-hover)]"
               >
                 {/* Icon */}
                 <div style={{
-                  width: 34, height: 34, borderRadius: 8,
+                  width: 40, height: 40, borderRadius: 12, border: `1px solid ${typeConfig.color}40`,
                   background: typeConfig.bg, display: 'flex',
                   alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  marginTop: 2,
                 }}>
-                  <Icon size={16} color={typeConfig.color} />
+                  <Icon size={18} color={typeConfig.color} />
                 </div>
 
                 {/* Content */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
                     <span style={{
-                      fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
-                      background: typeConfig.bg, color: typeConfig.color,
-                      textTransform: 'uppercase', letterSpacing: '0.04em',
+                      fontSize: 10, fontWeight: 800, padding: '4px 10px', borderRadius: 6,
+                      background: typeConfig.bg, color: typeConfig.color, border: `1px solid ${typeConfig.color}40`,
+                      textTransform: 'uppercase', letterSpacing: '0.05em',
                     }}>
                       {TYPE_LABELS[log.type] || log.type}
                     </span>
+                    <span style={{ fontSize: 12, color: 'var(--color-secondary-text)', fontWeight: 500, marginLeft: 'auto' }}>
+                      {formatTimestamp(log.timestamp)}
+                    </span>
                   </div>
                   <p style={{
-                    fontSize: 13, color: '#1A1A2E', margin: '0 0 4px',
-                    lineHeight: 1.5, wordBreak: 'break-word',
+                    fontSize: 14, color: '#fff', margin: '0 0 10px', fontWeight: 500,
+                    lineHeight: 1.6, wordBreak: 'break-word',
                   }}>
                     {log.description || 'No description'}
                   </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 11, color: '#999' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--color-secondary-text)', fontWeight: 600 }}>
                     {user && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <InitialsAvatar name={user.name} size={16} />
-                        {user.name}
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--color-background)', padding: '2px 8px 2px 2px', borderRadius: 20, border: '1px solid var(--color-border)' }}>
+                        <InitialsAvatar name={user.name} size={20} />
+                        <span style={{ color: '#fff' }}>{user.name}</span>
                       </span>
                     )}
-                    <span>·</span>
-                    <span>{formatTimestamp(log.timestamp)}</span>
                   </div>
                 </div>
               </div>
@@ -252,14 +257,15 @@ export default function ActivityLog() {
 
           {/* Load More */}
           {visibleCount < filteredLogs.length && (
-            <div style={{ textAlign: 'center', padding: '14px 20px', borderTop: '1px solid #F3F4F6' }}>
+            <div style={{ textAlign: 'center', padding: '20px', borderTop: '1px solid var(--color-border)', background: 'var(--color-background)' }}>
               <button
                 onClick={() => setVisibleCount(c => c + 50)}
                 style={{
-                  padding: '8px 24px', borderRadius: 8, border: '1px solid #D4D2D0',
-                  background: '#fff', fontSize: 13, fontWeight: 600, color: '#0451CC',
-                  cursor: 'pointer',
+                  padding: '10px 28px', borderRadius: 12, border: '1px solid var(--color-border)',
+                  background: 'var(--color-surface)', fontSize: 13, fontWeight: 700, color: '#fff',
+                  cursor: 'pointer', transition: 'all 0.2s',
                 }}
+                className="hover:bg-[var(--color-surface-hover)] hover:border-[var(--color-primary)]"
               >
                 Load More ({filteredLogs.length - visibleCount} remaining)
               </button>

@@ -87,9 +87,9 @@ export default function App() {
         <Route path="/timelog" element={<ProtectedRoute><TimeLog /></ProtectedRoute>} />
         <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
         <Route path="/activity-log" element={<ProtectedRoute><ActivityLog /></ProtectedRoute>} />
-        <Route path="/shifts" element={<ProtectedRoute><Shifts /></ProtectedRoute>} />
-        <Route path="/leaves" element={<ProtectedRoute><LeaveManagement /></ProtectedRoute>} />
-        <Route path="/salary" element={<ProtectedRoute><Salary /></ProtectedRoute>} />
+        <Route path="/shifts" element={<Navigate to="/" />} />
+        <Route path="/leaves" element={<Navigate to="/" />} />
+        <Route path="/salary" element={<Navigate to="/" />} />
         <Route path="/team" element={<ProtectedRoute adminOnly><Team /></ProtectedRoute>} />
         <Route path="/login" element={<Navigate to="/" />} />
         <Route path="*" element={<Navigate to="/" />} />

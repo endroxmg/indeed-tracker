@@ -3,7 +3,7 @@ import { collection, query, where, getDocs, onSnapshot, orderBy } from 'firebase
 import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { format } from 'date-fns';
-import { Search, Filter, Calendar as CalIcon, Trash2, Edit3 } from 'lucide-react';
+import { Search, Filter, Calendar as CalIcon, Trash2, Edit3, CheckCircle } from 'lucide-react';
 import { ATTENDANCE_STATUS_COLORS, ATTENDANCE_STATUS_LABELS } from '../../utils/helpers';
 
 export default function LeaveLogTab() {
@@ -38,7 +38,7 @@ export default function LeaveLogTab() {
       {/* Filter Bar */}
       <div style={filterBarStyle}>
         <div style={{ position: 'relative', flex: 1 }}>
-          <Search size={18} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF' }} />
+          <Search size={18} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-secondary-text)' }} />
           <input 
             type="text" placeholder="Search by date or notes..." 
             value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
@@ -64,7 +64,7 @@ export default function LeaveLogTab() {
       <div style={tableContainerStyle}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+            <tr style={{ background: 'var(--color-background)', borderBottom: '1px solid var(--color-border)' }}>
               <th style={thStyle}>Date</th>
               <th style={thStyle}>User</th>
               <th style={thStyle}>Type</th>
@@ -77,10 +77,10 @@ export default function LeaveLogTab() {
             {filteredLogs.map(log => {
               const user = users.find(u => u.id === log.userId);
               return (
-                <tr key={log.id} style={{ borderBottom: '1px solid #F3F4F6' }}>
+                <tr key={log.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
                   <td style={tdStyle}>
                     <div style={{ fontWeight: 600 }}>{format(new Date(log.date), 'dd MMM yyyy')}</div>
-                    <div style={{ fontSize: 11, color: '#9CA3AF' }}>{format(new Date(log.date), 'EEEE')}</div>
+                    <div style={{ fontSize: 11, color: 'var(--color-secondary-text)' }}>{format(new Date(log.date), 'EEEE')}</div>
                   </td>
                   <td style={tdStyle}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -91,8 +91,8 @@ export default function LeaveLogTab() {
                   <td style={tdStyle}>
                     <div style={{ 
                       display: 'inline-block', padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600,
-                      background: ATTENDANCE_STATUS_COLORS[log.status]?.bg || '#F3F4F6',
-                      color: ATTENDANCE_STATUS_COLORS[log.status]?.text || '#374151'
+                      background: ATTENDANCE_STATUS_COLORS[log.status]?.bg || 'var(--color-surface-hover)',
+                      color: ATTENDANCE_STATUS_COLORS[log.status]?.text || 'var(--color-secondary-text)'
                     }}>
                       {log.leaveType ? log.leaveType.charAt(0).toUpperCase() + log.leaveType.slice(1) : ATTENDANCE_STATUS_LABELS[log.status]}
                     </div>
@@ -102,7 +102,7 @@ export default function LeaveLogTab() {
                       <CheckCircle size={14} /> Approved
                     </div>
                   </td>
-                  <td style={{ ...tdStyle, color: '#6B7280', fontSize: 12, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <td style={{ ...tdStyle, color: 'var(--color-secondary-text)', fontSize: 12, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {log.notes || '—'}
                   </td>
                   <td style={tdStyle}>
@@ -130,11 +130,11 @@ export default function LeaveLogTab() {
 }
 
 const filterBarStyle = { display: 'flex', gap: 16, alignItems: 'center' };
-const searchInputStyle = { width: '100%', padding: '10px 12px 10px 40px', borderRadius: 10, border: '1px solid #E5E7EB', fontSize: 14 };
-const selectStyle = { padding: '10px 12px', borderRadius: 10, border: '1px solid #E5E7EB', fontSize: 14, background: '#fff', minWidth: 160 };
-const tableContainerStyle = { background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', overflow: 'hidden' };
-const thStyle = { padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#6B7280' };
-const tdStyle = { padding: '16px', fontSize: 13, color: '#2D2D2D' };
-const avatarSmallStyle = { width: 24, height: 24, borderRadius: 6, background: '#0451CC', color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' };
-const actionBtnStyle = { background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 4 };
-const summaryRowStyle = { padding: '12px 20px', background: '#F9FAFB', borderRadius: 12, fontSize: 12, color: '#6B7280', fontWeight: 500 };
+const searchInputStyle = { width: '100%', padding: '10px 12px 10px 40px', borderRadius: 10, border: '1px solid var(--color-border)', fontSize: 14 };
+const selectStyle = { padding: '10px 12px', borderRadius: 10, border: '1px solid var(--color-border)', fontSize: 14, background: 'var(--color-surface)', minWidth: 160 };
+const tableContainerStyle = { background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border)', overflow: 'hidden' };
+const thStyle = { padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: 'var(--color-secondary-text)' };
+const tdStyle = { padding: '16px', fontSize: 13, color: '#fff' };
+const avatarSmallStyle = { width: 24, height: 24, borderRadius: 6, background: 'var(--color-primary)', color: 'var(--color-surface)', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' };
+const actionBtnStyle = { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-secondary-text)', padding: 4 };
+const summaryRowStyle = { padding: '12px 20px', background: 'var(--color-background)', borderRadius: 12, fontSize: 12, color: 'var(--color-secondary-text)', fontWeight: 500 };

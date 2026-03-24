@@ -250,7 +250,7 @@ export const FEEDBACK_COLORS = {
   voiceover: '#DC2626',
   storyboard: '#16A34A',
   animation: '#D97706',
-  text: '#7C3AED',
+  text: '#003A9B',
   timing: '#0891B2',
   other: '#6B7280',
 };

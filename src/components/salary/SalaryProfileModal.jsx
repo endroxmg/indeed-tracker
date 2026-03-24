@@ -53,13 +53,13 @@ export default function SalaryProfileModal({ users, profiles, onClose }) {
       justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)'
     }}>
       <div style={{
-        background: '#fff', width: '100%', maxWidth: 640, borderRadius: 16,
+        background: 'var(--color-surface)', width: '100%', maxWidth: 640, borderRadius: 16,
         boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', overflow: 'hidden'
       }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, fontFamily: '"Poppins"' }}>Salary Profiles</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={20} color="#6B7280" />
+            <X size={20} color="var(--color-secondary-text)" />
           </button>
         </div>
 
@@ -70,14 +70,14 @@ export default function SalaryProfileModal({ users, profiles, onClose }) {
 
             return (
               <div key={user.id} style={{ 
-                padding: '12px 24px', borderBottom: '1px solid #F3F4F6',
+                padding: '12px 24px', borderBottom: '1px solid var(--color-border)',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <InitialsAvatar name={user.name} size={32} />
                   <div>
                     <div style={{ fontWeight: 600, fontSize: 14 }}>{user.name}</div>
-                    <div style={{ fontSize: 12, color: '#6B7280' }}>
+                    <div style={{ fontSize: 12, color: 'var(--color-secondary-text)' }}>
                       {profile.monthlySalary ? `₹${profile.monthlySalary.toLocaleString()}` : 'No salary set'}
                     </div>
                   </div>
@@ -91,7 +91,7 @@ export default function SalaryProfileModal({ users, profiles, onClose }) {
                         placeholder="Amount (₹)"
                         value={editData.monthlySalary}
                         onChange={(e) => setEditData(p => ({ ...p, monthlySalary: e.target.value }))}
-                        style={{ width: '100%', padding: '6px 10px', borderRadius: 8, border: '1px solid #D1D5DB', fontSize: 13 }}
+                        style={{ width: '100%', padding: '6px 10px', borderRadius: 8, border: '1px solid var(--color-border)', fontSize: 13 }}
                       />
                     </div>
                     <div style={{ width: 140 }}>
@@ -99,14 +99,14 @@ export default function SalaryProfileModal({ users, profiles, onClose }) {
                         type="date"
                         value={editData.effectiveFrom}
                         onChange={(e) => setEditData(p => ({ ...p, effectiveFrom: e.target.value }))}
-                        style={{ width: '100%', padding: '6px 10px', borderRadius: 8, border: '1px solid #D1D5DB', fontSize: 13 }}
+                        style={{ width: '100%', padding: '6px 10px', borderRadius: 8, border: '1px solid var(--color-border)', fontSize: 13 }}
                       />
                     </div>
                     <button 
                       onClick={() => handleSave(user.id)}
                       disabled={saving}
                       style={{ 
-                        background: '#0451CC', color: '#fff', border: 'none', borderRadius: 8, 
+                        background: 'var(--color-primary)', color: 'var(--color-surface)', border: 'none', borderRadius: 8, 
                         padding: '6px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600,
                         display: 'flex', alignItems: 'center', gap: 6
                       }}
@@ -115,7 +115,7 @@ export default function SalaryProfileModal({ users, profiles, onClose }) {
                     </button>
                     <button 
                       onClick={() => setEditingUserId(null)}
-                      style={{ background: 'none', border: 'none', color: '#6B7280', fontSize: 13, cursor: 'pointer' }}
+                      style={{ background: 'none', border: 'none', color: 'var(--color-secondary-text)', fontSize: 13, cursor: 'pointer' }}
                     >
                       Cancel
                     </button>
@@ -124,8 +124,8 @@ export default function SalaryProfileModal({ users, profiles, onClose }) {
                   <button 
                     onClick={() => handleEdit(user, profile)}
                     style={{ 
-                      padding: '6px 16px', borderRadius: 8, border: '1px solid #D1D5DB', 
-                      background: '#fff', color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer' 
+                      padding: '6px 16px', borderRadius: 8, border: '1px solid var(--color-border)', 
+                      background: 'var(--color-surface)', color: 'var(--color-secondary-text)', fontSize: 13, fontWeight: 600, cursor: 'pointer' 
                     }}
                   >
                     Edit Salary
@@ -136,7 +136,7 @@ export default function SalaryProfileModal({ users, profiles, onClose }) {
           })}
         </div>
 
-        <div style={{ padding: '16px 24px', background: '#F9FAFB', borderTop: '1px solid #E5E7EB' }}>
+        <div style={{ padding: '16px 24px', background: 'var(--color-background)', borderTop: '1px solid var(--color-border)' }}>
           <div style={{ display: 'flex', gap: 10, color: '#D97706' }}>
             <AlertCircle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
             <p style={{ fontSize: 12, margin: 0, lineHeight: 1.5 }}>

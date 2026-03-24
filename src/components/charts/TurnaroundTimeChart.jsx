@@ -25,41 +25,41 @@ export default function TurnaroundTimeChart({ tickets, dateRange, publicHolidays
     <ChartCard title="Tickets Turnaround Time" icon={TrendingUp} chartRef={chartRef}>
       <ResponsiveContainer width="100%" height={340}>
         <ComposedChart data={data} margin={{ top: 20, right: 30, bottom: 5, left: 0 }}>
-          <CartesianGrid horizontal vertical={false} stroke="#F3F4F6" strokeDasharray="4 4" />
+          <CartesianGrid horizontal vertical={false} stroke="var(--color-border)" strokeDasharray="4 4" />
           <XAxis
             dataKey="jiraId"
             tick={(props) => {
               const d = data.find(item => item.jiraId === props.payload.value);
               return (
                 <g transform={`translate(${props.x},${props.y})`} style={{ cursor: 'pointer' }} onClick={() => onTicketClick(d?.ticketId)}>
-                  <text x={0} y={0} dy={16} textAnchor="middle" fontSize={11} fontFamily='"Poppins"' fontWeight={600} fill={isEditMode ? '#DC2626' : '#0451CC'}>
+                  <text x={0} y={0} dy={16} textAnchor="middle" fontSize={11} fontFamily='"Poppins"' fontWeight={600} fill={isEditMode ? '#EF4444' : 'var(--color-primary)'}>
                     {props.payload.value}
                   </text>
                   {isEditMode && (
                     <foreignObject x={-6} y={18} width={12} height={12}>
-                      <Edit2 size={10} color="#DC2626" />
+                      <Edit2 size={10} color="#EF4444" />
                     </foreignObject>
                   )}
                 </g>
               );
             }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
           />
           <YAxis
             yAxisId="left"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#6B7280' }}
+            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-secondary-text)' }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
             allowDecimals={false}
-            label={{ value: 'Total Days', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#6B7280' } }}
+            label={{ value: 'Total Days', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: 'var(--color-secondary-text)' } }}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
-            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: '#6B7280' }}
+            tick={{ fontSize: 11, fontFamily: '"Noto Sans"', fill: 'var(--color-secondary-text)' }}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={{ stroke: 'var(--color-border)' }}
             tickFormatter={v => {
               const m = Math.floor(v);
               const s = Math.round((v - m) * 60);
@@ -75,8 +75,8 @@ export default function TurnaroundTimeChart({ tickets, dateRange, publicHolidays
             return `${v} days`;
           }} />} />
           <Legend verticalAlign="bottom" wrapperStyle={{ fontSize: 12, fontFamily: '"Noto Sans"' }} />
-          <Bar yAxisId="left" dataKey="totalDays" name="Total days" fill="#0451CC" radius={[3, 3, 0, 0]} barSize={32}>
-            <LabelList dataKey="totalDays" position="top" fontSize={10} fontWeight={600} fill="#0451CC" />
+          <Bar yAxisId="left" dataKey="totalDays" name="Total days" fill="var(--color-primary)" radius={[3, 3, 0, 0]} barSize={32}>
+            <LabelList dataKey="totalDays" position="top" fontSize={10} fontWeight={600} fill="var(--color-primary)" />
           </Bar>
           <Line
             yAxisId="right"

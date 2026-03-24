@@ -81,10 +81,10 @@ export default function LeaveCalendarTab() {
           return (
             <div key={dateStr} style={{ 
               ...cellStyle, 
-              background: holiday ? '#FEF9C3' : (isSun ? '#F3F4F6' : '#fff'),
+              background: holiday ? '#FEF9C3' : (isSun ? 'var(--color-surface-hover)' : 'var(--color-surface)'),
               opacity: isCurrentMonth ? 1 : 0.4
             }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: holiday ? '#92400E' : (isSun ? '#6B7280' : '#1A1A2E'), marginBottom: 4 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: holiday ? '#92400E' : (isSun ? 'var(--color-secondary-text)' : '#fff'), marginBottom: 4 }}>
                 {format(day, 'd')}
                 {holiday && <span style={{ fontSize: 9, marginLeft: 6, fontWeight: 500 }}>{holiday.name}</span>}
               </div>
@@ -113,11 +113,11 @@ export default function LeaveCalendarTab() {
   );
 }
 
-const navBtnStyle = { background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: 8, cursor: 'pointer', display: 'flex' };
-const legendItemStyle = { display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, color: '#6B7280' };
+const navBtnStyle = { background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 10, padding: 8, cursor: 'pointer', display: 'flex' };
+const legendItemStyle = { display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, color: 'var(--color-secondary-text)' };
 const dotStyle = { width: 10, height: 10, borderRadius: '50%' };
-const calendarGridStyle = { display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: '#E5E7EB', border: '1px solid #E5E7EB', borderRadius: 16, overflow: 'hidden' };
-const calendarHeaderStyle = { background: '#F9FAFB', padding: '12px', fontSize: 12, fontWeight: 600, color: '#6B7280', textAlign: 'center' };
-const cellStyle = { minHeight: 100, padding: '12px', background: '#fff', display: 'flex', flexDirection: 'column' };
+const calendarGridStyle = { display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: 'var(--color-border)', border: '1px solid var(--color-border)', borderRadius: 16, overflow: 'hidden' };
+const calendarHeaderStyle = { background: 'var(--color-background)', padding: '12px', fontSize: 12, fontWeight: 600, color: 'var(--color-secondary-text)', textAlign: 'center' };
+const cellStyle = { minHeight: 100, padding: '12px', background: 'var(--color-surface)', display: 'flex', flexDirection: 'column' };
 const pillStyle = { display: 'flex', alignItems: 'center', gap: 6, padding: '2px 6px', borderRadius: 20, maxWidth: '100%' };
 const miniAvatarStyle = { width: 16, height: 16, borderRadius: '50%', background: 'rgba(255,255,255,0.4)', fontSize: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 };

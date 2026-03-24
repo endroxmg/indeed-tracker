@@ -75,31 +75,31 @@ export default function DailyBreakdownTable({ record }) {
   if (loading) return <div>Loading daily breakdown...</div>;
 
   return (
-    <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-      <div style={{ padding: '20px 24px', borderBottom: '1px solid #E5E7EB' }}>
+    <div style={{ background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border)', overflow: 'hidden' }}>
+      <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-border)' }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0, fontFamily: '"Poppins"' }}>Day-by-Day Breakdown</h3>
       </div>
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
-            <tr style={{ background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
-              <th style={{ padding: '12px 24px', fontSize: 12, fontWeight: 600, color: '#6B7280' }}>Date</th>
-              <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 600, color: '#6B7280' }}>Day</th>
-              <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 600, color: '#6B7280' }}>Status</th>
-              <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 600, color: '#6B7280' }}>Hours Logged</th>
-              <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 600, color: '#6B7280' }}>Overtime</th>
-              <th style={{ padding: '12px 24px', fontSize: 12, fontWeight: 600, color: '#6B7280', textAlign: 'right' }}>Day Rate Est.</th>
+            <tr style={{ background: 'var(--color-background)', borderBottom: '1px solid var(--color-border)' }}>
+              <th style={{ padding: '12px 24px', fontSize: 12, fontWeight: 600, color: 'var(--color-secondary-text)' }}>Date</th>
+              <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 600, color: 'var(--color-secondary-text)' }}>Day</th>
+              <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 600, color: 'var(--color-secondary-text)' }}>Status</th>
+              <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 600, color: 'var(--color-secondary-text)' }}>Hours Logged</th>
+              <th style={{ padding: '12px 16px', fontSize: 12, fontWeight: 600, color: 'var(--color-secondary-text)' }}>Overtime</th>
+              <th style={{ padding: '12px 24px', fontSize: 12, fontWeight: 600, color: 'var(--color-secondary-text)', textAlign: 'right' }}>Day Rate Est.</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row, i) => {
               const colors = ATTENDANCE_STATUS_COLORS[row.status] || ATTENDANCE_STATUS_COLORS.working;
-              const bgColor = row.isSunday ? '#F9FAFB' : '#fff';
+              const bgColor = row.isSunday ? 'var(--color-background)' : 'var(--color-surface)';
               
               return (
-                <tr key={i} style={{ borderBottom: '1px solid #F3F4F6', background: bgColor }}>
+                <tr key={i} style={{ borderBottom: '1px solid var(--color-border)', background: bgColor }}>
                   <td style={{ padding: '12px 24px', fontSize: 13, fontWeight: 500 }}>{format(parseISO(row.date), 'dd MMM')}</td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, color: row.isSunday ? '#9CA3AF' : '#6B7280', fontStyle: row.isSunday ? 'italic' : 'normal' }}>{row.day}</td>
+                  <td style={{ padding: '12px 16px', fontSize: 13, color: row.isSunday ? 'var(--color-secondary-text)' : 'var(--color-secondary-text)', fontStyle: row.isSunday ? 'italic' : 'normal' }}>{row.day}</td>
                   <td style={{ padding: '12px 16px' }}>
                     <span style={{ 
                       fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
@@ -108,15 +108,15 @@ export default function DailyBreakdownTable({ record }) {
                       {ATTENDANCE_STATUS_LABELS[row.status] || 'Working'}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, color: '#1A1A2E' }}>{row.hoursLogged.toFixed(1)} hrs</td>
+                  <td style={{ padding: '12px 16px', fontSize: 13, color: '#fff' }}>{row.hoursLogged.toFixed(1)} hrs</td>
                   <td style={{ padding: '12px 16px' }}>
                     {row.otHrs > 0 ? (
                       <span style={{ fontSize: 13, fontWeight: 600, color: '#16A34A' }}>+{row.otHrs.toFixed(1)} hrs</span>
                     ) : (
-                      <span style={{ color: '#E5E7EB' }}>—</span>
+                      <span style={{ color: 'var(--color-border)' }}>—</span>
                     )}
                   </td>
-                  <td style={{ padding: '12px 24px', fontSize: 13, fontWeight: 600, textAlign: 'right', color: '#1A1A2E' }}>
+                  <td style={{ padding: '12px 24px', fontSize: 13, fontWeight: 600, textAlign: 'right', color: '#fff' }}>
                      {/* Simplified per-day net calculation for UI reference */}
                      ₹{Math.round(record.dailyRate + (row.otHrs * record.overtimeHourlyRate))}
                   </td>

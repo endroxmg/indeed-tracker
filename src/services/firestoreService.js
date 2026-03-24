@@ -135,11 +135,13 @@ export async function getTimeEntriesForRange(dateFrom, dateTo) {
   const q = query(
     collection(db, 'timeEntries'),
     where('date', '>=', dateFrom),
-    where('date', '<=', dateTo),
-    orderBy('date', 'desc')
+    where('date', '<=', dateTo)
   );
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  const entries = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  // Sort client-side to avoid composite index requirement
+  entries.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  return entries;
 }
 
 // ─── Activity Log ──────────────────────────────────────────

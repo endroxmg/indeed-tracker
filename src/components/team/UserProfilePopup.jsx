@@ -73,7 +73,7 @@ export default function UserProfilePopup({ userId, onClose }) {
                 onClick={() => setActiveTab(tab.id)}
                 style={{
                   ...tabStyle,
-                  color: activeTab === tab.id ? '#0451CC' : '#6B7280',
+                  color: activeTab === tab.id ? 'var(--color-primary)' : 'var(--color-secondary-text)',
                   borderBottom: activeTab === tab.id ? '2px solid #0451CC' : '2px solid transparent'
                 }}
               >
@@ -117,7 +117,7 @@ function ProfileTab({ user, userId, isAdmin }) {
               {user.isActive ? 'Active' : 'Inactive'}
             </div>
           </div>
-          <div style={{ fontSize: 14, color: '#6B7280', marginTop: 4 }}>{user.email}</div>
+          <div style={{ fontSize: 14, color: 'var(--color-secondary-text)', marginTop: 4 }}>{user.email}</div>
         </div>
       </div>
 
@@ -146,7 +146,7 @@ function ProfileTab({ user, userId, isAdmin }) {
 }
 
 function LeaveInsightsTab({ user, lb }) {
-  if (!lb) return <div style={{ padding: 40, textAlign: 'center', color: '#9CA3AF' }}>No leave data for this financial year.</div>;
+  if (!lb) return <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-secondary-text)' }}>No leave data for this financial year.</div>;
 
   const chartData = [
     { month: 'Apr', accrued: 1.5, taken: 0 },
@@ -159,7 +159,7 @@ function LeaveInsightsTab({ user, lb }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <div style={balanceSummaryStyle}>
-         <BalBox label="Normal Leave" value={lb.normalLeaveBalance?.toFixed(1)} color="#0451CC" />
+         <BalBox label="Normal Leave" value={lb.normalLeaveBalance?.toFixed(1)} color="var(--color-primary)" />
          <BalBox label="Sick Leave" value={6 - (lb.sickLeaveTaken || 0)} color="#DC2626" />
          <BalBox label="Festival Leave" value={lb.festivalLeaveUsed ? 'Used' : 'Avail'} color="#16A34A" />
          <BalBox label="Comp-off" value={lb.compOffBalance} color="#4338CA" />
@@ -169,12 +169,12 @@ function LeaveInsightsTab({ user, lb }) {
         <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16 }}>Accrual vs Usage Trend</div>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
-            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} />
-            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--color-secondary-text)' }} />
+            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'var(--color-secondary-text)' }} />
             <Tooltip />
             <Bar dataKey="taken" fill="#DC2626" radius={[4, 4, 0, 0]} barSize={32} />
-            <Line type="monotone" dataKey="accrued" stroke="#0451CC" strokeWidth={2} dot={{ fill: '#0451CC' }} />
+            <Line type="monotone" dataKey="accrued" stroke="var(--color-primary)" strokeWidth={2} dot={{ fill: 'var(--color-primary)' }} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -211,7 +211,7 @@ function AttendanceTab({ userId, holidays }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ fontSize: 14, fontWeight: 700 }}>{format(month, 'MMMM yyyy')} Attendance</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
-        {['S','M','T','W','T','F','S'].map((d, i) => <div key={`${d}-${i}`} style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', fontWeight: 600 }}>{d}</div>)}
+        {['S','M','T','W','T','F','S'].map((d, i) => <div key={`${d}-${i}`} style={{ textAlign: 'center', fontSize: 11, color: 'var(--color-secondary-text)', fontWeight: 600 }}>{d}</div>)}
         {days.map(day => {
           const dateStr = toDateString(day);
           const att = attendance[dateStr];
@@ -222,10 +222,10 @@ function AttendanceTab({ userId, holidays }) {
           return (
             <div key={dateStr} style={{
               height: 48, borderRadius: 8, display: 'flex', flexDir: 'column', alignItems: 'center', justifyContent: 'center',
-              background: att ? ATTENDANCE_STATUS_COLORS[att.status]?.bg : (holiday ? '#FEF9C3' : (isSun ? '#F3F4F6' : '#fff')),
-              border: '1px solid #F3F4F6', opacity: isOut ? 0.2 : 1, position: 'relative'
+              background: att ? ATTENDANCE_STATUS_COLORS[att.status]?.bg : (holiday ? '#FEF9C3' : (isSun ? 'var(--color-surface-hover)' : 'var(--color-surface)')),
+              border: '1px solid var(--color-border)', opacity: isOut ? 0.2 : 1, position: 'relative'
             }}>
-              <span style={{ fontSize: 10, position: 'absolute', top: 2, right: 4, color: '#9CA3AF' }}>{format(day, 'd')}</span>
+              <span style={{ fontSize: 10, position: 'absolute', top: 2, right: 4, color: 'var(--color-secondary-text)' }}>{format(day, 'd')}</span>
               {att && <div style={{ width: 6, height: 6, borderRadius: '50%', background: ATTENDANCE_STATUS_COLORS[att.status]?.text }} />}
             </div>
           );
@@ -257,8 +257,8 @@ function WorkStatsTab({ userId, user, timeEntries, tickets }) {
 
 function BalBox({ label, value, color }) {
   return (
-    <div style={{ padding: 16, borderRadius: 12, border: '1px solid #F3F4F6', background: '#F9FAFB', flex: 1 }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase' }}>{label}</div>
+    <div style={{ padding: 16, borderRadius: 12, border: '1px solid var(--color-border)', background: 'var(--color-background)', flex: 1 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-secondary-text)', textTransform: 'uppercase' }}>{label}</div>
       <div style={{ fontSize: 24, fontWeight: 700, color, marginTop: 4 }}>{value}</div>
     </div>
   );
@@ -266,8 +266,8 @@ function BalBox({ label, value, color }) {
 
 function StatChip({ label, value }) {
   return (
-    <div style={{ padding: '12px 16px', borderRadius: 12, background: '#F9FAFB', border: '1px solid #F3F4F6' }}>
-      <div style={{ fontSize: 11, color: '#6B7280' }}>{label}</div>
+    <div style={{ padding: '12px 16px', borderRadius: 12, background: 'var(--color-background)', border: '1px solid var(--color-border)' }}>
+      <div style={{ fontSize: 11, color: 'var(--color-secondary-text)' }}>{label}</div>
       <div style={{ fontSize: 14, fontWeight: 700, marginTop: 2 }}>{value}</div>
     </div>
   );
@@ -275,8 +275,8 @@ function StatChip({ label, value }) {
 
 function DashboardMetric({ label, value, sub }) {
   return (
-    <div style={{ padding: 20, borderRadius: 16, background: '#fff', border: '1px solid #E5E7EB' }}>
-      <div style={{ fontSize: 12, color: '#6B7280' }}>{label}</div>
+    <div style={{ padding: 20, borderRadius: 16, background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+      <div style={{ fontSize: 12, color: 'var(--color-secondary-text)' }}>{label}</div>
       <div style={{ fontSize: 24, fontWeight: 700, margin: '4px 0' }}>{value}</div>
       <div style={{ fontSize: 11, color: '#16A34A', fontWeight: 600 }}>{sub}</div>
     </div>
@@ -308,8 +308,8 @@ function SalaryTab({ userId }) {
     fetchSalary();
   }, [userId]);
 
-  if (loading) return <div style={{ textAlign: 'center', padding: 40 }}><RefreshCcw size={24} className="spinning" color="#0451CC" /></div>;
-  if (!profile) return <div style={{ textAlign: 'center', padding: 40, color: '#6B7280' }}>No salary profile configured for this user.</div>;
+  if (loading) return <div style={{ textAlign: 'center', padding: 40 }}><RefreshCcw size={24} className="spinning" color="var(--color-primary)" /></div>;
+  if (!profile) return <div style={{ textAlign: 'center', padding: 40, color: 'var(--color-secondary-text)' }}>No salary profile configured for this user.</div>;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -318,10 +318,10 @@ function SalaryTab({ userId }) {
         <DashboardMetric label="YTD Earnings" value={`₹${history.reduce((s, r) => s + (r.netSalary || 0), 0).toLocaleString()}`} sub="Current Financial Year" />
       </div>
 
-      <div style={{ border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ border: '1px solid var(--color-border)', borderRadius: 12, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
-            <tr style={{ background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+            <tr style={{ background: 'var(--color-background)', borderBottom: '1px solid var(--color-border)' }}>
               <th style={{ padding: '10px 16px', textAlign: 'left' }}>Month</th>
               <th style={{ padding: '10px 16px', textAlign: 'right' }}>Base</th>
               <th style={{ padding: '10px 16px', textAlign: 'right' }}>Bonus</th>
@@ -331,17 +331,17 @@ function SalaryTab({ userId }) {
           </thead>
           <tbody>
             {history.slice(0, 6).map((r, i) => (
-              <tr key={i} style={{ borderBottom: i === history.length - 1 ? 'none' : '1px solid #F3F4F6' }}>
+              <tr key={i} style={{ borderBottom: i === history.length - 1 ? 'none' : '1px solid var(--color-border)' }}>
                 <td style={{ padding: '10px 16px', fontWeight: 600 }}>{r.month}</td>
                 <td style={{ padding: '10px 16px', textAlign: 'right' }}>₹{r.monthlySalary?.toLocaleString()}</td>
                 <td style={{ padding: '10px 16px', textAlign: 'right', color: '#16A34A' }}>+₹{(r.sundayBonusAmount + r.holidayBonusAmount + r.overtimeAmount).toLocaleString()}</td>
                 <td style={{ padding: '10px 16px', textAlign: 'right', color: '#DC2626' }}>-₹{r.totalDeductions?.toLocaleString()}</td>
-                <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 700, color: '#0451CC' }}>₹{r.netSalary?.toLocaleString()}</td>
+                <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 700, color: 'var(--color-primary)' }}>₹{r.netSalary?.toLocaleString()}</td>
               </tr>
             ))}
             {history.length === 0 && (
               <tr>
-                <td colSpan="5" style={{ padding: 24, textAlign: 'center', color: '#9CA3AF' }}>No history found</td>
+                <td colSpan="5" style={{ padding: 24, textAlign: 'center', color: 'var(--color-secondary-text)' }}>No history found</td>
               </tr>
             )}
           </tbody>
@@ -352,19 +352,19 @@ function SalaryTab({ userId }) {
 }
 
 const overlayStyle = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' };
-const modalStyle = { width: 720, background: '#fff', borderRadius: 20, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', overflow: 'hidden' };
-const headerStyle = { padding: '0 24px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 60 };
+const modalStyle = { width: 720, background: 'var(--color-surface)', borderRadius: 20, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', overflow: 'hidden' };
+const headerStyle = { padding: '0 24px', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 60 };
 const tabContainerStyle = { display: 'flex', gap: 24, height: '100%' };
 const tabStyle = { background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, height: '100%', padding: '0 4px', transition: 'all 0.2s ease' };
-const closeBtnStyle = { background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF' };
+const closeBtnStyle = { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-secondary-text)' };
 const contentStyle = { padding: 32, minHeight: 400 };
-const largeAvatarStyle = { width: 80, height: 80, borderRadius: 20, background: '#0451CC', color: '#fff', fontSize: 32, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' };
-const badgeStyle = { px: 12, py: 4, borderRadius: 20, background: '#EAF0FD', color: '#0451CC', fontSize: 11, fontWeight: 700 };
+const largeAvatarStyle = { width: 80, height: 80, borderRadius: 20, background: 'var(--color-primary)', color: 'var(--color-surface)', fontSize: 32, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' };
+const badgeStyle = { px: 12, py: 4, borderRadius: 20, background: 'var(--color-primary-light)', color: 'var(--color-primary)', fontSize: 11, fontWeight: 700 };
 const infoGridStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 };
 const infoItemStyle = { display: 'flex', flexDirection: 'column', gap: 4 };
-const infoLabelStyle = { fontSize: 12, color: '#6B7280', fontWeight: 600 };
-const infoValueStyle = { fontSize: 15, fontWeight: 600, color: '#1A1A2E' };
+const infoLabelStyle = { fontSize: 12, color: 'var(--color-secondary-text)', fontWeight: 600 };
+const infoValueStyle = { fontSize: 15, fontWeight: 600, color: '#fff' };
 const balanceSummaryStyle = { display: 'flex', gap: 16 };
-const smallInputStyle = { width: 60, padding: '4px 8px', borderRadius: 6, border: '1px solid #E5E7EB' };
-const saveBtnSmall = { background: '#0451CC', color: '#fff', padding: '4px 12px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer' };
-const iconBtnStyle = { background: 'none', border: 'none', cursor: 'pointer', color: '#0451CC' };
+const smallInputStyle = { width: 60, padding: '4px 8px', borderRadius: 6, border: '1px solid var(--color-border)' };
+const saveBtnSmall = { background: 'var(--color-primary)', color: 'var(--color-surface)', padding: '4px 12px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer' };
+const iconBtnStyle = { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-primary)' };

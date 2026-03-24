@@ -31,59 +31,63 @@ export default function CreateTicketModal({ users = [], onClose, onSubmit }) {
   const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const inputStyle = {
-    width: '100%', padding: '10px 14px', borderRadius: 8,
-    border: '1px solid #D4D2D0', fontSize: 14,
-    fontFamily: '"Noto Sans", sans-serif', color: '#1A1A2E',
-    transition: 'all 0.2s ease',
+    width: '100%', padding: '12px 16px', borderRadius: 10,
+    border: '1px solid var(--color-border)', fontSize: 14,
+    fontFamily: '"Noto Sans", sans-serif', color: '#fff',
+    transition: 'all 0.2s ease', background: 'var(--color-background)',
+    outline: 'none',
   };
 
   const labelStyle = {
-    display: 'block', fontSize: 13, fontWeight: 600,
-    color: '#1A1A2E', marginBottom: 6,
-    fontFamily: '"Poppins", sans-serif',
+    display: 'block', fontSize: 13, fontWeight: 700,
+    color: 'var(--color-secondary-text)', marginBottom: 8,
+    fontFamily: '"Poppins", sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em'
   };
 
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 1000,
-      background: 'rgba(0,0,0,0.4)',
+      background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }} onClick={onClose}>
       <div style={{
-        background: '#fff', borderRadius: 16, width: 560,
+        background: 'var(--color-surface)', borderRadius: 24, width: 560,
         maxHeight: '90vh', overflow: 'auto',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+        boxShadow: 'var(--shadow-modal)', border: '1px solid var(--color-border)'
       }} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div style={{
-          padding: '20px 24px', borderBottom: '1px solid #E5E7EB',
+          padding: '24px 32px', borderBottom: '1px solid var(--color-border)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <h2 style={{
-            fontFamily: '"Poppins", sans-serif', fontWeight: 600,
-            fontSize: 18, color: '#2D2D2D', margin: 0,
-          }}>
-            Create New Ticket
-          </h2>
+          <div>
+            <h2 style={{
+              fontFamily: '"Poppins", sans-serif', fontWeight: 700,
+              fontSize: 20, color: '#fff', margin: '0 0 4px',
+            }}>
+              Create New Ticket
+            </h2>
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--color-secondary-text)'}}>Configure task details and assignment.</p>
+          </div>
           <button onClick={onClose} style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            padding: 4, borderRadius: 6, display: 'flex',
-          }}>
-            <X size={20} color="#6B7280" />
+            background: 'var(--color-surface-hover)', border: 'none', cursor: 'pointer',
+            padding: 8, borderRadius: 10, display: 'flex', transition: 'all 0.2s'
+          }} className="hover:bg-[rgba(255,255,255,0.1)]">
+            <X size={20} color="var(--color-secondary-text)" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <form onSubmit={handleSubmit} style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             <div>
               <label style={labelStyle}>Jira Ticket ID *</label>
               <input style={inputStyle} placeholder="e.g. PROJ-123"
-                value={form.jiraId} onChange={(e) => update('jiraId', e.target.value)} />
+                value={form.jiraId} onChange={(e) => update('jiraId', e.target.value)} className="focus:border-[var(--color-primary)]" />
             </div>
             <div>
               <label style={labelStyle}>Ticket Type</label>
-              <select style={inputStyle} value={form.type} onChange={(e) => update('type', e.target.value)}>
+              <select style={inputStyle} value={form.type} onChange={(e) => update('type', e.target.value)} className="focus:border-[var(--color-primary)]">
                 <option value="webinar">Webinar</option>
                 <option value="video">Video</option>
                 <option value="screengrabs">Screengrabs</option>
@@ -95,21 +99,21 @@ export default function CreateTicketModal({ users = [], onClose, onSubmit }) {
 
           <div>
             <label style={labelStyle}>Title *</label>
-            <input style={inputStyle} placeholder="Ticket title"
-              value={form.title} onChange={(e) => update('title', e.target.value)} />
+            <input style={inputStyle} placeholder="Task title/headline"
+              value={form.title} onChange={(e) => update('title', e.target.value)} className="focus:border-[var(--color-primary)]" />
           </div>
 
           <div>
             <label style={labelStyle}>Description</label>
-            <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }}
+            <textarea style={{ ...inputStyle, minHeight: 100, resize: 'vertical' }}
               placeholder="Storyboard / brief details..."
-              value={form.description} onChange={(e) => update('description', e.target.value)} />
+              value={form.description} onChange={(e) => update('description', e.target.value)} className="focus:border-[var(--color-primary)]" />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             <div>
               <label style={labelStyle}>LDAP Account</label>
-              <select style={inputStyle} value={form.ldap} onChange={(e) => update('ldap', e.target.value)}>
+              <select style={inputStyle} value={form.ldap} onChange={(e) => update('ldap', e.target.value)} className="focus:border-[var(--color-primary)]">
                 <option value="">Select LDAP...</option>
                 {LDAP_ACCOUNTS.map((l) => (
                   <option key={l.id} value={l.id}>{l.label}</option>
@@ -117,9 +121,9 @@ export default function CreateTicketModal({ users = [], onClose, onSubmit }) {
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Assign To <span style={{ fontWeight: 400, color: '#999', fontSize: 11 }}>(designer)</span></label>
-              <select style={inputStyle} value={form.assigneeId} onChange={(e) => update('assigneeId', e.target.value)}>
-                <option value="">Select designer...</option>
+              <label style={labelStyle}>Assign To</label>
+              <select style={inputStyle} value={form.assigneeId} onChange={(e) => update('assigneeId', e.target.value)} className="focus:border-[var(--color-primary)]">
+                <option value="">Select teammate...</option>
                 {designers.map((u) => (
                   <option key={u.uid} value={u.uid}>{u.name}</option>
                 ))}
@@ -127,60 +131,46 @@ export default function CreateTicketModal({ users = [], onClose, onSubmit }) {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             <div>
               <label style={labelStyle}>Priority</label>
-              <select style={inputStyle} value={form.priority} onChange={(e) => update('priority', e.target.value)}>
+              <select style={inputStyle} value={form.priority} onChange={(e) => update('priority', e.target.value)} className="focus:border-[var(--color-primary)]">
                 <option value="high">High</option>
                 <option value="medium">Medium</option>
                 <option value="low">Low</option>
               </select>
             </div>
+            <div>
+              <label style={labelStyle}>Frame.io Link</label>
+              <input style={inputStyle} placeholder="https://app.frame.io/..."
+                value={form.frameioLink} onChange={(e) => update('frameioLink', e.target.value)} className="focus:border-[var(--color-primary)]" />
+            </div>
           </div>
 
-          <div>
-            <label style={labelStyle}>Frame.io Link</label>
-            <input style={inputStyle} placeholder="https://app.frame.io/..."
-              value={form.frameioLink} onChange={(e) => update('frameioLink', e.target.value)} />
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <label style={{ ...labelStyle, marginBottom: 0 }}>Figma Available?</label>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--color-surface-hover)', padding: '16px 20px', borderRadius: 12 }}>
+            <label style={{ ...labelStyle, marginBottom: 0, color: '#fff' }}>Figma Resource Available?</label>
             <button type="button" onClick={() => update('figmaAvailable', !form.figmaAvailable)}
               style={{
-                width: 44, height: 24, borderRadius: 12, border: 'none',
-                background: form.figmaAvailable ? '#0451CC' : '#E5E7EB',
-                cursor: 'pointer', position: 'relative', transition: 'background 0.2s ease',
+                width: 48, height: 26, borderRadius: 13, border: 'none',
+                background: form.figmaAvailable ? 'var(--color-primary)' : 'var(--color-secondary-text)',
+                cursor: 'pointer', position: 'relative', transition: 'background 0.3s ease',
               }}>
               <span style={{
-                position: 'absolute', top: 2, left: form.figmaAvailable ? 22 : 2,
+                position: 'absolute', top: 3, left: form.figmaAvailable ? 25 : 3,
                 width: 20, height: 20, borderRadius: '50%', background: '#fff',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'left 0.2s ease',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)', transition: 'left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
               }} />
             </button>
           </div>
 
           <div style={{
             display: 'flex', gap: 12, justifyContent: 'flex-end',
-            paddingTop: 8, borderTop: '1px solid #E5E7EB',
+            paddingTop: 16, borderTop: '1px solid var(--color-border)', marginTop: 8
           }}>
-            <button type="button" onClick={onClose} style={{
-              padding: '10px 20px', borderRadius: 10,
-              border: '1px solid #E5E7EB', background: '#fff',
-              cursor: 'pointer', fontSize: 14, fontWeight: 500,
-              color: '#6B7280',
-            }}>
+            <button type="button" onClick={onClose} className="btn-secondary" style={{ padding: '12px 24px' }}>
               Cancel
             </button>
-            <button type="submit" style={{
-              padding: '10px 24px', borderRadius: 10,
-              border: 'none', background: '#0451CC', color: '#fff',
-              cursor: 'pointer', fontSize: 14, fontWeight: 600,
-              transition: 'background 0.2s ease',
-            }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#0340A0'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#0451CC'}
-            >
+            <button type="submit" className="btn-primary" style={{ padding: '12px 24px' }}>
               Create Ticket
             </button>
           </div>

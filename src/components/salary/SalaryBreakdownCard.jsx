@@ -17,14 +17,14 @@ export default function SalaryBreakdownCard({ record }) {
   ];
 
   return (
-    <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-      <div style={{ padding: '20px 24px', borderBottom: '1px solid #E5E7EB' }}>
+    <div style={{ background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border)', overflow: 'hidden' }}>
+      <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-border)' }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0, fontFamily: '"Poppins"' }}>Salary Breakdown — {record.month}</h3>
       </div>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
         {/* Earnings */}
-        <div style={{ padding: '24px', borderRight: '1px solid #F3F4F6' }}>
+        <div style={{ padding: '24px', borderRight: '1px solid var(--color-border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#16A34A', marginBottom: 20 }}>
             <TrendingUp size={18} />
             <span style={{ fontWeight: 700, fontSize: 14, textTransform: 'uppercase' }}>Earnings</span>
@@ -33,13 +33,13 @@ export default function SalaryBreakdownCard({ record }) {
             {earnings.map((item, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                  <div style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>{item.label}</div>
-                  {item.sub && <div style={{ fontSize: 11, color: '#6B7280' }}>{item.sub}</div>}
+                  <div style={{ fontSize: 13, color: 'var(--color-secondary-text)', fontWeight: 500 }}>{item.label}</div>
+                  {item.sub && <div style={{ fontSize: 11, color: 'var(--color-secondary-text)' }}>{item.sub}</div>}
                 </div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: i === 0 ? '#111827' : '#16A34A' }}>{item.value}</div>
               </div>
             ))}
-            <div style={{ marginTop: 8, paddingTop: 16, borderTop: '1px solid #F3F4F6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ marginTop: 8, paddingTop: 16, borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontWeight: 700, fontSize: 14 }}>Total Earnings</span>
               <span style={{ fontWeight: 700, fontSize: 16, color: '#16A34A' }}>{formatCurrency(record.totalEarnings)}</span>
             </div>
@@ -56,13 +56,13 @@ export default function SalaryBreakdownCard({ record }) {
             {deductions.map((item, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                  <div style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>{item.label}</div>
-                  {item.sub && <div style={{ fontSize: 11, color: '#6B7280' }}>{item.sub}</div>}
+                  <div style={{ fontSize: 13, color: 'var(--color-secondary-text)', fontWeight: 500 }}>{item.label}</div>
+                  {item.sub && <div style={{ fontSize: 11, color: 'var(--color-secondary-text)' }}>{item.sub}</div>}
                 </div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: '#DC2626' }}>{item.value}</div>
               </div>
             ))}
-            <div style={{ marginTop: 8, paddingTop: 16, borderTop: '1px solid #F3F4F6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ marginTop: 8, paddingTop: 16, borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontWeight: 700, fontSize: 14 }}>Total Deductions</span>
               <span style={{ fontWeight: 700, fontSize: 16, color: '#DC2626' }}>{formatCurrency(record.totalDeductions)}</span>
             </div>
@@ -70,10 +70,10 @@ export default function SalaryBreakdownCard({ record }) {
         </div>
       </div>
 
-      <div style={{ padding: '24px', background: '#EAF0FD', textAlign: 'center' }}>
-        <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 4 }}>Net Salary Payable</div>
-        <div style={{ fontSize: 28, fontWeight: 800, color: '#0451CC', fontFamily: '"Poppins"' }}>{formatCurrency(record.netSalary)}</div>
-        <div style={{ fontSize: 12, color: '#6B7280', marginTop: 4 }}>
+      <div style={{ padding: '24px', background: 'var(--color-primary-light)', textAlign: 'center' }}>
+        <div style={{ fontSize: 13, color: 'var(--color-secondary-text)', marginBottom: 4 }}>Net Salary Payable</div>
+        <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--color-primary)', fontFamily: '"Poppins"' }}>{formatCurrency(record.netSalary)}</div>
+        <div style={{ fontSize: 12, color: 'var(--color-secondary-text)', marginTop: 4 }}>
           = {formatCurrency(record.totalEarnings)} earnings – {formatCurrency(record.totalDeductions)} deductions
         </div>
       </div>

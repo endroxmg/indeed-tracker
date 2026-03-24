@@ -39,38 +39,41 @@ export default function LogTimeModal({ date, users = [], tickets = [], currentUs
   };
 
   const inputStyle = {
-    width: '100%', padding: '8px 10px', borderRadius: 8,
-    border: '1px solid #E5E7EB', fontSize: 13,
+    width: '100%', padding: '12px 14px', borderRadius: 10,
+    border: '1px solid var(--color-border)', fontSize: 14,
+    background: 'var(--color-surface)', color: '#fff', outline: 'none', transition: 'border-color 0.2s'
   };
+
+  const labelStyle = { fontSize: 12, fontWeight: 700, marginBottom: 8, display: 'block', fontFamily: '"Poppins", sans-serif', color: 'var(--color-secondary-text)', textTransform: 'uppercase', letterSpacing: '0.05em' };
 
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 1000,
-      background: 'rgba(0,0,0,0.4)',
+      background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }} onClick={onClose}>
       <div style={{
-        background: '#fff', borderRadius: 16, width: 600,
-        maxHeight: '85vh', overflow: 'auto',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+        background: 'var(--color-surface)', borderRadius: 24, width: 640,
+        maxHeight: '85vh', overflow: 'auto', border: '1px solid var(--color-border)',
+        boxShadow: 'var(--shadow-modal)',
       }} onClick={(e) => e.stopPropagation()}>
         <div style={{
-          padding: '18px 24px', borderBottom: '1px solid #E5E7EB',
+          padding: '24px 32px', borderBottom: '1px solid var(--color-border)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 600, fontSize: 17, margin: 0 }}>
-            Log Time — {date}
+          <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 20, margin: 0, color: '#fff' }}>
+            Log Time — <span style={{ color: 'var(--color-primary)' }}>{date}</span>
           </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex' }}>
-            <X size={20} color="#6B7280" />
+          <button onClick={onClose} style={{ background: 'var(--color-surface-hover)', border: 'none', cursor: 'pointer', display: 'flex', padding: 8, borderRadius: 10, transition: 'background 0.2s' }} className="hover:bg-[rgba(255,255,255,0.1)]">
+            <X size={20} color="var(--color-secondary-text)" />
           </button>
         </div>
 
-        <div style={{ padding: 24 }}>
+        <div style={{ padding: 32 }}>
           {isAdmin && (
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'block', fontFamily: '"Poppins", sans-serif' }}>Designer</label>
-              <select value={userId} onChange={(e) => setUserId(e.target.value)} style={inputStyle}>
+            <div style={{ marginBottom: 24 }}>
+              <label style={labelStyle}>Designer</label>
+              <select value={userId} onChange={(e) => setUserId(e.target.value)} style={inputStyle} className="focus:border-[var(--color-primary)]">
                 {users.filter((u) => u.isActive && (u.roles?.some(r => r !== 'pending') || u.role !== 'pending')).map((u) => (
                   <option key={u.uid} value={u.uid}>{u.name}</option>
                 ))}
@@ -78,14 +81,14 @@ export default function LogTimeModal({ date, users = [], tickets = [], currentUs
             </div>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {rows.map((row, idx) => (
               <div key={idx} style={{
-                display: 'grid', gridTemplateColumns: '1fr 80px 110px 1fr 32px',
-                gap: 8, alignItems: 'start',
+                display: 'grid', gridTemplateColumns: '1fr 90px 130px 1fr 40px',
+                gap: 12, alignItems: 'start',
               }}>
                 {row.category === 'ticket' ? (
-                  <select value={row.ticketId} onChange={(e) => updateRow(idx, 'ticketId', e.target.value)} style={inputStyle}>
+                  <select value={row.ticketId} onChange={(e) => updateRow(idx, 'ticketId', e.target.value)} style={inputStyle} className="focus:border-[var(--color-primary)]">
                     <option value="">Select ticket...</option>
                     {tickets.map((t) => (
                       <option key={t.id} value={t.id}>{t.jiraId} — {t.title}</option>
@@ -93,14 +96,14 @@ export default function LogTimeModal({ date, users = [], tickets = [], currentUs
                   </select>
                 ) : (
                   <input value={row.notes} onChange={(e) => updateRow(idx, 'notes', e.target.value)}
-                    placeholder="Description..." style={inputStyle} />
+                    placeholder="Description..." style={inputStyle} className="focus:border-[var(--color-primary)]" />
                 )}
 
                 <input type="number" min="0" max="24" step="0.5"
                   value={row.hours} onChange={(e) => updateRow(idx, 'hours', e.target.value)}
-                  placeholder="Hrs" style={inputStyle} />
+                  placeholder="Hrs" style={inputStyle} className="focus:border-[var(--color-primary)]" />
 
-                <select value={row.category} onChange={(e) => updateRow(idx, 'category', e.target.value)} style={inputStyle}>
+                <select value={row.category} onChange={(e) => updateRow(idx, 'category', e.target.value)} style={inputStyle} className="focus:border-[var(--color-primary)]">
                   <option value="ticket">Ticket</option>
                   <option value="meeting">Meeting</option>
                   <option value="admin">Admin</option>
@@ -109,62 +112,53 @@ export default function LogTimeModal({ date, users = [], tickets = [], currentUs
                 </select>
 
                 <input value={row.notes} onChange={(e) => updateRow(idx, 'notes', e.target.value)}
-                  placeholder="Notes" style={{ ...inputStyle, display: row.category === 'ticket' ? 'block' : 'none' }} />
+                  placeholder="Notes" style={{ ...inputStyle, display: row.category === 'ticket' ? 'block' : 'none' }} className="focus:border-[var(--color-primary)]" />
                 {row.category !== 'ticket' && <div />}
 
                 <button onClick={() => removeRow(idx)} style={{
-                  background: 'none', border: 'none', cursor: 'pointer', padding: 6,
-                  borderRadius: 6, display: 'flex', marginTop: 2,
+                  background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', cursor: 'pointer', padding: 10,
+                  borderRadius: 10, display: 'flex', marginTop: 2, alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s'
                 }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#FEE2E2'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                  className="hover:bg-[rgba(239,68,68,0.1)] hover:border-[#EF4444]"
                 >
-                  <Trash2 size={14} color="#DC2626" />
+                  <Trash2 size={16} color="#EF4444" />
                 </button>
               </div>
             ))}
           </div>
 
           <button onClick={addRow} style={{
-            display: 'flex', alignItems: 'center', gap: 4,
-            padding: '8px 14px', borderRadius: 8, border: '1px dashed #E5E7EB',
-            background: 'transparent', fontSize: 13, color: '#6B7280',
-            cursor: 'pointer', marginTop: 12, width: '100%', justifyContent: 'center',
-          }}>
-            <Plus size={14} /> Add Entry
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '12px 16px', borderRadius: 10, border: '1px dashed var(--color-border)',
+            background: 'var(--color-background)', fontSize: 14, fontWeight: 600, color: 'var(--color-primary)',
+            cursor: 'pointer', marginTop: 16, width: '100%', justifyContent: 'center', transition: 'all 0.2s'
+          }} className="hover:border-[var(--color-primary)] hover:bg-[var(--color-surface-hover)]">
+            <Plus size={16} /> Add Another Entry
           </button>
 
           {/* Total */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            marginTop: 20, padding: '12px 16px', background: '#F9FAFB', borderRadius: 10,
+            marginTop: 32, padding: '16px 24px', background: 'var(--color-surface-hover)', borderRadius: 12, border: '1px solid var(--color-border)'
           }}>
-            <span style={{ fontSize: 14, fontWeight: 600, fontFamily: '"Poppins", sans-serif' }}>Total Hours</span>
+            <span style={{ fontSize: 15, fontWeight: 700, fontFamily: '"Poppins", sans-serif', color: 'var(--color-secondary-text)' }}>Total Logged Hours</span>
             <span style={{
-              fontSize: 20, fontWeight: 700, fontFamily: '"Poppins", sans-serif',
-              color: totalHours > 12 ? '#DC2626' : totalHours >= 8 ? '#0451CC' : '#2D2D2D',
+              fontSize: 24, fontWeight: 800, fontFamily: '"Poppins", sans-serif',
+              color: totalHours > 12 ? '#EF4444' : totalHours >= 8 ? '#10B981' : '#fff',
             }}>
               {totalHours}h
             </span>
           </div>
 
           {totalHours > 12 && (
-            <p style={{ fontSize: 12, color: '#DC2626', marginTop: 8 }}>⚠ Total exceeds 12 hours for this day</p>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#EF4444', marginTop: 12, display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(239, 68, 68, 0.1)', padding: '10px 16px', borderRadius: 8 }}>
+              ⚠ Total exceeds 12 hours for this day
+            </div>
           )}
 
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 20, paddingTop: 16, borderTop: '1px solid #E5E7EB' }}>
-            <button onClick={onClose} style={{
-              padding: '10px 20px', borderRadius: 10, border: '1px solid #E5E7EB',
-              background: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 500, color: '#6B7280',
-            }}>Cancel</button>
-            <button onClick={handleSave} style={{
-              padding: '10px 24px', borderRadius: 10, border: 'none',
-              background: '#0451CC', color: '#fff', cursor: 'pointer',
-              fontSize: 14, fontWeight: 600, transition: 'background 0.2s ease',
-            }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#0340A0'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#0451CC'}
-            >Save Time</button>
+          <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end', marginTop: 32, paddingTop: 24, borderTop: '1px solid var(--color-border)' }}>
+            <button onClick={onClose} className="btn-secondary" style={{ padding: '12px 28px' }}>Cancel</button>
+            <button onClick={handleSave} className="btn-primary" style={{ padding: '12px 28px' }}>Save Log</button>
           </div>
         </div>
       </div>

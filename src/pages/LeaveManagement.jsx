@@ -20,9 +20,20 @@ export default function LeaveManagement() {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32, padding: '0 16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <div>
+          <h2 style={{ fontFamily: '"Poppins", sans-serif', fontWeight: 700, fontSize: 24, color: '#fff', margin: '0 0 8px' }}>
+            Leave Management
+          </h2>
+          <p style={{ fontSize: 14, color: 'var(--color-secondary-text)', margin: 0, fontWeight: 500 }}>
+            Track and manage employee time off and holidays.
+          </p>
+        </div>
+      </div>
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', borderBottom: '1px solid #E5E7EB', gap: 32, flex: 1 }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--color-border)', gap: 32, flex: 1 }}>
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -30,14 +41,15 @@ export default function LeaveManagement() {
               style={{
                 padding: '12px 0 16px',
                 fontSize: 14,
-                fontWeight: activeTab === tab.id ? 600 : 500,
-                color: activeTab === tab.id ? '#0451CC' : '#6B7280',
-                borderBottom: activeTab === tab.id ? '2px solid #0451CC' : '2px solid transparent',
+                fontWeight: activeTab === tab.id ? 700 : 600,
+                color: activeTab === tab.id ? 'var(--color-primary)' : 'var(--color-secondary-text)',
+                borderBottom: activeTab === tab.id ? '2px solid var(--color-primary)' : '2px solid transparent',
                 background: 'none',
-                border: 'none',
+                borderTop: 'none', borderLeft: 'none', borderRight: 'none',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
               }}
+              className={activeTab !== tab.id ? 'hover:text-white' : ''}
             >
               {tab.label}
             </button>
@@ -45,13 +57,15 @@ export default function LeaveManagement() {
         </div>
         
         <div style={{
-          background: '#EAF0FD',
-          color: '#0451CC',
-          padding: '6px 16px',
+          background: 'var(--color-primary-light)',
+          color: 'var(--color-primary)',
+          padding: '8px 16px',
           borderRadius: 20,
           fontSize: 12,
-          fontWeight: 600,
-          fontFamily: 'Poppins, sans-serif'
+          fontWeight: 700,
+          fontFamily: '"Poppins", sans-serif',
+          border: '1px solid rgba(37, 87, 167, 0.2)',
+          marginLeft: 24
         }}>
           FY {currentFY} | Resets: 1 Apr {parseInt(currentFY.split('-')[1])}
         </div>
@@ -60,8 +74,9 @@ export default function LeaveManagement() {
           <button 
             onClick={() => setShowHolidayModal(true)}
             style={manageHolidaysBtnStyle}
+            className="hover:bg-[var(--color-surface-hover)]"
           >
-            <Settings size={16} /> Manage Holidays
+            <Settings size={16} color="var(--color-secondary-text)" /> Manage Holidays
           </button>
         )}
       </div>
@@ -84,13 +99,13 @@ const manageHolidaysBtnStyle = {
   display: 'flex',
   alignItems: 'center',
   gap: 8,
-  padding: '8px 16px',
-  borderRadius: 10,
-  border: '1px solid #E5E7EB',
-  background: '#fff',
+  padding: '10px 16px',
+  borderRadius: 12,
+  border: '1px solid var(--color-border)',
+  background: 'var(--color-surface)',
   fontSize: 13,
   fontWeight: 600,
-  color: '#4B5563',
+  color: '#fff',
   cursor: 'pointer',
   transition: 'all 0.2s ease',
 };
